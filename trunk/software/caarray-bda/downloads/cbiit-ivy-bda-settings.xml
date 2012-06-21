@@ -1,0 +1,34 @@
+<!--
+This file is the is the settings file used by Ivy for caArray build dependencies. When configuring the
+IvyDE plugin for eclipse, you should point it at ivy-caarray-settings-eclipse.xml instead.
+
+The settings define two resolvers:
+  1) An ncicb-ivy-repo resolver points to the NCICB Ivy Repository
+  2) Another resolver points to a local filesystem repository where temporary artifacts can be published as part
+     of a project or where you can test out your ivy definitions before they are added to official NCICB Ivy Repository.
+     This can also be used to speed up builds and make it possible to do builds offline.
+
+The local resolver looks for the ivy repo in ${local.repo.dir}. This is set to a default value in build/default.properties,
+and can be overridden via local.properties or -D on the ant command line.
+-->
+
+<ivysettings>
+    <property name="ivy-bda.local.repo" value="${software.dir}/caarray-bda/ivy-repo"/>
+    <property name="tmp.local.repo" value="${software.dir}/tmp.local.ivy.repo"/>
+    <settings defaultResolver="ncicb-chain"/>
+    <caches defaultCacheDir="${ivy.settings.dir}/.ivy2-caarray-cache" useOrigin="false"/>
+    <resolvers >
+        <chain name="ncicb-chain">
+        <filesystem name="ivy-bda.repo" local="true">
+            <artifact pattern="${ivy-bda.local.repo}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+            <ivy pattern="${ivy-bda.local.repo}/[organisation]/[module]/[revision]/ivy.xml"/>
+        </filesystem>
+           <filesystem name="tmp.local.repo" local="true">
+            <artifact pattern="${tmp.local.repo}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+            <ivy pattern="${tmp.local.repo}/[organisation]/[module]/[revision]/ivy.xml"/>
+        </filesystem>
+        <ibiblio name="nexus-repo-public" m2compatible="true" root="https://ncimvn.nci.nih.gov/nexus/content/repositories/public" 
+                   pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+        </chain>
+    </resolvers>
+</ivysettings>

@@ -1,0 +1,199 @@
+           --------------------
+           JUpload - File Upload Applet - HowTo customize the applet ?
+           --------------------
+           --------------------
+           --------------------
+           
+           
+HowTo customize the applet ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+%{toc}
+
+
+
+* {Main choices}
+~~~~~~~~~~~~~~~~
+	
+	You can customize the behavour of this applet by using one (or more) of
+	the following ways (from the simplest to the most complex):
+	
+	* <<Basic HTML Customization>>. Simply precise other applet parameters to the applet, in the HTML APPLET tag: copy the
+    sample given in the {{{./applet-basic.html}basic demo}}. The parameters for all available upload policies are displayed on the
+    API page for UploadPolicy.
+
+	* <<Using another available upload policy>>. You can precise another policy amongst the available ones, by specifying a <i>uploadPolicy</i>
+    parameter, like in the {{{./applet-basic-picture.html}basic picture mode demo}}
+    
+    * <<Creating a new UploadPolicy, inheriting from an existing uploadpolicy>>, like DefaultUploadPolicy or
+    PictureUploadPolicy. Then, you get a default behaviour, and only define what is specific to your needs.
+    
+    * <<Creating an entirely new UploadPolicy>>. More complex: you need to code again every method. But then, you can use precisely
+    anagewhat the kind of fils that may be upload, check them, prepare upload (for instance, compress file before upload), check that
+    specific parameters are set before upload (the existing CoppermineUploadPolicy checks that an albumId is set), and much
+    more...
+    
+    * <<Changing the upload behavior>>. Since 2.9.0, the DefaultUploadThread provides a default implementation of the
+    FileUploadThread interface. It should be easy to inherit from it, and change the upload behaviour.
+    
+    * <<And, of course, change code everywhere in the applet>> ... like I did ;-)
+
+
+* {Daemon mode}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+** {Description}
+
+	The daemon was originally intended to be a daemon (Unix meaning). A basic applet would allow the user to choose the
+	file(s) to upload. Then, it would have started the daemon, and then send it the file(s) to upload. This would allow
+	the upload to be done, while the user go on browsing. He/she may close the window, which contains the applet without
+	impact on the running on upload.
+	
+	Half of the work was done. JUpload can work in a <<stand alone application>> mode, that is: as a standard java
+	application. As it is, it can be reused to be embedded in standard Java application.
+	
+	The 'basic' applet, which would allow the user to select the files, then communicate with the daemon doesn't exist.
+
+** {How to use it?}
+
+	A default configuration exists in the package: <./src/main/resources/conf/default_daemon.properties>. You should not 
+	modify this file, as it will be shipped with JUpload releases, and may change according to JUpload changes.
+	
+	To define your own parameters, you <<MUST>> define your own daemon.properties. This file will never exist in JUpload
+	releases. The <./src/main/resources/conf/daemon.properties> file is ignored in SVN (will never be commited). You must,
+	at least, define the mandatory JUpload parameters. Currently, one parameter is mandatory: postURL.
+	
+	The daemon.properties file are standard java properties. You can define here any of the applet configuration parameters.
+	For instance, the most basic daemon.properties file would be:
+	
+---------------------------------------------------------------------------------------------------------
+
+#
+# daemon.properties: specific configuration for the demo
+#
+# 9080 is the TCP port used by my tomcat server 
+#
+
+postURL = http://localhost:9080/jupload/samples.java/parseRequest.jsp
+---------------------------------------------------------------------------------------------------------
+
+
+* {Basic HTML Customization}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	A first level of customization is available by using the DefaultUploadPolicy (that is, not provide any uploadPolicy applet
+	parameter), and use parameters available within the DefaultUploadPolicy, without any Java coding: these parameters are 
+	provided in HTML, within the APPLET tag that creates this applet. These parameters are described {{{E}below}}
+	
+	* As there is no uploadPolicy parameter, you can only use the parameters that are implemented in the DefaultUploadPolicy. 
+	See the column 'Implemented in' in the parameter list, {{{E}hereafter}}
+	
+	* The main customizations available by applet parameters are listed here:
+	
+	  * Control of the target URL (where files should be uploaded).
+	  
+	  * Choose of an upload policy, among the available policies
+	    (see all classes that inherit from DefaultUploadPolicy)
+
+	  * Log information level, with debugLevel.
+	  
+	  * Language control, that can be specific for the HTML page.
+	  
+	  * A URL where all debug information can/should be sent when an error occurs (see urlToSendErrorTo).
+	  
+	  * Number of files to be put in one HTTP Request (see nbFilesPerRequest)
+	  
+	  * A string to control that upload is a success (see stringUploadSuccess)
+	  
+	  * For pictures only (use the PictureUploadPolicy): A maximum width and/or height (see maxPicHeight and maxPicWidth)
+
+
+* {Using another existing UploadPolicy}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	<<By providing the <uploadPolicy> >> parameter within the APPLET tag, you can select another class that implements the 
+	UploadPolicy interface. The current implemented upload policies are:
+	
+	* <<DefaultUploadPolicy>>. It's a 'simple' instanciation of each UploadPolicy methods. It makes JUpload work the same way as
+	    the original JUpload (v1).
+
+	* <(deprecated)> <<CustomizedNbFilesPerRequestUploadPolicy>> is a DefaultUploadPolicy, which allows to control how 
+	many files are to be uploaded for each HTTP request. This class is now of no use, as the <nbFilesPerRequest> is now 
+	managed directly by the DefaultUploadPolicy.
+	
+	* <<FileByFileUploadPolicy>> is a CustomizedNbFilesPerRequestUploadPolicy, where the number of files to upload for 
+	each HTTP request is ... one! This policy behaves as the DefaultUploadPolicy, when nbFilesPerRequest parameter (see
+	below) is 1.
+
+	* <<PictureUploadPolicy>> adds picture handling the applet. The main functionalities are :
+	
+		* Filter: only picture files can be uploaded.
+		
+		* Preview picture: The look of the applet changes, to allow display of the selected picture.
+		
+		* Rotation: you can rotate the picture by quarter of turn.
+		
+		* Resizing: the applet can resize picture before upload, to lower network (and time) transfer. Just specify 
+		a maximum width and/or height, in pixels.
+
+	* <<CoppermineUploadPolicy>> is a special PictureUploadPolicy: it allows upload to the nice 
+	{{{http://coppermine.sourceforge.net}Coppermine picture gallery}}. Its main add is to manage the albumId, so that 
+	uploaded pictures are directly uploaded into the selected album, and to change the current navigator page to the 
+	album property page, so that the user can change comments for all uploaded pictures in one step.
+	
+	
+* {Customization by creating a new Java Upload Policy (simple java coding)}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	All details on the {{{./apidocs/wjhk/jupload2/policies/package-summary.html}wjhk.jupload2.uploadpolicy package description}}. 
+	
+	If these customization possibilities are not enough, you can create a new upload policy. To do this, you need to 
+	create a new java class: the easiest way is to inherit from DefaultUploadPolicy. You can then override methods of 
+	the UploadPolicy interface.
+
+	This kind of customization will be compatible within next JUpload applet release. If you need other hooks (method 
+	within the UploadPolicy interface, to allow other customizations), please let me know by posting a message on the 
+	sourceforge jupload forums (open discussions for instance), or post a new Feature Request in the jupload sourceforge 
+	project page.
+
+	Here is a description of the customization that you can do by using the creating a new policy, using the UploadPolicy 
+	interface:
+	
+	* Control files management:
+	
+		* Authorization (or not) to add a file to the list of files to upload, see UploadPolicy.createFileData(File). This
+		allows the policy to validate files, before adding them to the list of files that must be displayed. The 
+		PictureUploadPolicy.createFileData(File) checks that the added files are valid pictures.
+		
+		* File preparation before upload (for instance to resize a picture, or encode a text file to a specific format)
+	
+	* Display other buttons on the applet (or remove the default buttons), see 
+	UploadPolicy.createTopPanel(JButton, JButton, JButton, JPanel)
+
+	* Specific behaviour, on file selection. The wjhk.jupload2.policies.PictureUploadPolicy allows picture management. 
+	The UploadPolicy.onSelectFile(FileData) method is called when the user selects a file in the list. This allow the 
+	policy to do any action about this file. The PictureUploadPolicy.onSelectFile(FileData) displays a preview pictures 
+	on the top part of the applet.
+
+	* Change applet output. You can 'interfere' with some attributes (debugFile and debugOK) and with the addMsgToDebugLog 
+	methods. All these are not in the UploadPolicy interface, but in the DefaultUploadPolicy implementation.
+	
+
+* {Customization by creating a new Java FileData}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	All details on the {{{./apidocs/wjhk/jupload2/filedata/package-summary.html}filedata package documentation}}. 
+	
+	This allows you to change the file relative behaviour. You can for instance add data compression, preload check,
+	new data about files in the upload to the server...
+	
+	
+* {List of available applet parameters}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	The list of applet parameters available in JUpload is defined in the 
+	{{{./apidocs/wjhk/jupload2/policies/UploadPolicy.html}UploadPolicy javadoc page}}.
+	  
+	These are applet parameters that can be 'given' to the applet, with <PARAM> tags. They allow to large control of 
+	the applet behavior.

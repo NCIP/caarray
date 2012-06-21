@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ivy-module version="1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.jayasoft.org/misc/ivy/ivy.xsd">
+
+    <info organisation="xalan-serializer" module="serializer" revision="2.7.1" status="integration" publication="20111027174736"/>
+
+  <configurations>
+    <conf name="master"/>
+    <conf name="compile"/>
+    <conf name="runtime"/>
+  </configurations>
+  
+  <publications>
+      <artifact name="serializer" type="jar" conf="master, compile, runtime"/>
+  </publications>
+    
+  <dependencies>               
+  </dependencies>
+
+</ivy-module>

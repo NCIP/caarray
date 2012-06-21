@@ -1,0 +1,8 @@
+<atlassian-plugin key="copynumber-platform" name="DataMatrix Copy Number Array Platform" plugins-version="2">
+    <plugin-info>
+        <version>1.0.0</version>
+    </plugin-info>
+    <platform key="copynumber">
+        <platform-module class="gov.nih.nci.caarray.plugins.copynumber.DataMatrixCopyNumberModule"/>
+    </platform>
+</atlassian-plugin>

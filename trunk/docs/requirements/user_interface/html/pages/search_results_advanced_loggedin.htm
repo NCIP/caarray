@@ -1,0 +1,636 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Search Results</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Manufacturer</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+				
+				<!--<select name="searchnode" id="browsenode">
+					<option>NCICB</option>
+				</select>-->
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->	
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->		
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>Search Results</h1>
+								
+							<div class="padme">
+							
+								<h2>Results for: "<strong>microarray</strong>"</h2>
+								
+								<p class="small">
+									<strong>38 experiments</strong> found in <strong>3 categories</strong> across <strong>4 locations</strong>. 
+									Display in list:
+									<select name="select" id="nodes">
+										<option>(All Locations)</option>
+									</select>
+								</p>
+							
+								<!--Primary Tabs -->
+								
+								<ul id="tabs" class="tabs">
+									<li><a href="#experiments" class="active">Experiments (30)</a></li>
+									<li><a href="#protocols">Array Designs (5)</a></li>
+									<li><a href="#software">Samples (3)</a></li>								
+								</ul>
+								
+								<!--/Primary Tabs -->
+								
+								
+									<!--Results-->
+									
+									<div id="tabboxwrapper">
+									
+										<!--Experiments-->
+											
+											<div id="experiments">
+												
+												<p class="small">Displaying <strong>1-25</strong> of <strong>30</strong> total.</p>
+												
+												<div class="pagingtop">
+													Page 1 <span class="bar">|</span> <a href="#">2</a>
+													&nbsp;&nbsp;
+													&lt; Back <span class="bar">|</span> 
+													<a href="#">Next &gt;</a>
+												</div>
+												
+												
+												<!--Searchbox-->
+									
+													<div id="searchboxwrapper" style="display:none">
+													
+														<form name="searchform" id="searchform_exp">
+													
+															<table class="form">
+																<tr>
+																	<td class="label">Experiment Title:</td>
+																	<td><input type="text" name="" style="width:150px" /></td>
+																	<td class="label">Assay Type:</td>
+																	<td>
+																		<select name="select" name="" style="width:150px">
+																			<option>All</option>
+																		</select>
+																	</td>
+																	<td class="label">Organism:</td>
+																	<td>
+																		<select name="select" name="" style="width:150px">
+																			<option>All</option>
+																		</select>
+																	</td>
+																</tr>
+																<tr>
+																	<td class="label">ID:</td>
+																	<td><input type="text" name="" style="width:150px" /></td>
+																	<td class="label">P.I. Last Name:</td>
+																	<td>
+																		<select name="select" name="" style="width:150px">
+																			<option>All</option>
+																		</select>
+																	</td>
+																	<td class="label">Disease:</td>
+																	<td>
+																		<select name="select" name="" style="width:150px">
+																			<option>All</option>
+																		</select>
+																	</td>
+																</tr>
+															</table>
+															
+															<div class="actions">
+																<a href="search_results_advanced.htm"><img src="images/btn_filter.gif" alt="" /></a>
+															</div>
+															
+														</form>
+													
+													</div>
+													
+												<!--/Searchbox-->
+												
+												
+												
+												
+												<table class="searchresults" cellspacing="0">
+													<tr>
+														<th><a href="#">Experiment Title</a></th>
+														<th><a href="#">ID</a></th>
+														<th><a href="#">Assay Type</a></th>
+														<th><a href="#">Location</a></th>
+														<th><a href="#">Primary Contact</a></th>
+														<th><a href="#">Organism</a></th>
+														<th><a href="#">Disease State</a></th>
+														<th><a href="#"># Samples</a></th>
+														<th><a href="#">Updated</a></th>
+														<th class="actions">Edit</th>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Assembly of microarrays for genome-wide ...</a></td>
+														<td>352</td>
+														<td>SNP</td>
+														<td>NCICB</td>
+														<td><a href="mailto:email@email.com" class="email">Albertson<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>TrkB loss from retina</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">34</a></td>
+														<td>9/6/2007</td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Interlaboratory comparability study of c...</a></td>
+														<td>BN-213A</td>
+														<td>Gene Expression</td>
+														<td>Johns Hopkins</td>
+														<td><a href="mailto:email@email.com" class="email">Dobbin<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>Transgenic huntington disease</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">553</a></td>
+														<td>12/3/2006</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Assembly of microarrays for genome-wide ...</a></td>
+														<td>352</td>
+														<td>SNP</td>
+														<td>NCICB</td>
+														<td><a href="mailto:email@email.com" class="email">Albertson<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>TrkB loss from retina</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">34</a></td>
+														<td>9/6/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Interlaboratory comparability study of c...</a></td>
+														<td>BN-213A</td>
+														<td>Gene Expression</td>
+														<td>Johns Hopkins</td>
+														<td><a href="mailto:email@email.com" class="email">Dobbin<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>Transgenic huntington disease</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">553</a></td>
+														<td>12/3/2006</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Assembly of microarrays for genome-wide ...</a></td>
+														<td>352</td>
+														<td>SNP</td>
+														<td>NCICB</td>
+														<td><a href="mailto:email@email.com" class="email">Albertson<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>TrkB loss from retina</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">34</a></td>
+														<td>9/6/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Interlaboratory comparability study of c...</a></td>
+														<td>BN-213A</td>
+														<td>Gene Expression</td>
+														<td>Johns Hopkins</td>
+														<td><a href="mailto:email@email.com" class="email">Dobbin<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>Transgenic huntington disease</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">553</a></td>
+														<td>12/3/2006</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Assembly of microarrays for genome-wide ...</a></td>
+														<td>352</td>
+														<td>SNP</td>
+														<td>NCICB</td>
+														<td><a href="mailto:email@email.com" class="email">Albertson<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>TrkB loss from retina</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">34</a></td>
+														<td>9/6/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Interlaboratory comparability study of c...</a></td>
+														<td>BN-213A</td>
+														<td>Gene Expression</td>
+														<td>Johns Hopkins</td>
+														<td><a href="mailto:email@email.com" class="email">Dobbin<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>Transgenic huntington disease</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">553</a></td>
+														<td>12/3/2006</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Distinctive molecular profiles of high-g...</a></td>
+														<td>CA8283-B</td>
+														<td>Gene Expression</td>
+														<td>Duke University</td>
+														<td><a href="mailto:email@email.com" class="email">Hanash<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Rat</td>
+														<td>Acute Lymphoblastic Leukemia, Adult </td>
+														<td class="alignright"><a href="#">23</td>
+														<td>7/7/2007</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Interlaboratory comparability study of c...</a></td>
+														<td>BN-213A</td>
+														<td>Gene Expression</td>
+														<td>Johns Hopkins</td>
+														<td><a href="mailto:email@email.com" class="email">Dobbin<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Mouse</td>
+														<td>Transgenic huntington disease</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">553</a></td>
+														<td>12/3/2006</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">Identification of novel E2F1-regulated g...</a></td>
+														<td>ASD-24568</td>
+														<td>SNP</td>
+														<td>Georgetown</td>
+														<td><a href="mailto:email@email.com" class="email">Cress<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a></td>
+														<td>Human</td>
+														<td>Brain Stem Glioma, Childhood</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">423</a></td>
+														<td>5/6/2005</td>
+														<td class="icon">&nbsp;</td>
+													</tr>
+												</table>
+												<div class="paging">
+													Page 1 <span class="bar">|</span> <a href="#">2</a>
+													&nbsp;&nbsp;
+													&lt; Back <span class="bar">|</span> 
+													<a href="#">Next &gt;</a>
+												</div>
+														
+											</div>
+											
+										<!--/Experiments-->
+										
+										
+									
+									</div>
+									
+								<!--/Results-->
+								
+								
+								</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+				
+				
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

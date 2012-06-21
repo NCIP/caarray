@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JUpload project on Sourceforge - JUpload - File Upload Applet - HowTo customize the applet ?</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            JUpload project on Sourceforge
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2011-10-13
+                      </div>
+            <div class="xright">            <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Sourceforge project page</a>
+            |
+                <a href="http://sourceforge.net/donate/index.php?group_id=59144" class="externalLink">Support this project</a>
+            |
+                <a href="http://maven.apache.org/" class="externalLink">Maven</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Sourceforge project page</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Project presentation (and download)</a>
+          </li>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/files" class="externalLink">Browse files</a>
+          </li>
+          </ul>
+              <h5>JUpload samples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="applet-basic.html">Basic demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="applet-basic-picture.html">Picture mode demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="advanced_js_demo.html">Advanced demo</a>
+          </li>
+          </ul>
+              <h5>Project documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">General description</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-compile.html">HowTo compile</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-sign.html">HowTo sign the applet</a>
+          </li>
+              
+    <li class="none">
+              <strong>HowTo customize</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="faq.html">FAQ</a>
+          </li>
+              
+    <li class="none">
+                    <a href="README.txt">Release Notes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-support.html">HowTo get support</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-debug.html">HowTo debug</a>
+          </li>
+              
+    <li class="none">
+                    <a href="issue-tracking.html">Issue Tracking</a>
+          </li>
+              
+    <li class="none">
+                    <a href="dependencies.html">Dependencies</a>
+          </li>
+          </ul>
+              <h5>Translation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="howto-translate.html">HowTo translate</a>
+          </li>
+              
+    <li class="none">
+                    <a href="available_translations.html">Available translations</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                                 
+                        
+                        
+            <a href="http://sourceforge.net/donate/index.php?group_id=59144" title="Support this project" class="poweredBy">
+                            <img alt="Support this project" src="http://images.sourceforge.net/images/project-support.jpg" />
+            </a>
+                               
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>HowTo customize the applet ?</h2>
+<ul><li><a href="#HowTo_customize_the_applet_">HowTo customize the applet ?</a><ul><li><a href="#Main_choices">Main choices</a></li>
+<li><a href="#Daemon_mode">Daemon mode</a><ul><li><a href="#Description">Description</a></li>
+<li><a href="#How_to_use_it">How to use it?</a></li>
+</ul>
+</li>
+<li><a href="#Basic_HTML_Customization">Basic HTML Customization</a></li>
+<li><a href="#Using_another_existing_UploadPolicy">Using another existing UploadPolicy</a></li>
+<li><a href="#Customization_by_creating_a_new_Java_Upload_Policy_simple_java_coding">Customization by creating a new Java Upload Policy (simple java coding)</a></li>
+<li><a href="#Customization_by_creating_a_new_Java_FileData">Customization by creating a new Java FileData</a></li>
+<li><a href="#List_of_available_applet_parameters">List of available applet parameters</a></li>
+</ul>
+</li>
+</ul>
+<div class="section"><h3><a name="Main_choices">Main choices</a></h3>
+<p>You can customize the behavour of this applet by using one (or more) of the following ways (from the simplest to the most complex):</p>
+<ul><li><b>Basic HTML Customization</b>. Simply precise other applet parameters to the applet, in the HTML APPLET tag: copy the sample given in the <a href="./applet-basic.html">basic demo</a>. The parameters for all available upload policies are displayed on the API page for UploadPolicy.</li>
+<li><b>Using another available upload policy</b>. You can precise another policy amongst the available ones, by specifying a <i>i</i>uploadPolicy<i>/i</i> parameter, like in the <a href="./applet-basic-picture.html">basic picture mode demo</a></li>
+</ul>
+<ul><li><b>Creating a new UploadPolicy, inheriting from an existing uploadpolicy</b>, like DefaultUploadPolicy or PictureUploadPolicy. Then, you get a default behaviour, and only define what is specific to your needs.</li>
+<li><b>Creating an entirely new UploadPolicy</b>. More complex: you need to code again every method. But then, you can use precisely anagewhat the kind of fils that may be upload, check them, prepare upload (for instance, compress file before upload), check that specific parameters are set before upload (the existing CoppermineUploadPolicy checks that an albumId is set), and much more...</li>
+<li><b>Changing the upload behavior</b>. Since 2.9.0, the DefaultUploadThread provides a default implementation of the FileUploadThread interface. It should be easy to inherit from it, and change the upload behaviour.</li>
+<li><b>And, of course, change code everywhere in the applet</b> ... like I did ;-)</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Daemon_mode">Daemon mode</a></h3>
+<div class="section"><h4><a name="Description">Description</a></h4>
+<p>The daemon was originally intended to be a daemon (Unix meaning). A basic applet would allow the user to choose the file(s) to upload. Then, it would have started the daemon, and then send it the file(s) to upload. This would allow the upload to be done, while the user go on browsing. He/she may close the window, which contains the applet without impact on the running on upload.</p>
+<p>Half of the work was done. JUpload can work in a <b>stand alone application</b> mode, that is: as a standard java application. As it is, it can be reused to be embedded in standard Java application.</p>
+<p>The 'basic' applet, which would allow the user to select the files, then communicate with the daemon doesn't exist.</p>
+</div>
+<div class="section"><h4><a name="How_to_use_it">How to use it?</a></h4>
+<p>A default configuration exists in the package: <i>./src/main/resources/conf/default_daemon.properties</i>. You should not modify this file, as it will be shipped with JUpload releases, and may change according to JUpload changes.</p>
+<p>To define your own parameters, you <b>MUST</b> define your own daemon.properties. This file will never exist in JUpload releases. The <i>./src/main/resources/conf/daemon.properties</i> file is ignored in SVN (will never be commited). You must, at least, define the mandatory JUpload parameters. Currently, one parameter is mandatory: postURL.</p>
+<p>The daemon.properties file are standard java properties. You can define here any of the applet configuration parameters. For instance, the most basic daemon.properties file would be:</p>
+<div class="source"><pre>
+#
+# daemon.properties: specific configuration for the demo
+#
+# 9080 is the TCP port used by my tomcat server 
+#
+
+postURL = http://localhost:9080/jupload/samples.java/parseRequest.jsp</pre>
+</div>
+</div>
+</div>
+<div class="section"><h3><a name="Basic_HTML_Customization">Basic HTML Customization</a></h3>
+<p>A first level of customization is available by using the DefaultUploadPolicy (that is, not provide any uploadPolicy applet parameter), and use parameters available within the DefaultUploadPolicy, without any Java coding: these parameters are provided in HTML, within the APPLET tag that creates this applet. These parameters are described <a href="#E">below</a></p>
+<ul><li>As there is no uploadPolicy parameter, you can only use the parameters that are implemented in the DefaultUploadPolicy. See the column 'Implemented in' in the parameter list, <a href="#E">hereafter</a></li>
+<li>The main customizations available by applet parameters are listed here:<ul><li>Control of the target URL (where files should be uploaded).</li>
+<li>Choose of an upload policy, among the available policies (see all classes that inherit from DefaultUploadPolicy)</li>
+<li>Log information level, with debugLevel.</li>
+<li>Language control, that can be specific for the HTML page.</li>
+<li>A URL where all debug information can/should be sent when an error occurs (see urlToSendErrorTo).</li>
+<li>Number of files to be put in one HTTP Request (see nbFilesPerRequest)</li>
+<li>A string to control that upload is a success (see stringUploadSuccess)</li>
+<li>For pictures only (use the PictureUploadPolicy): A maximum width and/or height (see maxPicHeight and maxPicWidth)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Using_another_existing_UploadPolicy">Using another existing UploadPolicy</a></h3>
+<p><b>By providing the &lt;uploadPolicy&gt; </b> parameter within the APPLET tag, you can select another class that implements the UploadPolicy interface. The current implemented upload policies are:</p>
+<ul><li><b>DefaultUploadPolicy</b>. It's a 'simple' instanciation of each UploadPolicy methods. It makes JUpload work the same way as the original JUpload (v1).</li>
+<li><i>(deprecated)</i> <b>CustomizedNbFilesPerRequestUploadPolicy</b> is a DefaultUploadPolicy, which allows to control how many files are to be uploaded for each HTTP request. This class is now of no use, as the <i>nbFilesPerRequest</i> is now managed directly by the DefaultUploadPolicy.</li>
+<li><b>FileByFileUploadPolicy</b> is a CustomizedNbFilesPerRequestUploadPolicy, where the number of files to upload for each HTTP request is ... one! This policy behaves as the DefaultUploadPolicy, when nbFilesPerRequest parameter (see below) is 1.</li>
+<li><b>PictureUploadPolicy</b> adds picture handling the applet. The main functionalities are :<ul><li>Filter: only picture files can be uploaded.</li>
+<li>Preview picture: The look of the applet changes, to allow display of the selected picture.</li>
+<li>Rotation: you can rotate the picture by quarter of turn.</li>
+<li>Resizing: the applet can resize picture before upload, to lower network (and time) transfer. Just specify a maximum width and/or height, in pixels.</li>
+</ul>
+</li>
+<li><b>CoppermineUploadPolicy</b> is a special PictureUploadPolicy: it allows upload to the nice <a href="http://coppermine.sourceforge.net" class="externalLink">Coppermine picture gallery</a>. Its main add is to manage the albumId, so that uploaded pictures are directly uploaded into the selected album, and to change the current navigator page to the album property page, so that the user can change comments for all uploaded pictures in one step.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Customization_by_creating_a_new_Java_Upload_Policy_simple_java_coding">Customization by creating a new Java Upload Policy (simple java coding)</a></h3>
+<p>All details on the <a href="./apidocs/wjhk/jupload2/policies/package-summary.html">wjhk.jupload2.uploadpolicy package description</a>. </p>
+<p>If these customization possibilities are not enough, you can create a new upload policy. To do this, you need to create a new java class: the easiest way is to inherit from DefaultUploadPolicy. You can then override methods of the UploadPolicy interface.</p>
+<p>This kind of customization will be compatible within next JUpload applet release. If you need other hooks (method within the UploadPolicy interface, to allow other customizations), please let me know by posting a message on the sourceforge jupload forums (open discussions for instance), or post a new Feature Request in the jupload sourceforge project page.</p>
+<p>Here is a description of the customization that you can do by using the creating a new policy, using the UploadPolicy interface:</p>
+<ul><li>Control files management:<ul><li>Authorization (or not) to add a file to the list of files to upload, see UploadPolicy.createFileData(File). This allows the policy to validate files, before adding them to the list of files that must be displayed. The PictureUploadPolicy.createFileData(File) checks that the added files are valid pictures.</li>
+<li>File preparation before upload (for instance to resize a picture, or encode a text file to a specific format)</li>
+</ul>
+</li>
+<li>Display other buttons on the applet (or remove the default buttons), see UploadPolicy.createTopPanel(JButton, JButton, JButton, JPanel)</li>
+<li>Specific behaviour, on file selection. The wjhk.jupload2.policies.PictureUploadPolicy allows picture management. The UploadPolicy.onSelectFile(FileData) method is called when the user selects a file in the list. This allow the policy to do any action about this file. The PictureUploadPolicy.onSelectFile(FileData) displays a preview pictures on the top part of the applet.</li>
+<li>Change applet output. You can 'interfere' with some attributes (debugFile and debugOK) and with the addMsgToDebugLog methods. All these are not in the UploadPolicy interface, but in the DefaultUploadPolicy implementation.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Customization_by_creating_a_new_Java_FileData">Customization by creating a new Java FileData</a></h3>
+<p>All details on the <a href="./apidocs/wjhk/jupload2/filedata/package-summary.html">filedata package documentation</a>. </p>
+<p>This allows you to change the file relative behaviour. You can for instance add data compression, preload check, new data about files in the upload to the server...</p>
+</div>
+<div class="section"><h3><a name="List_of_available_applet_parameters">List of available applet parameters</a></h3>
+<p>The list of applet parameters available in JUpload is defined in the <a href="./apidocs/wjhk/jupload2/policies/UploadPolicy.html">UploadPolicy javadoc page</a>.</p>
+<p>These are applet parameters that can be 'given' to the applet, with <i>PARAM</i> tags. They allow to large control of the applet behavior.</p>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

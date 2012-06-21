@@ -1,0 +1,46 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (list of available translations)
+           --------------------
+           --------------------
+           --------------------
+
+   This page contains the list of available translation, with the relevant contributors (thanks to them). Each line contains 
+   a link to the page which contains this translation. Each page contains both the applet translation (for this package), and a 
+   translation for the JUPload plugin for Coppermine. This second translation is not used, if you directly use the applet. But, 
+   as it is a free and open source project, it would be nice that translators also translate it...
+
+   Please read all details in the {{{../howto-translate.html}howto-translate}} page.
+
+*--------------------*--------------------*
+| Language | Contributor |
+| {{{./lang.properties.html}English (default language file)}} | Core translation file (no contributor) |
+| {{{./lang_ar.properties.html}Arabic}} | "Abdulrhman Alkhodiry" <almooheb@gmail.com> |
+| {{{./lang_ar_SA.properties.html}Arabic}} | "Abdulrhman Alkhodiry" <almooheb@gmail.com> |
+| {{{./lang_bg.properties.html}Bulgarian}} | Илиан Христодоров (zulix@zulix.net) |
+| {{{./lang_cs.properties.html}Czech}} | Vladan Zajda |
+| {{{./lang_da.properties.html}Danish}} | Jeppe Bundsgaard <jebu@dpu.dk> |
+| {{{./lang_de.properties.html}German}} | Fritz Elfert <felfert@users.sourceforge.net> |
+| {{{./lang_en.properties.html}English}} | No maintainer (same content as lang.properties) |
+| {{{./lang_eo.properties.html}Esperanto}} | Chuck Smith |
+| {{{./lang_es.properties.html}Spanish}} | Unknown |
+| {{{./lang_fi.properties.html}Finnish}} | No maintainer (same content as lang.properties) |
+| {{{./lang_fr.properties.html}French}} | Etienne <etienne_sf@users.sourceforge.net> |
+| {{{./lang_hr.properties.html}Croatian}} | Bruno Simic |
+| {{{./lang_hu.properties.html}Hungarian}} | Rézsó Gábor <gabor.rezso@gmail.com> |
+| {{{./lang_il.properties.html}Hebrew}} | liorda@gmail.com |
+| {{{./lang_it.properties.html}Italian}} | Manuele Grueff mgrueff@atipica.it |
+| {{{./lang_ja.properties.html}Japanese}} | Takashi Yukawa: takashi_922 at yahoo dot co dot jp |
+| {{{./lang_nl.properties.html}Dutch}} | Unknown |
+| {{{./lang_no.properties.html}Norwegian}} | Unkown |
+| {{{./lang_pl.properties.html}Polish}} | Unknown |
+| {{{./lang_pt.properties.html}Portugese}} | Filipe Teixeira <filipesteixeira@gmail.com> |
+| {{{./lang_pt_BR.properties.html}Brasilian (Protugese)}} | Filipe Teixeira <filipesteixeira@gmail.com> |
+| {{{./lang_ro.properties.html}Romanian (idem to Moldova)}} | Adrian (nickname: ady1503) (mail: gallery@butnarumd.com) |
+| {{{./lang_ru.properties.html}Russian}} | Unknown |
+| {{{./lang_sk.properties.html}Slovak}} | Unknown |
+| {{{./lang_sl.properties.html}Slovenian}} | Unknown |
+| {{{./lang_sv.properties.html}Swedish}} | Erik Lindahl erik@fisensmosse.se |
+| {{{./lang_tr.properties.html}Turkish}} | Tugcem Oral (SF account: tugcem )  |
+| {{{./lang_zh.properties.html}Chinese simplified}} | bluesway (u93530054@ccu.edu.tw and bluesway@mail2000.com.tw) |
+| {{{./lang_zh_TW.properties.html}Chinese simplified}} | bluesway (u93530054@ccu.edu.tw and bluesway@mail2000.com.tw) |
+*--------------------*--------------------*

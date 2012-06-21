@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JUpload project on Sourceforge - JUpload - File Upload Applet - HowTo translate the applet?</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            JUpload project on Sourceforge
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2011-10-13
+                      </div>
+            <div class="xright">            <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Sourceforge project page</a>
+            |
+                <a href="http://sourceforge.net/donate/index.php?group_id=59144" class="externalLink">Support this project</a>
+            |
+                <a href="http://maven.apache.org/" class="externalLink">Maven</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Sourceforge project page</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Project presentation (and download)</a>
+          </li>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/files" class="externalLink">Browse files</a>
+          </li>
+          </ul>
+              <h5>JUpload samples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="applet-basic.html">Basic demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="applet-basic-picture.html">Picture mode demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="advanced_js_demo.html">Advanced demo</a>
+          </li>
+          </ul>
+              <h5>Project documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">General description</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-compile.html">HowTo compile</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-sign.html">HowTo sign the applet</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-customize.html">HowTo customize</a>
+          </li>
+              
+    <li class="none">
+                    <a href="faq.html">FAQ</a>
+          </li>
+              
+    <li class="none">
+                    <a href="README.txt">Release Notes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-support.html">HowTo get support</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-debug.html">HowTo debug</a>
+          </li>
+              
+    <li class="none">
+                    <a href="issue-tracking.html">Issue Tracking</a>
+          </li>
+              
+    <li class="none">
+                    <a href="dependencies.html">Dependencies</a>
+          </li>
+          </ul>
+              <h5>Translation</h5>
+            <ul>
+              
+    <li class="none">
+              <strong>HowTo translate</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="available_translations.html">Available translations</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                                 
+                        
+                        
+            <a href="http://sourceforge.net/donate/index.php?group_id=59144" title="Support this project" class="poweredBy">
+                            <img alt="Support this project" src="http://images.sourceforge.net/images/project-support.jpg" />
+            </a>
+                               
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>HowTo translate the applet?</h2>
+<ul><li><a href="#HowTo_translate_the_applet">HowTo translate the applet?</a><ul><li><a href="#General_presentation">General presentation</a></li>
+<li><a href="#How_to_contribute">How to contribute?</a></li>
+<li><a href="#Which_translation_is_stored_there">Which translation is stored there?</a></li>
+<li><a href="#Where_to_find_translation_files">Where to find translation files</a></li>
+<li><a href="#Compile_JUpload_with_an_updated_translation">Compile JUpload with an updated translation</a><ul><li><a href="#Compile_the_maven-translation-plugin">Compile the maven-translation-plugin</a></li>
+<li><a href="#Build_the_JUpload_applet_with_the_maven-translation-plugin_activated">Build the JUpload applet, with the maven-translation-plugin activated</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="section"><h3><a name="General_presentation">General presentation</a></h3>
+<p>JUpload is used by people talking/reading lots of languages. Internationalization is native in the core JUpload package. These translations may be total or partial, depending on when the contributor sent his/her contribution. You are, of course, <b>welcome to complete the existing translations</b> or <b>create a new translation</b>.</p>
+<p>In order to contribute:</p>
+<ul><li>Check the liste of translation on the <a href="./available_translations.html">./available_translations.html</a> page.</li>
+<li>If your language is there, you can check it, and complete it, if some items are marked as MISSING.</li>
+<li>If your language is not there, you can start from the <a href="./lang.properties.html">./lang.properties.html</a> page.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="How_to_contribute">How to contribute?</a></h3>
+<p><b>For all translaters:</b></p>
+<p><b>Please also check/translate the Coppermine part</b>, even if you don't use it. This part is not relative to the core applet, but translating it will allow the plugin to be used by more and more people.</p>
+<p>For developpers (that is if you may commit in the JUpload SVN repository), just update the relevant ./src/translation/xxx file, and commit it. You'll then have to execute the translation plugin, to get the modified translation be properly taken into account in the applet. See below, <a href="#Compile_JUpload_with_an_updated_translation">Compile JUpload with an updated translation</a>.</p>
+<p>//TODO SVN ref to give </p>
+<p>For non developper people, you should start from the files available in SVN, at this URL: <a href="http://jupload.svn.sourceforge.net/viewvc/jupload/trunk/jupload2/main/translation/" class="externalLink">translations (on SVN)</a> as they are more up to date than the files referenced in the project site, behind the <a href="./available_translations.html">./available_translations.html</a> page. Then, you can submit the new or updated translation by submitting a patch in the <a href="http://sourceforge.net/tracker/?group_id=59144&amp;atid=490055" class="externalLink">Sourceforge Patch tracker</a>. It's the best way. Any JUpoad developper can then commit this translation in the sf SVN. You can also mail me, at this address: etienne_sf at users.sourceforge.net. </p>
+<p>Notes:</p>
+<ul><li>If the translation for your language doesn't exist, you should start by the English one, which contains all needed text.</li>
+<li>Please take care to the text encoding. If you commit to SVN or your own SCM, you must keep the existing file encoding: utf-16 for the applet translation, and utf-8 for the Coppermine one.</li>
+<li>If you submit a new translation or an updated one, please do it in a standard format which won't have encoding troubles. The <b>rtf file format</b> is the best choice. </li>
+</ul>
+</div>
+<div class="section"><h3><a name="Which_translation_is_stored_there">Which translation is stored there?</a></h3>
+<p>JUpload is used for two main open source developpements:</p>
+<ul><li>The applet itself. It is contained in the jupload sourceforge project. <br />
+See <a href="http://sourceforge.net/projects/jupload/" class="externalLink">http://sourceforge.net/projects/jupload/</a></li>
+<li>A plugin for Coppermine, based on this applet. Coppermine is a nice picture gallery. The translation for Coppermine is not useful when you only use the applet. This translation is still stored there, as there are more people using the JUpload applet, then people using the Coppermine plugin. I hope to get more translation for both, by putting also the Coppermine translation here. So, <b>please, Contributors, also translate the Coppermine part</b>.. <ul><li>For more information on Coppermine: <a href="http://www.coppermine-gallery.net" class="externalLink">http://www.coppermine-gallery.net</a></li>
+<li>For more information on the JUpload plugin for Coppermine: <a href="http://forum.coppermine-gallery.net/index.php/board,100.0.html" class="externalLink">http://forum.coppermine-gallery.net/index.php/board,100.0.html</a></li>
+</ul>
+</li>
+</ul>
+<p>So the translation part also contains two parts:</p>
+<ul><li>The text for the applet itself. The original text is encoded in UTF-16, and stored in the /src/main/translation/lang.utf-16 directory. The text is then encoded in Unicode by the jupload-translation maven plugin, toward the /src/main/resources/lang folder, to be embedded into the applet. It is a java property file, filled with lines like:<div class="source"><pre>          property = the translated text</pre>
+</div>
+</li>
+<li>The text for the PHP part, specific to the JUpload Coppermine plugin. It's a PHP file, that fills an array. It contains an array initialization, like this:<div class="source"><pre>                $lang_jupload_php = array_merge (
+                        $lang_jupload_php,
+                        array(
+                          'link_comment' =&gt; 'Upload files to the gallery, with the help of an applet',
+                          ...
+                        )
+                );</pre>
+</div>
+</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Where_to_find_translation_files">Where to find translation files</a></h3>
+<p>The translation files are stored in these folders :</p>
+<ul><li>[Code, useless for contributors] <i>./maven-translation-plugin</i> contains the translation maven plugin, which manages the translation files. Please read the <a href="#Compile_JUpload_with_an_updated_translation">Compile JUpload with an updated translation</a> section, for a doc about it.</li>
+<li>[The translations themself, for contributors] <i>./src/main/translation</i> contains the translation sources. The translation contributor should work in this folder. It contains these items:<ul><li><i>./src/main/translation/applet.utf-16</i> This folder contains one translation file for each available language, formatted as a java ResourceBundle. The file is lang_ll_CC_vv, where: ll is the code for the language, CC is the code for the country and vv is the code for the variant. CC and vv are optional. So valid filenames are: lang_ll.properties, lang_ll_CC.properties and lang_ll_CC_vv.properties. In order to use a given translation, the CC[_ll[_vv]] string should be given to the applet in the <i>lang</i> applet parameter. </li>
+<li><i>./src/main/translation/coppermine.utf-8</i> This folder contains one translation file for each language, available in the Coppermine plugin. Contributor, please also translate the Coppermine file for your language...</li>
+<li>[template, useless for contributors] <i>./src/main/translation/available_translations.template</i> This file is the template, which is used to generate the list of available translations, in the JUpload site.</li>
+<li>[template, useless for contributors] <i>./src/main/translation/one_translation.template</i> This file is the template, which is used to generate the page for each available translation, on the JUpload site. This page will contain both the applet and the Coppermine translation, if the <i>coppermineFolder</i> parameter is given in the <i>maven-translation-plugin</i> plugin configuration in the JUpload pom.xml file (which is the core JUpload configuration).</li>
+</ul>
+</li>
+<li>[The generated resource file] <i>./src/main/resources/lang</i> This folder contains the translations, with non-ascii characters properly encoded with unicode values. This folder contains the resource files used by the java code of the applet.</li>
+<li>[The site documentation] <i>./src/site/apt</i> This folder contains the 'real' site content. The translation documentation is generated by the maven-translation-plugin, that is: available_translation.apt and each lang_xx.apt file.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Compile_JUpload_with_an_updated_translation">Compile JUpload with an updated translation</a></h3>
+<p>This part is useless for translation contributors. It explains how to compile the applet with modified translation file(s). This is done by using the maven-translation-plugin, given in the JUpload package.</p>
+<div class="section"><h4><a name="Compile_the_maven-translation-plugin">Compile the maven-translation-plugin</a></h4>
+<p>There are to ways to do this:</p>
+<ul><li>From a release package, you'll have to:<ul><li>Open a terminal window</li>
+<li><b>Go to the maven-translation-plugin folder</b>, behind the root of the package. This expects that the release package is already uncompressed... Something like <i>cd maven-translation-plugin folder</i> should do the trick...</li>
+<li>Type the command: <i>mvn install</i></li>
+<li>That's all. This will compile the plugin, and install it in your local maven repository.</li>
+</ul>
+</li>
+<li>From a SVN checkout. You can either use the previous method, or (better only if you want to update the plugin itself):<ul><li>Checkout the <i>trunk/jupload2/maven-translation-plugin</i> folder as a separate maven project.</li>
+<li>Execute the following command from within your favorite IDE: <i>mvn install</i></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section"><h4><a name="Build_the_JUpload_applet_with_the_maven-translation-plugin_activated">Build the JUpload applet, with the maven-translation-plugin activated</a></h4>
+<p>Once the plugin is installed, you can use it. To do this, you'll have to build the JUpload applet, with the <i>jupload.translation</i> property defined as <i>true</i>. For instance, you can type one of the following commands, in the jupload folder: </p>
+<ul><li><i>mvn install -Djupload.translation=true</i> to test the compiled applet. </li>
+<li><i>mvn site -Djupload.translation=true</i> to test the generated site. </li>
+<li><i>mvn install site -Djupload.translation=true</i> to do both in one step. </li>
+</ul>
+<p>Once you typed one of the two above commands, all translations file are generated, and you don't need any more to use the <i>-Djupload.translation=true</i> parameter in maven build ... until you change again your translation. </p>
+</div>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

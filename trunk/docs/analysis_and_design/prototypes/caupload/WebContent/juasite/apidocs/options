@@ -1,0 +1,24 @@
+-classpath
+'D:/Documents and Settings/egauthie/Mes documents/Java/eclipse-3.7/jupload/target/checkout/target/classes;D:/temp2/cache/maven/repository/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0.jar;D:/temp2/cache/maven/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar;D:/temp2/cache/maven/repository/commons-net/commons-net/1.4.1/commons-net-1.4.1.jar;D:/temp2/cache/maven/repository/oro/oro/2.0.8/oro-2.0.8.jar;C:/Program Files/Java/jdk1.6.0_23/jre/lib/plugin.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'D:/Documents and Settings/egauthie/Mes documents/Java/eclipse-3.7/jupload/target/checkout/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2011. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'D:/Documents and Settings/egauthie/Mes documents/Java/eclipse-3.7/jupload/target/checkout/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'JUpload project on Sourceforge 5.0.7 API'
+-link
+'http://java.sun.com/j2se/1.5.0/docs/api'
+-use
+-version
+-windowtitle
+'JUpload project on Sourceforge 5.0.7 API'

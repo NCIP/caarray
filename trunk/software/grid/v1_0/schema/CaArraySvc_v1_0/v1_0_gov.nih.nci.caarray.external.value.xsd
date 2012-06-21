@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:val="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
+    xmlns:voc="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
+
+    <xs:element name="AbstractValue" type="val:AbstractValue" />
+    <xs:complexType name="AbstractValue" abstract="true">
+        <xs:sequence>
+            <xs:element name="unit" minOccurs="0" maxOccurs="1" type="voc:Term" />                
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="TermValue" type="val:TermValue" />
+    <xs:complexType name="TermValue">
+        <xs:complexContent>
+            <xs:extension base="val:AbstractValue">
+                <xs:sequence>
+                    <xs:element name="term" minOccurs="0" maxOccurs="1" type="voc:Term" />                
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="MeasurementValue" type="val:MeasurementValue" />
+    <xs:complexType name="MeasurementValue">
+        <xs:complexContent>
+            <xs:extension base="val:AbstractValue">
+                <xs:attribute name="measurement" type="xs:float"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>      
+            
+    <xs:element name="UserDefinedValue" type="val:UserDefinedValue" />
+    <xs:complexType name="UserDefinedValue">
+        <xs:complexContent>
+            <xs:extension base="val:AbstractValue">
+                <xs:attribute name="value" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>                  
+ </xs:schema>

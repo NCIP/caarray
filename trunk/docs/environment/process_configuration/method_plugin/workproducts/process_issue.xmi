@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:ArtifactDescription xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.4/uma.ecore"
+    xmlns:epf="http://www.eclipse.org/epf" epf:version="1.2.0" xmlns:rmc="http://www.ibm.com/rmc"
+    rmc:version="7.2.0" xmi:id="-kMSuWjSVTaCx3pXdrcMclw"
+    name="new_artifact,_bA-7gAG9Ed28r8TwSmvtJw" guid="-kMSuWjSVTaCx3pXdrcMclw" authors="Eric Tavela"
+    changeDate="2008-04-03T16:38:20.526-0400" changeDescription="Initial version"
+    version="1.0"/>

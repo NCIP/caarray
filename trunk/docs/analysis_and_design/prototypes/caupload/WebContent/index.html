@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<!--
+/*
+ * jQuery File Upload Plugin Demo 6.0.3
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>jQuery File Upload Demo</title>
+	<!--
+	    The Bootstrap CSS is not required, but included for the demo.
+	    However, the FileUpload user interface waits for CSS transition events in several callbacks,
+	    if a "fade" class is present. These CSS transitions are defined by the Bootstrap CSS.
+	    If it is not included, either remove the "fade" class from the upload/download templates,
+	    or define your own "fade" class with CSS transitions.
+	-->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/bootstrap-ie6.min.css"><![endif]-->
+	<link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+	<link rel="stylesheet" href="css/caarray.css">
+	<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
+	
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+	<script src="scripts/vendor/jquery.ui.widget.js"></script>
+	<!-- The Templates and Load Image plugins are included for the FileUpload user interface -->
+	<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
+	<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+	<!-- Bootstrap Modal and Image Gallery are not required, but included for the demo -->
+	<script src="http://twitter.github.com/bootstrap/1.4.0/bootstrap-modal.min.js"></script>
+	<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+	<script src="scripts/jquery.iframe-transport.js"></script>
+	<script src="scripts/jquery.fileupload.js"></script>
+	<script src="scripts/jquery.fileupload-ui.js"></script>
+    <script src="scripts/jquery.fileupload-fallback.js"></script>
+    <script src="scripts/application.js"></script>
+	<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+	<script src="scripts/cors/jquery.xdr-transport.js"></script>
+</head>
+
+<body>
+	<div id="nciheader">
+	    <div id="ncilogo">
+	        <a href="http://www.cancer.gov" target="_blank"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute"></a>
+	    </div>
+	    <div id="nihtag">
+	        <a href="http://www.cancer.gov" target="_blank"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov"></a>
+	    </div>
+	</div>
+	<div class="container ncibody">
+	    <div class="page-header">
+	        <h1>caUpload Demo</h1>
+	    </div>
+	    <div>
+		    <blockquote>
+		        <p>caUpload component features multiple file selection, drag&amp;drop support, progress bar.<br>
+		        Supports large file, cross-domain, chunked and resumable file uploads.<br>
+		        Some features that are not natively supported by Inernet Explorer are implemented in the applet fallback approach.</p>
+		    </blockquote>
+		    <br>
+	    </div>
+	    <div id="ie_marker"></div>
+	    <form id="fileupload" action="upload" method="POST" enctype="multipart/form-data">
+	        <div class="row">
+	            <div class="span16 fileupload-buttonbar">
+	                <div class="progressbar fileupload-progressbar fade"><div style="width:0%;"></div></div>
+	                <span id="button_add" class="btn success fileinput-button">
+	                    <span>Add files...</span>
+	                </span>
+	                <button id="button_start" type="submit" class="btn primary start">Start upload</button>
+	                <button id="button_reset" type="reset" class="btn info cancel">Cancel upload</button>
+<!-- 
+                    <button id="button_test" type="button" class="btn info">Test</button>
+	                <button type="button" class="btn danger delete">Delete selected</button>
+	                <input type="checkbox" class="toggle">
+-->
+	            </div>
+	        </div>
+	        <br><br><br>
+	        <div class="row">
+	            <div class="span16">
+	                <table class="zebra-striped"><tbody class="files"></tbody></table>
+	            </div>
+	        </div>
+	    </form>
+	    <div class="well">
+	        <h3>Demo №1 Notes</h3>
+	        <ul>
+	            <li>This demo is capable of selecting multiple files at one time for upload from the file selection dialog in Firefox and Chrome</li>
+	            <li>Uploads will be progressing simultaneously</li>
+	            <li>Server side is written in Java and will save these files with temporary names</li>
+	        </ul>
+	    </div>
+	</div>
+
+	<div id="footerwrapper">
+	    <div id="footernavwrapper">
+	        <div id="footernav">
+	            <a href="mailto:pshrabstein@5amsolutions.com">Contact Us</a>
+	            <a href="http://www.nih.gov/about/privacy.htm" target="_blank">Privacy Notice</a>
+	            <a href="http://www.nih.gov/about/disclaim.htm" target="_blank">Disclaimer</a>
+	            <a href="http://www3.cancer.gov/accessibility/nci508.htm" target="_blank">Accessibility</a>
+	            <a href="http://ncicb.nci.nih.gov/NCICB/support" target="_blank" class="last">caArray Support</a>
+	        </div>
+	    </div>
+	    <div id="partnerlogos">
+	        <a href="http://www.cancer.gov" target="_blank"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute"></a>
+	        <a href="http://www.dhhs.gov" target="_blank"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services"></a>
+	        <a href="http://www.nih.gov" target="_blank"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health"></a>
+	        <a href="http://www.usa.gov" target="_blank"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov"></a>
+	    </div>
+	</div>
+
+<script>
+var fileUploadErrors = {
+    maxFileSize: 'File is too big',
+    minFileSize: 'File is too small',
+    acceptFileTypes: 'Filetype not allowed',
+    maxNumberOfFiles: 'Max number of files exceeded',
+    uploadedBytes: 'Uploaded bytes exceed file size',
+    emptyResult: 'Empty file upload result'
+};
+</script>
+
+<script id="template-upload" type="text/html">
+{% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name">{%=file.name%}</td>
+        <td class="size">{%=o.formatFileSize(file.size)%}</td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td class="progress"><div class="progressbar"><div style="width:0%;"></div></div></td>
+            <td class="start" style="width: 2%">{% if (!o.options.autoUpload) { %}<button class="btn primary">Start</button>{% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel" style="width: 7em;">{% if (!i) { %}<button class="btn info">Cancel</button>{% } %}</td>
+        <td style="width: 1%">&nbsp;</td>
+    </tr>
+{% } %}
+</script>
+
+<script id="template-download" type="text/html">
+{% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <tr class="template-download fade">
+        {% if (false && file.error) { %}
+            <td></td>
+            <td class="name">{%=file.name%}</td>
+            <td class="size">{%=o.formatFileSize(file.size)%}</td>
+            <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
+        {% } else { %}
+            <td class="preview">{% if (file.thumbnail_url) { %}
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery"><img src="{%=file.thumbnail_url%}"></a>
+            {% } %}</td>
+            <td class="name">
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}">{%=file.name%}</a>
+            </td>
+            <td class="size">{%=o.formatFileSize(file.size)%}</td>
+            <td colspan="2"></td>
+        {% } %}
+        <td class="delete" style="width: 7em;">
+<!--
+            <button class="btn danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">Delete</button>
+            <input type="checkbox" name="delete" value="1">
+-->
+			<div style="width: 24px; height: 24px;"><img src="images/ok.png" width="100%" height="100%"/></div>
+        </td>
+        <td style="width: 1%">&nbsp;</td>
+    </tr>
+{% } %}
+</script>
+
+</body> 
+</html>

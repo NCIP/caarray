@@ -1,0 +1,81 @@
+           --------------------
+           JUpload - File Upload Applet - HowTo sign the applet ?
+           --------------------
+           --------------------
+           --------------------
+
+HowTo sign the applet ?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+%{toc}
+
+
+
+* {Why do you need to sign the applet?}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  When running from a web site, within your browser, the applet needs to have access to the local filesystem, in order to
+  choose then upload the files. Thanks to Java protection, this is impossible ... unless specific prerequisite:
+  
+  * The applet must be signed. Non-signed applet mat never access the local filesystem.
+  
+  * The user must accept the applet certificate. The user then has the option to accept it for ever, or just for the
+  current session. If the user accepted 'for ever' the certificate, he/she can remove it by doing these actions:
+  
+    * Go to the <Java Control Panel> / Security / Certificates / Approved certificates, and remove the relevant certificate
+	
+    * Go to the <Java Control Panel> / General. In the <temporary Internet Files>, click on the <Parameter> button. Then,
+	click on the <Remove files...> button to clean the Java cache.
+  
+  [] 
+  
+  <<Take care about this:>> Once a certificate is permanently accepted on a browser, this browser will execute any 
+  applet signed by this certificate, without asking the user. So good practices are:
+  
+  * The keystore and the storepass must remain secret.
+  
+  * The validity of the certificate must be not too long (1 year seems a maximum to me).
+  
+  * For commercial use, a good practice is to have a certificate signed by a known <Certificate Autority>. You'll need 
+  to pay, for that...
+  
+  
+* {How to generate a certificate?}      
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	With maven compilation, signing the applet is native. See the {{{./howto-compile.html}HowTo compile the applet}} page. But
+	you need to create a certificate, in order to sign the applet. Here are the java commands, to create a demo
+	certificate for JUpload:
+	
+	* Generate Private/Public key set :
+
+--------------------------------------------------------------------------------
+       keytool -genkey -alias "jupload" -validity 3600 -dname "CN=JUpload, OU=Testing/Demo, O=JUpload.SourceForge.net, L=SourceForge, S=SourceForge, C=SG"
+--------------------------------------------------------------------------------
+
+	* List key set.
+
+--------------------------------------------------------------------------------
+       keytool -list
+--------------------------------------------------------------------------------
+
+	* Sign the Applet with the private key. You <<must do that after each modification of the jar package>>. You can use 
+	the below command, if you want to do this manually, or use the given ant or maven compilation scripts. All details on 
+	the {{{./howto-compile.html}HowTo compile the applet}} page. The command below allows you to sign the applet with a
+	'test' certificate: 
+
+--------------------------------------------------------------------------------
+       jarsigner wjhk.jupload.jar jupload
+--------------------------------------------------------------------------------
+
+	* Verify the jar file have being sign properly.
+
+--------------------------------------------------------------------------------
+       jarsigner -verify -certs -verbose wjhk.jupload.jar
+--------------------------------------------------------------------------------
+
+	[]
+
+	You can find more information, to sign the applet is provided by Martin Westin in this thread:
+	{{https://sourceforge.net/forum/forum.php?thread_id=2991519&forum_id=199106}}

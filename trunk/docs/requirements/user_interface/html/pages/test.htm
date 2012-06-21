@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml2/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+body {font-family:verdana, arial, helvetica, sans-serif; font-size:76%; color:#000; padding:0; border:0; margin:0; background:#fff url(pro/cssplay/body_back.gif) repeat-x 0 10px; }
+#info {height:26em; text-align:center;}
+#info p {clear:both; text-align:left; margin-left:15px;}
+.actions
+{  }
+#menu1 {
+  width:408px;
+  padding:0; 
+  margin:0 auto; 
+  list-style-type:none;
+  }
+#menu1 li {
+  float:left;
+  width:100px;
+  border:1px solid #fff; 
+  }
+#menu1 a {
+  display:block;
+  width:100px;
+  color:#000; 
+  background:#d4d4d4; 
+  text-align:center; 
+  padding:4px 0; 
+  text-decoration:none; 
+  float:left; 
+  }
+#menu1 a:hover {
+  color:#fff; 
+  background:#08c;
+  }
+
+
+#menu2 {
+  display:table;
+  padding:0; 
+  margin:0 auto; 
+  list-style-type:none;
+  white-space:nowrap;
+  }
+#menu2 li {
+  display:table-cell;
+  }
+
+
+.container {clear:both; text-decoration:none;}
+/* NEW Sliding Door Buttons */
+
+A.btn 
+{ width:auto; background:transparent url("images/bg_btn_right.gif") no-repeat scroll top right; color:#333; display:block; float:left; font:bold 11px arial, sans-serif; height:24px; margin:0 20px; padding-right:9px; /* sliding doors padding */ text-transform:uppercase; text-decoration:none; }
+A.btn SPAN.btn_img 
+{ background:transparent url("images/bg_btn_left.gif") no-repeat; display:block; line-height:17px; padding:4px 0 3px 9px; }
+A.btn:hover
+{ background-position:center right; text-decoration:none; }
+A.btn:hover SPAN.btn_img 
+{ background:transparent url("images/bg_btn_left.gif") no-repeat 0 -29px; display:block; line-height:17px; padding:4px 0 3px 9px; }
+A.btn:active 
+{ background-position:bottom right; color:#000; outline:none; /* hide dotted outline in Firefox */ }
+A.btn:active SPAN.btn_img 
+{ background-position:bottom left; padding:5px 0 2px 9px; /* push text down 1px */ }
+A.btn SPAN SPAN
+{ display:block; padding:0 0 0 20px }
+A.btn SPAN.add
+{ background:url("images/ico_add.gif") no-repeat; }
+A.btn SPAN.cancel
+{ background:url("images/ico_cancel.gif") no-repeat; }
+A.btn SPAN.copy
+{ background:url("images/ico_copy.gif") no-repeat; }
+A.btn SPAN.delete
+{ background:url("images/ico_delete.gif") no-repeat; }
+A.btn SPAN.edit
+{ background:url("images/ico_edit.gif") no-repeat; }
+A.btn SPAN.filter
+{ background:url("images/ico_filter.gif") no-repeat; }
+A.btn SPAN.import
+{ background:url("images/ico_import.gif") no-repeat; }
+A.btn SPAN.launch_download
+{ background:url("images/ico_launch_download.gif") no-repeat; }
+A.btn SPAN.manage_associations
+{ background:url("images/ico_manage_associations.gif") no-repeat; }
+A.btn SPAN.save
+{ background:url("images/ico_save.gif") no-repeat; }
+A.btn SPAN.submit_experiment
+{ background:url("images/ico_submit_experiment.gif") no-repeat; }
+A.btn SPAN.validate
+{ background:url("images/ico_validate.gif") no-repeat; }
+</style>
+
+<!--[if IE]>
+<style type="text/css">
+#menu2 li {
+  float:left;
+  }
+#menu2 a {
+  float:left;
+  }
+.container {display:inline-block;}
+</style>
+<![endif]-->
+</head>
+														<body>
+														<div class="actions">
+												<del class="container">
+<ul id="menu2">
+<li><a href="experiment_workspace.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
+														<li><a href="experiment_edit.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="save">Save</span></span></a></li>
+														<li><a href="experiment_submit_confirm.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="submit_experiment">Submit Experiment for Review</span></span></a></li>
+</ul>
+</del>
+
+</div>
+
+</body>
+</html>

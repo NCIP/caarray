@@ -1,0 +1,151 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray Legacy API Test Suite                       ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayLegacyAPITestSuite" default="gui" basedir=".">
+    <!-- ******************************************************************* -->
+        <!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
+        <!-- ******************************************************************* -->
+    <property name="grid.server.hostname" value="array-qa.nci.nih.gov" />
+    <property name="grid.server.http.port" value="80" />
+    <property name="server.hostname" value="array-qa.nci.nih.gov" />
+    <property name="server.jndi.port" value="8080" />
+
+    <!-- ******************************************************************* -->
+        <!-- ** PROPERTIES NEEDED FOR BUILD                                   ** -->
+        <!-- ******************************************************************* -->
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="package.dir" value="/caarray/legacy/client/test" />
+    <property name="gui.src.dir" value="${package.dir}/gui" />
+    <property name="grid.src.dir" value="${package.dir}/grid" />
+    <property name="java.src.dir" value="${package.dir}/java" />
+    <property name="full.src.dir" value="${package.dir}/full" />
+    <property name="classes.dir" value="${basedir}/classes" />
+    <property name="jar.dir" value="${basedir}/gui" />
+    <property name="jar.file" value="${jar.dir}/client_legacy_api_test_suite.jar" />
+    <property name="jar.dest.file" value="${basedir}/client_legacy_api_test_suite.jar" />
+
+    <!-- ******************************************************************* -->
+        <!-- ** TEST SUITE PROPERTIES                                         ** -->
+        <!-- ******************************************************************* -->
+    <property name="test.version" value="all" />
+
+    <!-- ******************************************************************* -->
+        <!-- ** TEST RESULT REPORT PROPERTIES                                 ** -->
+        <!-- ******************************************************************* -->
+    <property name="report.dir" value="${basedir}/report" />
+    <property name="report.file" value="Legacy_API_Test_Results"/>
+
+
+    <!-- ******************************************************************* -->
+        <!-- ** BUILD TARGETS                                                 ** -->
+        <!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+    </target>
+
+    <path id="libs">
+        <fileset dir="../../../software/caarray-client.jar/target/" includes="caarray-client-legacy.jar"/>
+        <fileset dir="../../../software/grid/legacy/lib/" includes="*.jar"/>
+        <fileset dir="../../../software/grid/legacy/build/lib/" includes="*.jar"/>
+        <fileset dir="../../../software/lib/caarray-project/" >
+            <include name="*.jar"/>
+            <exclude name="xercesImpl-1.7.0.jar" />
+            <exclude name="xerces-J-1.4.0.jar" />
+            <exclude name="pull-parser-2.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+            <classpath>
+                <path refid="libs"/>
+            </classpath>
+        </javac>
+
+    </target>
+
+    <target name="run_tests_all" depends="compile" description="Run all tests">
+        <java classname="caarray.legacy.client.test.full.FullTest" fork="yes">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <path refid="libs"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="all"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+        </java>
+    </target>
+
+    <target name="run_tests_grid" depends="compile" description="Run Grid API tests">
+        <java classname="caarray.legacy.client.test.grid.GridTest"  fork="yes">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <path refid="libs"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <!--jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y"/-->
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="grid"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+        </java>
+    </target>
+
+    <target name="run_tests_java" depends="compile" description="Run Java API tests">
+        <java classname="caarray.legacy.client.test.java.JavaTest" fork="yes">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <path refid="libs"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="java"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+        </java>
+    </target>
+
+    <target name="gui" depends="compile" description="Run test GUI">
+        <java classname="caarray.legacy.client.test.gui.GuiMain" fork="yes">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <path refid="libs"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <!-- jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/-->
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="all"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+        </java>
+    </target>
+    
+    <target name="test_all" depends="clean,run_tests_all"/>
+    <target name="test_java" depends="run_tests_java"/>
+    <target name="test_grid" depends="run_tests_grid"/>
+
+</project>

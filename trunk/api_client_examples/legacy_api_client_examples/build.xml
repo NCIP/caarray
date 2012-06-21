@@ -1,0 +1,139 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray Remote Client Examples                         ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayRemoteClientExamples" default="build" basedir=".">
+	
+	<property file="local.properties"/>
+
+    <!-- ******************************************************************* -->
+    <!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
+    <!-- ******************************************************************* -->
+	<property name="heap.size" value="256m" />
+    <property name="server.hostname" value="array-stage.nci.nih.gov" />
+    <property name="server.jndi.port" value="8080" />
+    <property name="globoss.server.hostname" value="array-stage.nci.nih.gov" />
+    <property name="globoss.server.http.port" value="80" />
+	<property name="client-zip.unpacked.dir" value="${user.home}/caarray_client_legacy_2_5_0_0" />
+	
+    <!-- ******************************************************************* -->
+    <!-- ** PROPERTIES NEEDED FOR BUILD                                   ** -->
+    <!-- ******************************************************************* -->
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="classes.dir" value="${basedir}/classes" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** BUILD TARGETS                                                 ** -->
+    <!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+    </target>
+	
+	<target name="-copy-libs">
+		<copy todir="${lib.dir}">
+			<fileset dir="${client-zip.unpacked.dir}/" includes="caarray-client-legacy*.jar"/>
+		</copy>
+		<copy todir="${lib.dir}">
+			<fileset dir="${client-zip.unpacked.dir}/lib/grid" includes="*.jar"/>
+			<fileset dir="${client-zip.unpacked.dir}/lib/java" includes="*.jar"/>
+		</copy>
+	</target>
+
+    <target name="build" depends="-copy-libs">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+	<macrodef name="run-java-example">
+		<attribute name="classname"/>
+		<sequential>
+	        <java classname="@{classname}" fork="yes">
+	            <classpath>
+	                <pathelement path="${classes.dir}" />
+	                <fileset dir="${lib.dir}">
+	                    <include name="**/*.jar" />
+	                </fileset>
+	            </classpath>
+	            <sysproperty key="server.hostname" value="${server.hostname}" />
+	            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+	            <jvmarg value="-Xmx${heap.size}"/>
+	        </java>		
+		</sequential>
+	</macrodef>
+
+	<macrodef name="run-grid-example">
+		<attribute name="classname"/>
+		<sequential>
+	        <java classname="@{classname}" fork="yes">
+	            <classpath>
+	                <pathelement path="${classes.dir}" />
+	                <fileset dir="${lib.dir}">
+	                    <include name="**/*.jar" />
+	                </fileset>
+	            </classpath>
+	            <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+	            <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+	            <jvmarg value="-Xmx${heap.size}"/>
+	        </java>		
+		</sequential>
+	</macrodef>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 1: SEARCH                                             ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_search_java" depends="build">
+        <run-java-example classname="caarray.client.examples.search.java.ApiSearchExperimentByExample"/>
+    </target>
+
+    <target name="run_search_grid" depends="build">
+        <run-grid-example classname="caarray.client.examples.search.grid.GridCqlSearchExperiment"/>
+    </target>
+
+    <target name="run_search_using_credentials_java" depends="build">
+        <run-java-example classname="caarray.client.examples.search.java.ApiLoginAndSearch"/>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 2: DOWNLOAD BYTE CONTENTS OF A FILE                   ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_file_java" depends="build">
+        <run-java-example classname="caarray.client.examples.download_file.java.ApiFileDownload"/>
+    </target>
+
+    <target name="run_download_file_grid" depends="build">
+        <run-grid-example classname="caarray.client.examples.download_file.grid.GridFileDownload"/>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 3: DOWNLOAD PARSED DATA                               ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_parsed_data_java" depends="build">
+        <run-java-example classname="caarray.client.examples.download_parsed_data.java.ApiDataSetDownload"/>
+    </target>
+
+    <target name="run_download_parsed_data_grid" depends="build">
+        <run-grid-example classname="caarray.client.examples.download_parsed_data.grid.GridDataSetDownload"/>
+    </target>
+
+    <target name="run_download_parsed_data_from_file_java" depends="build">
+        <run-java-example classname="caarray.client.examples.download_parsed_data.java.ApiOneFileDataSetDownload"/>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 4: DOWNLOAD DETAILS OF AN ARRAY DESIGN                ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_array_design_java" depends="build">
+        <run-java-example classname="caarray.client.examples.download_array_design.java.ApiArrayDesignDownload"/>
+    </target>
+
+    <target name="run_download_array_design_grid" depends="build">
+        <run-grid-example classname="caarray.client.examples.download_array_design.grid.GridArrayDesignDownload"/>
+    </target>
+</project>

@@ -1,0 +1,4 @@
+Affymetrix Mouse with Data 01	CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels
+Illumina Rat with Data 01	AVG_Signal,BEAD_STDEV,Avg_NBEADS,Detection
+Genepix Cow with Data 01	F635 Mean,F635 Median
+Affymetrix Experiment with CHP Data 01	CHPSignal

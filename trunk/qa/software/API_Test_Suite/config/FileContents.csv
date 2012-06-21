@@ -1,0 +1,91 @@
+Test Case,API,File Reference,File Name,File Experiment,File Experiment Id,Experiment Reference,Hybridization,Multi File Num,Multi File Type,Compressed,Zip,Mage Tab,Expected Bytes,Min Bytes,Max Bytes,Expected IDF Bytes,Expected SDRF Bytes,Expected File Num,API Utils,Max Time
+177.1,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,5348,,,,,,,
+177.2,java,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,,,0,,,,,,,
+177.3,java,${null},,,,,,,,,,,0,,,,,,,
+178.1,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,3263,,,,,,,
+178.2,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,5348,,,,,,,
+179,java,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,,,13550438,,,,,,,
+180.1,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,,6808,,,,,,,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,,
+180.2,java,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,TRUE,,0,,,,,,,
+180.3,java,${null},,,,,,,,,TRUE,,0,,,,,,,
+181.1,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,TRUE,,,6300,6825,,,,,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,,
+181.2,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,TRUE,,6808,,,,,,,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,,
+182,java,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,TRUE,,10997383,,,,,,,
+,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,,,,,,,,,,
+183,java,,,,woost-00041,,,20,CEL,,TRUE,,,10000000,
+184.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,5348,,
+184.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,,,0,,
+184.3,grid,${null},,,,,,,,,,,0,,
+185.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,3263,,
+185.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,5348,,
+186,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,,,13550438,,
+187.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,,10696,,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
+187.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,TRUE,,0,,
+187.3,grid,${null},,,,,,,,,TRUE,,0,,
+188.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,TRUE,,,6300,6825
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
+188.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,TRUE,,10696,,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,
+189.1,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,TRUE,,13550438,
+189.2,grid,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,woost-00041,,,,,,TRUE,,13550307,
+190,grid,,,,woost-00041,,,20,CEL,,,,,10000000
+191.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,10696,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,
+191.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,,,0,
+,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:58,,,,,,,,,,,,
+191.3,grid,${null},,,,,,,,,,,0,
+,,${null},,,,,,,,,,,,
+192.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,6526,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,
+192.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,10696,
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,
+193,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,,,27100745,
+,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,,,,,,,,,
+195.1,java,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:-5,,,,,,TRUE,0,
+195.2,java,,,QA Affymetrix Experiment for API Testing,,,,,,,,TRUE,,,,388,777,4,,
+196.1,java,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:-5,,,,,TRUE,TRUE,0,,,,,,,
+196.2,java,,,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,TRUE,,140000,,,,,,
+197.1,grid,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:-5,,,,,,TRUE,0,,,,,,,
+197.2,grid,,,QA Affymetrix Experiment for API Testing,,,,,,,,TRUE,,,,388,777,4,,
+198.1,grid,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:-5,,,,,TRUE,TRUE,0,,,,,,,
+198.2,grid,,,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,TRUE,,140000,,,,,,
+203,java,,,,woost-00041,,,20,CEL,,TRUE,,,5000000,,,,,,600000
+204,grid,,,,woost-00041,,,20,CEL,,TRUE,,,5000000,,,,,,600000
+294,java,,,,woost-00041,,,,,,,TRUE,343287,,,,,,,
+295,java,,,,woost-00041,,,,,,TRUE,TRUE,,47200,,,,,TRUE,
+297.1,java,,,,woost-00041,,,,,TRUE,TRUE,TRUE,,47200,,,,,TRUE,
+297.2,java,,,,woost-00041,,,,,FALSE,TRUE,TRUE,,47200,,,,,TRUE,
+298,grid,,,,woost-00041,,,,,,,TRUE,348981,,,,,,,
+299,grid,,,,woost-00041,,,,,,TRUE,TRUE,,47200,,,,,,
+301.1,grid,,,,woost-00041,,,,,TRUE,TRUE,TRUE,,47200,,,,,,
+301.2,grid,,,,woost-00041,,,,,FALSE,TRUE,TRUE,,47200,47500,,,,
+356.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,5348,,,,,,TRUE
+356.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,,,0,,,,,,TRUE
+356.3,grid,${null},,,,,,,,,,,0,,,,,,TRUE
+357.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,,,3263,,,,,,TRUE
+357.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,,,5348,,,,,,TRUE
+358,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,,,13550438,,,,,,TRUE
+359.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,,10696,,,,,,TRUE
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,
+359.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,,,,,TRUE,,0,,,,,,TRUE
+359.3,grid,${null},,,,,,,,,TRUE,,0,,,,,,TRUE
+360.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,TRUE,TRUE,,,6300,10696,,,,TRUE
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,
+360.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,,,,,FALSE,TRUE,,10696,,,,,,TRUE
+,,,QaApiTestAffymetrixData02.CHP,,,,,,,,,,,,,,,,
+361,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,,,,,,TRUE,,,27100000,,,,,TRUE
+,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,woost-00041,,,,,,,,,,,,,,,
+362,grid,,,,woost-00041,,,20,CEL,,TRUE,,,271000000,,,,,TRUE,
+363,grid,,,,woost-00041,,,,,,TRUE,TRUE,,47200,,,,,TRUE,
+365.1,grid,,,,woost-00041,,,,,TRUE,TRUE,TRUE,,47200,,,,,TRUE,
+365.2,grid,,,,woost-00041,,,,,FALSE,TRUE,TRUE,,47200,47500,,,,TRUE,
+366,java,,,,,,QaApiTestHybridization01,,,,,,1097275,,,,,,,
+367,grid,,,,,,QaApiTestHybridization01,,,,,,1097275,,,,,,,
+368,java,,,,woost-00041,,,,,,TRUE,TRUE,,10000000,,,,,TRUE,6000
+369,grid,,,,woost-00041,,,,,,TRUE,TRUE,,10000000,,,,,,6000
+409,java,,,,woost-00041,,,4,CEL,,,,,10000000,,,,,,
+410,grid,,,,woost-00041,,,4,CEL,,,,,10000000,,,,,,

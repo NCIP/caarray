@@ -1,0 +1,15 @@
+Test Case,API,Name,LSID,Associated Provider,Assay Type,Min Results,Expected Results,Expected Provider,Expected Organism,NULL
+47,java,,,,,46,,,,
+48,grid,,,,,46,,,,
+49.1,java,HG-U133_Plus_2,,,,,1,Affymetrix,human,
+50.1,grid,HG-U133_Plus_2,,,,,1,Affymetrix,human,
+49.2,java,,URN:LSID:Agilent.com:PhysicalArrayDesign:015847_G2_D_F_20070129,,,,1,,,
+50.2,grid,,URN:LSID:Agilent.com:PhysicalArrayDesign:015847_G2_D_F_20070129,,,,1,,,
+49.3,java,,,,,,0,,,TRUE
+50.3,grid,,,,,,0,,,TRUE
+215,java,invalid junk,,,,,0,,,
+216,grid,invalid junk,,,,,0,,,
+217,java,,,Affymetrix,,20,,,,
+218,grid,,,Affymetrix,,20,,,,
+312,java,HG-U133_Plus_2,,Illumina,,,0,,,
+313,grid,HG-U133_Plus_2,,Illumina,,,0,,,

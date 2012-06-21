@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="caUploadApplet" basedir="." default="package" >
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+
+    <property name="caupload.keystore.alias" value="caupload"/>
+    <property name="caupload.keystore.storepass" value="caupload123"/>
+    <property name="caupload.keystore.filename" value="ks/keystore"/>
+    <!-- <property name="caupload.keystore.keypass" value="caupload123"/> -->
+
+    <path id="caUploadApplet.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/commons-lang-2.6.jar"/>
+        <pathelement location="lib/commons-net-1.4.1.jar"/>
+        <pathelement location="lib/junit-4.5.jar"/>
+        <pathelement location="lib/log4j-1.2.13.jar"/>
+        <pathelement location="lib/maven-plugin-api-2.0.jar"/>
+        <pathelement location="lib/mockito-all-1.8.1.jar"/>
+        <pathelement location="lib/oro-2.0.8.jar"/>
+        <pathelement location="lib/plugin.jar"/>
+    </path>
+    
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src/main/java">
+                <!-- <exclude name="**/*.java"/>    -->
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src/main/resources">
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src/test/java">
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src/test/resources">
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    
+    <target name="cleanall" depends="clean"/>
+
+    <target name="build-subprojects"/>
+    <target name="build-refprojects" description="Build all projects which reference this project. Useful to propagate changes."/>
+
+    <target name="build-project" depends="init">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="src/main/java"/>
+            <classpath refid="caUploadApplet.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="src/main/resources"/>
+            <classpath refid="caUploadApplet.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="src/test/java"/>
+            <classpath refid="caUploadApplet.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="src/test/resources"/>
+            <classpath refid="caUploadApplet.classpath"/>
+        </javac>
+    </target>
+    
+    <target name="build" depends="build-subprojects,build-project"/>
+
+    <target name="export" depends="build">
+        <jar jarfile="../WebContent/${ant.project.name}.jar"
+             compress="true"
+             index="false"
+             basedir="bin"
+             excludes="**/package.html" />
+    </target>
+
+    <target name="sign_jar"
+            depends="sign_jar_without_keypass, sign_jar_with_keypass" />
+    <target name="sign_jar_without_keypass" unless="jupload.keystore.keypass">
+        <echo message="../WebContent/${ant.project.name}.jar" level="info" />
+        <echo message="Keystore: ${jupload.keystore.filename}" level="info" />
+        <echo message="Alias: ${jupload.keystore.alias}" level="info" />
+        <signjar jar="../WebContent/${ant.project.name}.jar"
+                 alias="${caupload.keystore.alias}"
+                 storepass="${caupload.keystore.storepass}"
+                 keystore="${caupload.keystore.filename}" />
+    </target>
+    <target name="sign_jar_with_keypass" if="jupload.keystore.keypass">
+        <signjar jar="../WebContent/${ant.project.name}.jar"
+                 alias="${caupload.keystore.alias}"
+                 storepass="${caupload.keystore.storepass}"
+                 keystore="${caupload.keystore.filename}"
+                 keypass="${caupload.keystore.keypass}"
+                 verbose="true" />
+    </target>
+
+    <target name="package" depends="export, sign_jar" />
+</project>

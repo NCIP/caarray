@@ -1,0 +1,2 @@
+Sample Name	Provider 	Characteristics [DiseaseState]	Term Source REF	Source Name	Extract Name	Labeled Extract Name	Hybridization Name	Normalization Name	Array Data File
+E10144	NIH NEURO-ONCOLOGY BRANCH	Squamous Carcinoma	DB:NCI_Thesaurus	E10144_B	E10144_B	E10144_B	E10144_B	Boo	Test3-1-121502.CEL

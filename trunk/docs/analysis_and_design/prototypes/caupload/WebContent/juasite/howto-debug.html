@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JUpload project on Sourceforge - JUpload - File Upload Applet - HowTo-debug the applet (and get the debug ouput)?</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            JUpload project on Sourceforge
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2011-10-13
+                      </div>
+            <div class="xright">            <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Sourceforge project page</a>
+            |
+                <a href="http://sourceforge.net/donate/index.php?group_id=59144" class="externalLink">Support this project</a>
+            |
+                <a href="http://maven.apache.org/" class="externalLink">Maven</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Sourceforge project page</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Project presentation (and download)</a>
+          </li>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/files" class="externalLink">Browse files</a>
+          </li>
+          </ul>
+              <h5>JUpload samples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="applet-basic.html">Basic demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="applet-basic-picture.html">Picture mode demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="advanced_js_demo.html">Advanced demo</a>
+          </li>
+          </ul>
+              <h5>Project documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">General description</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-compile.html">HowTo compile</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-sign.html">HowTo sign the applet</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-customize.html">HowTo customize</a>
+          </li>
+              
+    <li class="none">
+                    <a href="faq.html">FAQ</a>
+          </li>
+              
+    <li class="none">
+                    <a href="README.txt">Release Notes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-support.html">HowTo get support</a>
+          </li>
+              
+    <li class="none">
+              <strong>HowTo debug</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="issue-tracking.html">Issue Tracking</a>
+          </li>
+              
+    <li class="none">
+                    <a href="dependencies.html">Dependencies</a>
+          </li>
+          </ul>
+              <h5>Translation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="howto-translate.html">HowTo translate</a>
+          </li>
+              
+    <li class="none">
+                    <a href="available_translations.html">Available translations</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                                 
+                        
+                        
+            <a href="http://sourceforge.net/donate/index.php?group_id=59144" title="Support this project" class="poweredBy">
+                            <img alt="Support this project" src="http://images.sourceforge.net/images/project-support.jpg" />
+            </a>
+                               
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>HowTo-debug the applet (and get the debug ouput)?</h2>
+<ul><li><a href="#HowTo-debug_the_applet_and_get_the_debug_ouput">HowTo-debug the applet (and get the debug ouput)?</a><ul><li><a href="#Displaystorage_of_the_debug_message">Display/storage of the debug message</a></li>
+<li><a href="#Debug_the_applet_with_a_debugger">Debug the applet, with a debugger</a></li>
+<li><a href="#Getting_the_debug_output">Getting the debug output</a></li>
+<li><a href="#Changing_the_debug_level">Changing the debug level</a></li>
+</ul>
+</li>
+</ul>
+<div class="section"><h3><a name="Displaystorage_of_the_debug_message">Display/storage of the debug message</a></h3>
+<p>The UploadPolicy contains a displayDebug method. This method :</p>
+<ul><li><b>Displays the message on the status bar</b> (on the bottom of the applet), <b>if the current debugLevel is greater or equals to the level given to this method</b>. To have no debug output, put this applet parameter to 0 ... or omit debugLevel, as 0 is the default level. 100 is the maximum debugLevel. As I didn't documente nor really manage the different values of this level... Let's say you may have 0 or 100 (debug off or on).</li>
+<li><b>Regardless</b> of the log level, messages are always stored in a temporary log file (since version 2.9.2rc4). This file is named &quot;jupload_xxxxx_log.txt&quot; where xxxxx is a uniqe number and located in the platform-dependant temp directory. It is deleted upon VM exit.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Debug_the_applet_with_a_debugger">Debug the applet, with a debugger</a></h3>
+<p>It's of course the better solution. With eclipse, it works nicely, provided that the first compilation was executing with the respect of the <a href="./howot-compile.html}HowTo compile">./howot-compile.html}HowTo compile</a> hints.</p>
+<p>You can also take a look at this page: <a href="http://jswat.sourceforge.net/howto-applet.shtml" class="externalLink">http://jswat.sourceforge.net/howto-applet.shtml</a>. It gives useful information on how to debug the applet in 'real life' situation, within the browser, or with the applet viewer. </p>
+</div>
+<div class="section"><h3><a name="Getting_the_debug_output">Getting the debug output</a></h3>
+<p>The code contains a lot of calls to the displayDebug method. To retrieve the output generated by these calls:</p>
+<ul><li>If you are <b>in debug mode</b>, you can copy the full status area, to get the recent lines of debug output. In order to save memory, the status area is limited to 1000 lines.</li>
+<li>If not in debug mode and the parameter <b>urlToSendErrorTo</b> is set, then - if a fatal error occurs - the user will be asked to submit the full log (from the log file). If she agrees, the applet will send the log to the specified URL using an HTTP POST. This allows you to log the error, send a mail to the webmaster or do whatever processing you want on the server side.<p><b>About the log format:</b> The log lines contains several items, separated by a tabulation. This is very useful, as it is possible to isolate what a thread logged. The easiest way to open the debug output is, of course, to use a standard text editor. But it's also nice to use a tool like excel or openOffice, to view each item in a column, and be able to sort or filter entries. Here is the list of logged items:</p>
+</li>
+<li>Id: A unique number, to easily sort the messages is the relevant order.</li>
+<li>Time: The time the event has been logged. Allows also to sort according to the message creation order, at one condition: that the display tool understand this format!</li>
+<li>Thread name: The name of the thread allows to filter (or sort) on the thread. It helps to understand what actually happens in one given thread. This is very interesting in picture mode, where picture are calculated while previous pictures are being uploaded.</li>
+<li>Level: ERROR, WARN, INFO or DEBUG. This level is controlled by using the UploadPolicy.displayXxx() relevant method.</li>
+<li>Message: the message itself.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Changing_the_debug_level">Changing the debug level</a></h3>
+<p>There are two ways to do this:</p>
+<ul><li><b>Change the server configuration</b>: give the debugLevel applet parameter, in the applet tag. Put this parameter to 100, to get the full debug output.</li>
+<li><b>Change the applet configuration, once it is started</b> (since 2.5). I've hidden this functionnality, to prevent user to activate this by error. Here is the way to activate the full debug output: Right-Click on the file list (since 2.9.0) or the status area, while holding the CTRL key down. This should open a popmenu: select the 'debug on' entry. Doing so switch the debug on and off. If the status area was hidden (with the showStatusBar applet parameter), it will become visiblen when debug is put on.</li>
+</ul>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

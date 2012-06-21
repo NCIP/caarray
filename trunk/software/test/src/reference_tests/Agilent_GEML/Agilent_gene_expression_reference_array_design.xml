@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE project SYSTEM "GEMLPattern.dtd"[]>
+<!--Copyright (c) 2006 Agilent Technologies-->
+<!--Layout notes:-->
+<!--1) Layout is double-density (interlaced rectilinear grids).-->
+<!--2) Feature numbers are LR-TB relative to Agilent scanned images-->
+<!--(DNA back, barcode left).-->
+<!--3) X and Y are relative to writer (DNA front, barcode top).-->
+<!--AgilentTagVersion=1-->
+<!--NumFeaturesRows=532, NumFeaturesColumns=170, AG_X_OFFSET_MICRONS=36.6617420935413, AG_Y_OFFSET_MICRONS=63.5-->
+<project by="Agilent Technologies" date="2006/11/30" name="Agilent-015354" company="Agilent Technologies">
+  <pattern name="Agilent-015354" owner="Agilent Technologies" description="Bovine 4x44K Microarray" species_database="B. taurus">
+    <reporter name="DarkCorner" systematic_name="DarkCorner" control_type="pos">
+      <feature number="171">
+        <position x="0.0733234841870825" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="DarkCorner" primary_name="DarkCorner" />
+    </reporter>
+    <reporter name="DarkCorner" systematic_name="DarkCorner" control_type="pos">
+      <feature number="341">
+        <position x="0.146646968374165" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="DarkCorner" primary_name="DarkCorner" />
+    </reporter>
+    <reporter name="NA" systematic_name="NA" control_type="ignore">
+      <feature number="3401">
+        <position x="1.46646968374165" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="NA" primary_name="NA" />
+    </reporter>
+    	<!--artificially created control_type="ignore" with no reporter name-->
+    <reporter name="" systematic_name="NA" control_type="ignore">
+      <feature number="3401">
+        <position x="1.46646968374165" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="NA" primary_name="NA" />
+    </reporter>
+    <reporter name="(-)3xSLv1" systematic_name="NegativeControl" control_type="neg">
+      <feature number="36551">
+        <position x="15.7645491002227" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="NegativeControl" primary_name="NegativeControl" />
+    </reporter>
+    <reporter name="A_73_107362" systematic_name="AW484921">
+      <feature number="3231">
+        <position x="1.39314619955457" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="AW484921" primary_name="AW484921" description="Unidentified transcripts on BTA10 position 36450259-36449409">
+        <accession database="gb" id="AW484921" />
+        <other name="accessions" value="gb|AW484921" />
+      </gene>
+    </reporter>
+    <reporter name="A_73_103021" systematic_name="CB169144">
+      <feature number="20340">
+        <position x="8.76215636035636" y="3.1115" units="mm" />
+      </feature>
+      <gene systematic_name="CB169144" primary_name="CB169144" description="Bos taurus similar to Homo sapiens potassium voltage-gated channel, shaker-related subfamily, beta member 1 (KCNAB1), transcript variant 2">
+        <accession database="gb" id="CB169144" />
+        <other name="accessions" value="gb|CB169144" />
+      </gene>
+    </reporter>
+    <reporter name="A_24_P539226" active_sequence="GAAGACAGTCTTGTCTTTAGGTCAGAAGTACTTAGAAATAAAACTTGGAGGATTGGTGGA" start_coord="347">
+      <biosequence_ref identifier="A_24_P539226" database="agp" species="H. sapiens"></biosequence_ref>
+      <feature number="34709">
+        <position x="3.556" y="14.957990774164829" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="pos" name="AT_ssH_TR_5" start_coord="0">
+      <biosequence_ref identifier="AT_ssH_TR_5" database="agc" species="H. sapiens"></biosequence_ref>
+      <feature number="577">
+        <position x="8.382" y="0.21997045256124748" units="mm"></position>
+      </feature>
+    </reporter>
+    <other name="AG_TAG_VERSION" value="2" />
+    <other name="AG_ROW_SPACING_MICRONS" value="73.3234841870825" />
+    <other name="AG_COL_SPACING_MICRONS" value="127" />
+    <other name="AG_X_OFFSET_MICRONS" value="36.6617420935413" />
+    <other name="AG_Y_OFFSET_MICRONS" value="63.5" />
+    <other name="AG_ROW_SPOTSIZE_MICRONS" value="65" />
+    <other name="AG_COL_SPOTSIZE_MICRONS" value="65" />
+    <other name="NumArrays" value="4" />
+    <other name="NumArrayRows" value="1" />
+    <other name="NumArrayCols" value="4" />
+    <other name="ArraySpacingCol" value="15.748" />
+    <other name="ArraySpacingRow" value="0.01" />
+    <other name="ArrayPadding" value="2.0" />
+    <other name="Array1LocRow" value="2.9721" />
+    <other name="Array1LocCol" value="13" />
+    <other name="Fiducial1LocRow" value="0" />
+    <other name="Fiducial1LocCol" value="0" />
+    <other name="AMADID" value="015354" />
+    <other name="array_design_type" value="Expression" />
+    <other name="control_grid_id" value="IS-45220-4-V1_4x44K_GX_EQC_V20060608" />
+  </pattern>
+  <biosequence species="H. sapiens" description="Homo sapiens early growth response 4 (EGR4), mRNA [NM_001965]" primary_name="EGR4">
+    <accession database="agp" identifier="A_24_P539226"></accession>
+    <accession database="ref" identifier="NM_001965"></accession>
+    <accession database="ens" identifier="ENST00000258092"></accession>
+    <accession database="gb" identifier="X60104"></accession>
+    <accession database="thc" identifier="THC2478311"></accession>
+  </biosequence>
+  <biosequence species="H. sapiens" description="Homo sapiens ankyrin repeat domain 10 (ANKRD10), mRNA [NM_017664]" primary_name="ANKRD10">
+    <accession database="agp" identifier="AT_ssH_TR_5"></accession>
+    <accession database="ref" identifier="NM_017664"></accession>
+    <accession database="gb" identifier="BC001727"></accession>
+    <accession database="gb" identifier="BC039715"></accession>
+    <accession database="gb" identifier="AK000100"></accession>
+  </biosequence>
+</project>

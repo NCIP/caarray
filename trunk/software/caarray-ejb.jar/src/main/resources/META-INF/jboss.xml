@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss xmlns="http://www.jboss.com/xml/ns/javaee"  
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+       xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee  
+                           http://www.jboss.org/j2ee/schema/jboss_5_0.xsd"  
+       version="3.0">
+  <security-domain>caarray</security-domain>
+  <unauthenticated-principal>__anonymous__</unauthenticated-principal>
+  
+  <enterprise-beans>  
+     <message-driven>  
+        <ejb-name>FileManagementMDB</ejb-name>  
+        <destination-jndi-name>queue/caArray/FileManagement</destination-jndi-name>  
+        <create-destination>true</create-destination>  
+      </message-driven>
+   </enterprise-beans>  
+</jboss>

@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Selenium_RBT_TC43</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Selenium_RBT_TC43</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document.clinicaldataForm.method</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>queryName</td>
+	<td>NAKQ100L</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ageLower</td>
+	<td>label=10</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ageUpper</td>
+	<td>label=40</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submittalButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Finalize Query']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>selectedQueries[0].queryName</td>
+	<td>label=NAKQ100L</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>validateButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>runReportButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPopUp</td>
+	<td>_report66200713549</td>
+	<td>30000</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

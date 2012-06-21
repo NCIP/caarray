@@ -1,0 +1,128 @@
+
+<HTML>
+
+<BODY>
+
+This package contains the code that actually executes the upload (see below for a full description of the way the upload
+is executed in the JUpload code). 
+It is structured around these main items:
+<DIR>
+<LI><A HREF="FileUploadManagerThread.html">FileUploadManagerThread</A>: The main class. It controls the execution of 
+the upload, manages the file preparation, the progress bar, the possible exceptions...
+<LI><A HREF="FileUploadThread.html">FileUploadThread</A>: The interface of the class the execute the successives requests
+to the server. The following class implements this interface:
+	<DIR>
+	<LI><A HREF="DefaultFileUploadThread.html">DefaultFileUploadThread</A> is an abstract class, the provides the global
+	upload mechanism to send one packet of files to the server. The packet is created by FileUploadManagerThread, 
+	according to the current upload policy, with parameters like: <I>maxChunkSize</I> and <I>nbFilesPerRequest</I>. All protocol 
+	specific methods are implemented in the following implementation, depending on the applet parameter <I>postURL</I>:
+	<LI><A HREF="FileUploadThreadHTTP.html">FileUploadThreadHTTP</A> executes uploads to an HTTP server (http, https, 
+	proxy or not...), by using POST requests. It implements the abstract methods of DefaultFileUploadThread.
+	<LI><A HREF="FileUploadThreadFTP.html">FileUploadThreadFTP</A> is the implementation for FTP servers
+	</DIR>
+<LI><A HREF="UploadFileData.html">UploadFileData</A> is an implementation of the 
+	<A HREF="../filedata/FileData.html">wjhk.jupload2.filedata.FileData</A> interface, to add the 
+	<A HREF="UploadFileData.html#uploadFile(java.io.OutputStream,%20long)">uploadFile(OutputStream, long)</A> method,
+	which sends the file bytes to the server.
+<LI>The <A HREF="helper/package-summary.html">wjhk.jupload2.upload.helper</A> package offers various utilities to manage the upload.
+</DIR>
+
+<H3>How works the upload</H3>
+
+<P>Here is a description of what occurs, when the user clicks on the 'upload' button, on the applet, or when the
+applet startUpload() method is called by javascript:</P>
+<DIR>
+<LI>The JUploadPanel.doStartUpload() starts the job
+<LI>It calls the <A HREF="../policies/UploadPolicy.html#beforeUpload()">UploadPolicy.beforeUpload()</A> method. If this method 
+returns false, the process stops here.
+<LI>It then creates and starts the FileUploadManagerThread thread. This thread is responsible to throw all necessary 
+actions to execute the upload
+<LI>The fileUploadManagerThread creates the necessary queues and threads (see below)
+<LI>It then waits for the upload to finish, by comparing the total number of files to upload to the number of uploaded
+files, after each successful upload.
+</DIR>
+
+<P>The upload is done by these threads:</P>
+<DIR>
+<LI><A HREF="FileUploadManagerThread.html">FileUploadManagerThread</A>: The main thread of the upload, does these actions:
+	<DIR>
+	<LI>creation and start the queues described below.
+	<LI>creation and start the threads described below.
+	<LI>waiting for the upload to be finished
+	<LI>updating the upload progress bar
+	<LI>maintain the end of upload flag (with the isUploadFinished() method)
+	</DIR>
+<LI><A HREF="FilePreparationThread.html">FilePreparationThread</A>: This thread:
+	<DIR>
+	<LI>reads the list of files, from the FilePanel,
+	<LI>prepares each file for upload, by calling the <A HREF="../filedata/FileData.html#beforeUpload()">FileData.beforeUpload()</A> method.
+	<LI>manages exceptions that could occurs here. If one occurs, the user is asked if he want to go on with upload.
+	<LI>put the prepared file on the <B>preparedFileQueue</B>, if everything is ok.
+	<LI>put a <A HREF="UploadFileDataPoisonned.html">UploadFileDataPoisonned</A>, to tell the PacketPreparationThread 
+	that the last file was sent.
+	<LI>contains the reference of the number of files to upload (as some files may be in error, while the upload goes on).
+	</DIR>
+<LI><A href="PacketConstructionThread.html">PacketConstructionThread</A>: This thread is responsible for grouping the 
+files in packet of files, that will be sent in one request to the server. It:  
+	<DIR>
+	<LI>reads the files in the <B>preparedFileQueue</B>
+	<LI>checks if it can be added to the current packet.
+	<LI>put the packet in the <B>packetQueue</B> as soon as a packet is ready (or when the upload is finished)
+	<LI>put a <A HREF="UploadFilePacketPoisonned.html">UploadFilePacketPoisonned</A>, to tell the FileUploadThread 
+	that the last packet was sent.
+	<LI>adds the file to the current packet.
+	</DIR>
+<LI><A HREF="FileUploadThread.html">FileUploadThread</A>: This interface is implemented by these classes: 
+<A HREF="DefaultFileUploadThread.html">DefaultFileUploadThread</A> is an abstract
+class that contains all non protocol-specific code. The <A HREF="FileUploadThreadFTP.html">FileUploadThreadFTP</A> and 
+<A HREF="FileUploadThreadHTTP.html">FileUploadThreadHTTP</A> class implements the protocol-specific treatements, mainly: 
+build the request and read the server response. These classes do these actions:
+	<DIR>
+	<LI>Reads the next packet in the <B>packetQueue</B>
+	<LI>Checks if the upload is in chunked mode or not. Chunk mode is activated when the packet size is bigger than the
+	maxChunkSize applet. There must be only one file in the packet.
+	<LI>Calls the <A HREF="DefaultFileUploadThread.html#beforeRequest(wjhk.jupload2.upload.UploadFilePacket)">DefaultFileUploadThread.beforeRequest(UploadFilePacket)</A> 
+	method, for any request preparation (server connection...) 
+	<LI>Calls the <A HREF="DefaultFileUploadThread.html#startRequest(long,%20boolean,%20int,%20boolean)">DefaultFileUploadThread.startRequest(long, boolean, int, boolean)</A>
+	method, for headers that need to be sent before the first file. 
+	<LI>[Non chunked mode] Loops throught the files in the packet:
+		<DIR>
+		<LI>Calls the <A HREF="DefaultFileUploadThread.html#beforeFile(wjhk.jupload2.upload.UploadFilePacket, wjhk.jupload2.upload.UploadFileData)">beforeFile(UploadFilePacket, UploadFileData)</A>
+		<LI>Calls the <A HREF="UploadFileData.html#uploadFile(java.io.OutputStream, long)">UploadFileData.uploadFile(OutputStream, long)</A> to send the bytes for the already prepared files to the server.
+		<LI>Calls the <A HREF="DefaultFileUploadThread.html#afterFile(wjhk.jupload2.upload.UploadFileData)">afterFile(UploadFileData)</A>
+		</DIR>
+	<LI>[Chunked mode] Loops throught the chunks for the unique file in the packet:
+		<DIR>
+		<LI>Calls the <A HREF="DefaultFileUploadThread.html#beforeFile(wjhk.jupload2.upload.UploadFilePacket, wjhk.jupload2.upload.UploadFileData)">beforeFile(UploadFilePacket, UploadFileData)</A>
+		<LI>Calls the <A HREF="UploadFileData.html#uploadFile(java.io.OutputStream, long)">UploadFileData.uploadFile(OutputStream, long)</A> to send the bytes for the current chunk of the already prepared
+		files to the server.
+		<LI>Calls the <A HREF="DefaultFileUploadThread.html#afterFile(wjhk.jupload2.upload.UploadFileData)">afterFile(UploadFileData)</A>
+		</DIR>
+	<LI>Calls the <A HREF="DefaultFileUploadThread.html#finishRequest()">finishRequest()</A> method, to clean any 
+	resources about this request.
+	<LI>The <A HREF="../policies/UploadPolicy.html#checkUploadSuccess(int, java.lang.String, java.lang.String)">UploadPolicy.checkUploadSuccess(int, String, String)</A>
+	is called after each request to the server, to check that the server response contains the relevant success string.
+	It also checks if an error occurs (and then displays the message to the user). In this case, the 
+	<A HREF="FileUploadManagerThread.html#setUploadException(wjhk.jupload2.exception.JUploadException)">FileUploadManagerThread.setUploadException(JUploadException)</A>
+	is called. This stops the upload. All threads will quit. 
+	<LI>Calls the <A HREF="DefaultFileUploadThread.html#cleanRequest()">cleanRequest()</A> method, to clean any resources
+	used by this request.
+	<LI>Calls the <A HREF="DefaultFileUploadThread.html#cleanAll()">cleanAll()</A> method when the upload is finished, 
+	to clean any global resource for the upload.
+	</DIR>
+</DIR>
+
+<H3>The resume facility</H3>
+<P>When a network error occurs during upload, the applet can have some retries to the server. These retries can be automatic 
+or manually controlled. When an retries occurs, the <B>whole packet is resent</B>. That is: the apply re-execute the request that 
+failed. For chunk upload, all packets are re-sent, starting from chunk number 1.</P>
+
+
+Impacts:
+- The FileData.afterUpload() can only be called once the whole request is a success or a failure without retry. That is: the afterUpload
+is called after catching the exception, that may be resumed.
+--> The call to FileData.afterUpload() should be moved from doNonChunkedUpload() and doChunkedUpload() to doUpload, in a
+new finally block, in a finally block.
+
+</BODY>
+</HTML>

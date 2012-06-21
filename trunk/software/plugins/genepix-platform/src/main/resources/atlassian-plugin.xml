@@ -1,0 +1,8 @@
+<atlassian-plugin key="genepix-platform" name="Genepix Array Platform" plugins-version="2">
+	<plugin-info>
+		<version>1.0.0</version>
+	</plugin-info>
+	<platform key="genepix-platform">
+		<platform-module class="gov.nih.nci.caarray.plugins.genepix.GenepixModule"/>
+	</platform>
+</atlassian-plugin>

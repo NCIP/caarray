@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <constant name="struts.objectFactory" value="osgi" />
+    <constant name="struts.objectFactory.delegate" value="struts" />
+
+    <bean type="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" class="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" />
+    <bean type="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" class="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" />
+
+    <bean name="osgi" type="com.opensymphony.xwork2.ObjectFactory" class="gov.nih.nci.caarray.web.plugins.DelegatingObjectFactory" />
+    <bean name="osgi" type="com.opensymphony.xwork2.config.PackageProvider" class="gov.nih.nci.caarray.web.plugins.OsgiConfigurationProvider" />
+    <bean name="osgi" type="com.opensymphony.xwork2.util.finder.ClassLoaderInterface" class="gov.nih.nci.caarray.web.plugins.BundleClassLoaderInterface" />
+
+    <!-- Configuration for the default package. -->
+    <package name="default" extends="struts-default">
+        <interceptors>
+            <interceptor name="nullCollectionElements"
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.NullCollectionElementInterceptor" />
+
+            <interceptor name="parameterTrim"
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.ParameterTrimInterceptor" />
+
+            <interceptor name="maliciousInput"
+                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.XSSFilterInterceptor" />
+
+            <interceptor-stack name="caarrayParamsPrepareParamsStack">
+                <interceptor-ref name="exception" />
+                <interceptor-ref name="alias" />
+                <interceptor-ref name="params">
+                    <!--
+                        Excludes:
+                            the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                            All dojo parameters.
+                            .*\\.*,.*\(.*,.*\).*,.*@.* these are for an exploitation described here:
+                                http://blog.o0o.nu/2010/07/cve-2010-1870-struts2xwork-remote.html
+                    -->
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
+                </interceptor-ref>
+                <interceptor-ref name="servletConfig" />
+                <interceptor-ref name="prepare" />
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="chain" />
+                <interceptor-ref name="modelDriven" />
+                <interceptor-ref name="fileUpload" />
+                <interceptor-ref name="checkbox" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="params">
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="maliciousInput" />
+                <interceptor-ref name="tokenSession">
+                    <param name="excludeMethods">*</param>
+                </interceptor-ref>
+                <interceptor-ref name="parameterTrim">
+                  <param name="trimToNull">true</param>
+                </interceptor-ref>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="caarrayDefaultStack">
+                <interceptor-ref name="exception" />
+                <interceptor-ref name="alias" />
+                <interceptor-ref name="servletConfig" />
+                <interceptor-ref name="prepare" />
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="chain" />
+                <interceptor-ref name="debugging" />
+                <interceptor-ref name="profiling" />
+                <interceptor-ref name="scopedModelDriven" />
+                <interceptor-ref name="modelDriven" />
+                <interceptor-ref name="fileUpload" />
+                <interceptor-ref name="checkbox" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="params">
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="maliciousInput" />
+                <interceptor-ref name="parameterTrim">
+                  <param name="trimToNull">true</param>
+                </interceptor-ref>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="caarrayParamsPrepareParamsStack" />
+
+        <global-results>
+            <result name="permissionDenied">/permissionDenied.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="securityError" type="httpheader">
+                <param name="status">403</param>
+                <param name="errorMessage">tcp error</param>
+            </result>
+            <result name="notYetImplemented">/notYetImplemented.jsp</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping result="permissionDenied" exception="gov.nih.nci.caarray.security.PermissionDeniedException"/>
+            <exception-mapping result="error" exception="java.lang.Throwable"/>
+            <exception-mapping result="securityError" exception="java.lang.NoSuchMethodException"/>
+        </global-exception-mappings>
+
+        <action name="ajax/uploadProgress" class="gov.nih.nci.caarray.web.fileupload.UploadProgress">
+        </action>
+
+        <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
+            <result name="input">/WEB-INF/pages/home.jsp</result>
+        </action>
+        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction" method="logout">
+            <result name="success" type="redirectAction">
+                <param name="namespace">/</param>
+                <param name="actionName">home</param>
+            </result>
+            <result name="casLogout" type="redirect">
+                <param name="location">${casServerLogoutUrl}</param>
+            </result>
+        </action>
+        <action name="login">
+            <result>/WEB-INF/pages/login.jsp</result>
+        </action>
+        <action name="search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
+            <result name="success">/WEB-INF/pages/project/search/searchResults.jsp</result>
+            <result name="input" type="chain">home</result>
+        </action>
+        <action name="ajax/search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
+            <result name="tab">/WEB-INF/pages/project/search/searchTab.jsp</result>
+            <result name="success">/WEB-INF/pages/project/search/searchResults.jsp</result>
+            <result name="input" type="chain">home</result>
+        </action>
+        <action name="browse" class="gov.nih.nci.caarray.web.action.BrowseAction">
+            <result name="success">/WEB-INF/pages/project/search/browseResults.jsp</result>
+        </action>
+        <action name="ajax/browse/*" class="gov.nih.nci.caarray.web.action.BrowseAction" method="{1}">
+            <result name="tab">/WEB-INF/pages/project/search/browseTab.jsp</result>
+        </action>
+
+        <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
+            <result name="login-details-id" type="redirectAction">protected/project/details${requestParameters}</result>
+            <result name="login-details-publicid" type="redirectAction">protected/project/details${requestParameters}</result>
+            <result name="workspace" type="redirectAction">protected/project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/browse" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="browse">
+            <result name="workspace" type="redirectAction">/protected/project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+            <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
+        </action>
+
+        <action name="ajax/project/tab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.Project{1}Action" method="{2}">
+            <result name="input">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
+            <result name="saveError">/WEB-INF/pages/project/reloadProjectCreate.jsp</result>
+            <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
+            <result name="xmlArrayDesigns" type="stream">
+                <param name="contentType">text/xml;charset=UTF-8</param>
+                <param name="inputName">arrayDesignsAsXml</param>
+                <param name="bufferSize">4096</param>
+            </result>
+            <result name="protocolAutoCompleterValues">/WEB-INF/pages/protocol/protocolAutoCompleterValues.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="ajax/project/pluginTab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.ProjectTabPluginAction">
+            <param name="key">{1}</param>
+            <param name="method">{2}</param>
+            <result name="input">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
+            <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
+            <result name="xmlArrayDesigns" type="stream">
+                <param name="contentType">text/xml;charset=UTF-8</param>
+                <param name="inputName">arrayDesignsAsXml</param>
+                <param name="bufferSize">4096</param>
+            </result>
+            <result name="protocolAutoCompleterValues">/WEB-INF/pages/protocol/protocolAutoCompleterValues.jsp</result>
+        </action>
+
+        <action name="ajax/project/listTab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.Project{1}Action" method="{2}">
+            <result name="input">/WEB-INF/pages/project/tab{1}/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}/list.jsp</result>
+            <result name="list">/WEB-INF/pages/project/tab{1}/list.jsp</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
+            <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
+            <result name="associationValues">/WEB-INF/pages/project/annotationAssociatedValues.jsp</result>
+            <result name="noSourceData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=sources</result>
+            <result name="noSampleData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=samples</result>
+            <result name="noExtractData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
+            <result name="noLabeledExtractData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
+            <result name="noHybData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
+            <result name="downloadFiles">/WEB-INF/pages/project/tabCommon/downloadFiles.jsp</result>
+            <result name="downloadFilesList">/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp</result>
+            <result name="downloadFilesListTable">/WEB-INF/pages/project/tabCommon/downloadFilesListTable.jsp</result>
+            <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
+            <result name="factorValuesList">/WEB-INF/pages/project/tab{1}/factorValuesList.jsp</result>
+            <result name="downloadOptions">/WEB-INF/pages/project/tabCommon/downloadOptions.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
+            <result name="input">/error.jsp</result>
+            <result name="denied" type="chain">project/details</result>
+        </action>
+
+        <action name="ajax/project/files/deleteSupplementalFiles" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="deleteSupplementalFiles">
+            <result name="input">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
+            <result name="listSupplemental">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
+        </action>
+
+        <action name="ajax/project/files/deleteImportedFiles" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="deleteImportedFiles">
+            <result name="input">/WEB-INF/pages/project/files/listImported.jsp</result>
+            <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>
+        </action>
+
+        <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/files/listUnimported.jsp</result>
+            <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>
+            <result name="listUnimported">/WEB-INF/pages/project/files/listUnimported.jsp</result>
+            <result name="listSupplemental">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
+            <result name="listUnimportedForm">/WEB-INF/pages/project/files/listUnimportedForm.jsp</result>
+            <result name="listImportedForm">/WEB-INF/pages/project/files/listImportedForm.jsp</result>
+            <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
+            <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">changeFileType</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="ajax/project/files/upload/*" class="gov.nih.nci.caarray.web.action.project.UploadProjectFilesAction" method="{1}">
+            <result name="uploadInBackground">/WEB-INF/pages/project/files/uploadBackground.jsp</result>
+        </action>
+
+        <action name="ajax/project/export/*" class="gov.nih.nci.caarray.web.action.project.ProjectExportAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/export/details.jsp</result>
+            <result name="success">/WEB-INF/pages/project/export/{1}.jsp</result>
+        </action>
+
+        <action name="plugins/*" class="gov.nih.nci.caarray.web.action.PluginsAction" method="{1}">
+            <result name="success">/WEB-INF/pages/plugins.jsp</result>
+        </action>
+
+    </package>
+
+    <package name="protected" namespace="/protected" extends="default">
+        <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
+            <result name="workspace" type="redirectAction">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
+            <result name="success">/WEB-INF/pages/project/workspace/myProjects.jsp</result>
+        </action>
+
+        <action name="ajax/project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
+            <result name="success">/WEB-INF/pages/project/workspace/myProjects.jsp</result>
+        </action>
+
+        <action name="project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
+            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+        </action>
+
+        <action name="ajax/project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
+            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+        </action>
+
+        <action name="project/cancelJob" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="cancelJob">
+            <result name="success" type="redirectAction">project/viewJobQueue</result>
+        </action>
+
+        <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/edit" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="edit">
+            <result name="workspace" type="redirectAction">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/delete" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="delete">
+            <result name="workspace" type="redirectAction">project/workspace</result>
+        </action>
+
+        <action name="project/changeWorkflowStatus" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="changeWorkflowStatus">
+            <result name="workspace" type="redirectAction">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
+            <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>
+        </action>
+
+        <action name="ajax/project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/permissions/{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
+            <result name="accessProfile">/WEB-INF/pages/project/permissions/accessProfile.jsp</result>
+            <result name="list">/WEB-INF/pages/project/permissions/list.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveAccessProfile</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
+            <result name="input">/WEB-INF/pages/collaborators/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/collaborators/{1}.jsp</result>
+            <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
+            <result name="addUsers">/WEB-INF/pages/collaborators/addUsers.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">name</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
+            <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
+            <result name="editTable">/WEB-INF/pages/collaborators/editTable.jsp</result>
+            <result name="success">/WEB-INF/pages/collaborators/addTable.jsp</result>
+        </action>
+
+        <action name="arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
+            <result name="list">/WEB-INF/pages/arrayDesign/list.jsp</result>
+            <result name="input">/WEB-INF/pages/arrayDesign/edit.jsp</result>
+            <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
+            <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
+            <result name="success" type="redirectAction">arrayDesign/list</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveMeta</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="ajax/arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
+            <result name="list">/WEB-INF/pages/arrayDesign/list.jsp</result>
+            <result name="input">/WEB-INF/pages/arrayDesign/edit.jsp</result>
+            <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
+            <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
+            <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveMeta,save</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="vocabulary/manage">
+            <result>/WEB-INF/pages/vocabulary/manage.jsp</result>
+        </action>
+
+        <action name="ajax/vocabulary/*" class="gov.nih.nci.caarray.web.action.vocabulary.VocabularyAction" method="{1}">
+            <result name="input">/WEB-INF/pages/vocabulary/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/vocabulary/list.jsp</result>
+            <result name="termAutoCompleterValues">/WEB-INF/pages/vocabulary/termAutoCompleterValues.jsp</result>
+            <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
+        </action>
+
+        <action name="protocol/manage" class="gov.nih.nci.caarray.web.action.protocol.ProtocolManagementAction" method="manage">
+            <result name="success">/WEB-INF/pages/protocol/manage.jsp</result>
+        </action>
+
+        <action name="ajax/protocol/*" class="gov.nih.nci.caarray.web.action.protocol.ProtocolManagementAction" method="{1}">
+            <result name="input">/WEB-INF/pages/protocol/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/protocol/list.jsp</result>
+            <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
+        </action>
+        <action name="ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
+            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
+            <result name="listOwners" type="redirectAction">ownership/listOwners</result>
+            <result name="assets">/WEB-INF/pages/ownership/assets.jsp</result>
+            <result name="newOwner">/WEB-INF/pages/ownership/newOwner.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">newOwner,reassign</param>
+            </interceptor-ref>
+        </action>
+        <action name="ajax/ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
+            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
+        </action>
+        <action name="audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
+            <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
+            <result name="input">/WEB-INF/pages/audit/{1}.jsp</result>
+        </action>
+        <action name="ajax/audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
+            <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
+        </action>
+        <action name="admin/import/*" class="gov.nih.nci.caarray.web.action.admin.ImportAction" method="{1}">
+            <result name="success">/WEB-INF/pages/admin/{1}.jsp</result>
+        </action>
+        <action name="ajax/admin/import/*" class="gov.nih.nci.caarray.web.action.admin.ImportAction" method="{1}">
+            <result name="success">/WEB-INF/pages/admin/{1}.jsp</result>
+        </action>
+
+    </package>
+
+    <package name="registration" namespace="/registration" extends="default">
+        <action name="*" class="gov.nih.nci.caarray.web.action.registration.RegistrationAction" method="{1}">
+            <result name="input">/WEB-INF/pages/registration/form.jsp</result>
+            <result name="success">/WEB-INF/pages/registration/success.jsp</result>
+        </action>
+     </package>
+</struts>

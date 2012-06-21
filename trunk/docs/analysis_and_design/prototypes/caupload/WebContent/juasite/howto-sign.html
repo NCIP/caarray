@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JUpload project on Sourceforge - JUpload - File Upload Applet - HowTo sign the applet ?</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            JUpload project on Sourceforge
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2011-10-13
+                      </div>
+            <div class="xright">            <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Sourceforge project page</a>
+            |
+                <a href="http://sourceforge.net/donate/index.php?group_id=59144" class="externalLink">Support this project</a>
+            |
+                <a href="http://maven.apache.org/" class="externalLink">Maven</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Sourceforge project page</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Project presentation (and download)</a>
+          </li>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/files" class="externalLink">Browse files</a>
+          </li>
+          </ul>
+              <h5>JUpload samples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="applet-basic.html">Basic demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="applet-basic-picture.html">Picture mode demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="advanced_js_demo.html">Advanced demo</a>
+          </li>
+          </ul>
+              <h5>Project documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">General description</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-compile.html">HowTo compile</a>
+          </li>
+              
+    <li class="none">
+              <strong>HowTo sign the applet</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="howto-customize.html">HowTo customize</a>
+          </li>
+              
+    <li class="none">
+                    <a href="faq.html">FAQ</a>
+          </li>
+              
+    <li class="none">
+                    <a href="README.txt">Release Notes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-support.html">HowTo get support</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-debug.html">HowTo debug</a>
+          </li>
+              
+    <li class="none">
+                    <a href="issue-tracking.html">Issue Tracking</a>
+          </li>
+              
+    <li class="none">
+                    <a href="dependencies.html">Dependencies</a>
+          </li>
+          </ul>
+              <h5>Translation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="howto-translate.html">HowTo translate</a>
+          </li>
+              
+    <li class="none">
+                    <a href="available_translations.html">Available translations</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                                 
+                        
+                        
+            <a href="http://sourceforge.net/donate/index.php?group_id=59144" title="Support this project" class="poweredBy">
+                            <img alt="Support this project" src="http://images.sourceforge.net/images/project-support.jpg" />
+            </a>
+                               
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>HowTo sign the applet ?</h2>
+<ul><li><a href="#HowTo_sign_the_applet_">HowTo sign the applet ?</a><ul><li><a href="#Why_do_you_need_to_sign_the_applet">Why do you need to sign the applet?</a></li>
+<li><a href="#How_to_generate_a_certificate">How to generate a certificate?</a></li>
+</ul>
+</li>
+</ul>
+<div class="section"><h3><a name="Why_do_you_need_to_sign_the_applet">Why do you need to sign the applet?</a></h3>
+<p>When running from a web site, within your browser, the applet needs to have access to the local filesystem, in order to choose then upload the files. Thanks to Java protection, this is impossible ... unless specific prerequisite:</p>
+<ul><li>The applet must be signed. Non-signed applet mat never access the local filesystem.</li>
+<li>The user must accept the applet certificate. The user then has the option to accept it for ever, or just for the current session. If the user accepted 'for ever' the certificate, he/she can remove it by doing these actions:<ul><li>Go to the <i>Java Control Panel</i> / Security / Certificates / Approved certificates, and remove the relevant certificate</li>
+<li>Go to the <i>Java Control Panel</i> / General. In the <i>temporary Internet Files</i>, click on the <i>Parameter</i> button. Then, click on the <i>Remove files...</i> button to clean the Java cache.</li>
+</ul>
+</li>
+</ul>
+<p><b>Take care about this:</b> Once a certificate is permanently accepted on a browser, this browser will execute any applet signed by this certificate, without asking the user. So good practices are:</p>
+<ul><li>The keystore and the storepass must remain secret.</li>
+<li>The validity of the certificate must be not too long (1 year seems a maximum to me).</li>
+<li>For commercial use, a good practice is to have a certificate signed by a known <i>Certificate Autority</i>. You'll need to pay, for that...</li>
+</ul>
+</div>
+<div class="section"><h3><a name="How_to_generate_a_certificate">How to generate a certificate?</a> </h3>
+<p>With maven compilation, signing the applet is native. See the <a href="./howto-compile.html">HowTo compile the applet</a> page. But you need to create a certificate, in order to sign the applet. Here are the java commands, to create a demo certificate for JUpload:</p>
+<ul><li>Generate Private/Public key set :<div class="source"><pre>       keytool -genkey -alias &quot;jupload&quot; -validity 3600 -dname &quot;CN=JUpload, OU=Testing/Demo, O=JUpload.SourceForge.net, L=SourceForge, S=SourceForge, C=SG&quot;</pre>
+</div>
+</li>
+<li>List key set.<div class="source"><pre>       keytool -list</pre>
+</div>
+</li>
+<li>Sign the Applet with the private key. You <b>must do that after each modification of the jar package</b>. You can use the below command, if you want to do this manually, or use the given ant or maven compilation scripts. All details on the <a href="./howto-compile.html">HowTo compile the applet</a> page. The command below allows you to sign the applet with a 'test' certificate: <div class="source"><pre>       jarsigner wjhk.jupload.jar jupload</pre>
+</div>
+</li>
+<li>Verify the jar file have being sign properly.<div class="source"><pre>       jarsigner -verify -certs -verbose wjhk.jupload.jar</pre>
+</div>
+</li>
+</ul>
+<p>You can find more information, to sign the applet is provided by Martin Westin in this thread: <a href="https://sourceforge.net/forum/forum.php?thread_id=2991519&amp;forum_id=199106" class="externalLink">https://sourceforge.net/forum/forum.php?thread_id=2991519&amp;forum_id=199106</a></p>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

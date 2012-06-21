@@ -1,0 +1,45 @@
+Internal model changes for caArray internal model 2.3:
+
+* Renamed class project/FactorValue to project/AbstractFactorValue.
+* Added class project/MeasurementFactorValue.
+  + Concept mappings = Measurement Variable Value = C25209, C43371, C49100
+* Added class project/TermBasedFactorValue.
+  + Concept mappings = Term Variable Value = C45559, C43371, C49100
+* Added class project/UserDefinedFactorValue.
+  + Concept mappings = Free_Text_Format Variable Value = C70764, C43371, C49100
+* Removed attribute "value" from project/FactorValue (now project/AbstractFactorValue).
+* Added attribute "value" to project/MeasurementFactorValue and project/UserDefinedFactorValue.
+  + Concept mapping = Value = C25712
+* Added association "term" from project/TermBasedFactorValue to vocabulary/Term.
+* Added association "unit" to sample/AbstractCharacteristic.
+* Added class sample/UserDefinedCharacteristic that inherits from sample/AbstractCharacteristic.
+  + Concept mappings = Free_Text_Format Characteristic = C70764, C25447
+* Added attribute "value" to sample/UserDefinedCharacteristic.
+  + Concept mapping = Value = C25712
+* Removed association "unit" from sample/MeasurementCharacteristic.
+* Renamed class protocol/ParameterValue to protocol/AbstractParameterValue.
+* Removed attribute "value" from AbstractParameterValue.
+* Added association "unit" to protocol/AbstractParameterValue.
+* Made association between protocol/AbstractParameterValue and protocol/ProtocolApplication bidirectional.
+* Added class protocol/MeasurementParameterValue inheriting from protocol/AbstractParameterValue.
+  + Concept mappings = Measurement Parameter Value = C25209, C44175, C49100
+* Added class protocol/UserDefinedParameterValue inheriting from protocol/AbstractParameterValue.
+  + Concept mappings = Free_Text_Format Parameter Value = C70764, C44175, C49100
+* Added attribute "value" to protocol/MeasurementParameterValue and protocol/UserDefinedParameterValue.
+  + Concept mapping = Value = C25712
+* Added class protocol/TermBasedParameterValue inheriting from protocol/AbstractParameterValue.
+  + Concept mappings = Term Parameter Value = C45559, C44175, C49100
+* Added class project/AssayType.
+  + Concept mappings = Assay Type = C60819, C25284
+* Added attribute "name" to project/AssayType.
+  + Concept mapping = Name = C42614
+* Removed attribute "assayType" from project/Experiment.
+* Added association "assayTypes" to project/Experiment.
+* Removed attribute "assayType" from array/ArrayDesign.
+* Added association "assayTypes" to array/ArrayDesign.
+* Made association between project/Experiment and hybridization/Hybridization bidirectional.
+* Made association between hybridization/Hybridization and data/HybridizationData bidirectional.
+* Made association between project/Experiment and project/Factor bidirectional.
+* Made association between data/QuantitationType and data/ArrayDataType bidirectional.
+* Made association between data/DataSet and data/AbstractArrayData bidirectional.
+

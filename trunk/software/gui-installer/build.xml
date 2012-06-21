@@ -1,0 +1,75 @@
+<project name="Installer" default="install" basedir="." >
+
+	<!-- Generic properties -->
+	<property name="application_installer" value="caarray_installer" />
+
+	<property name="caarray.version.label" value="2_5_0_0"/>
+	<property name="installer_prefix" value="caarray_install_${caarray.version.label}"/>
+	<property name="application_installer_zip" value="caarray_install_2_5_0_0.zip" />
+	
+	<target name="unzip">
+		<delete dir="${install.path}/${application_installer}" />	
+		<unzip src="${install.path}/${application_installer_zip}" dest="${install.path}/${application_installer}">
+			<mapper type="glob" from="${installer_prefix}/*" to="*"/>
+	    </unzip>
+	</target>
+	
+	
+	<!-- TARGETS -->
+	<target name="install" depends="unzip">
+		<echo message="CALL THE INSTALL TARGET"/>
+		<echo message="install.path =${install.path}="/>
+		<copy file="${install.path}/property-template/installer.template.properties" tofile="${install.path}/${application_installer}/install.properties" overwrite="yes"/>
+		<copy file="${install.path}/property-template/upgrade.template.properties" tofile="${install.path}/${application_installer}/upgrade.properties" overwrite="yes"/>
+		<replace dir="${install.path}/${application_installer}" token="basedir}" value="install.path}/${application_installer}">
+			<include name="**/*.xml" />
+			<include name="**/*.properties" />
+			<exclude name="**/sync-gts/**/*"/>
+			<exclude name="**/caGrid-console/**/*"/>
+		</replace>
+		<replace dir="${install.path}/${application_installer}" token="&quot;upgrade.properties&quot;" value="&quot;${install.path}/${application_installer}/upgrade.properties&quot;">
+			<include name="**/*.xml" />
+		</replace>
+		<!-- fix for cagrid-console/build.xml getting wrong path-->
+        <replace dir="${install.path}/${application_installer}/caGrid-console/" token="basedir}" value="install.path}/${application_installer}/caGrid-console">
+            <include name="**/*.xml" />
+        </replace>
+	</target>
+
+	<target name="convert-install-path" >
+		<echo message="application.base.path.target =${application.base.path.target}="/>
+		<pathconvert targetos="unix" property="application.base.path.convert">
+			 <path location="${application.base.path.target}"/>
+		</pathconvert>
+        <pathconvert targetos="unix" property="dataStorage.fileSystem.baseDir.convert">
+             <path location="${dataStorage.fileSystem.baseDir}"/>
+        </pathconvert>
+
+		<replaceregexp file="${install.path}/${application_installer}/install.properties" byline="true"
+				match="^(application.base.path)=(.*)"
+				replace="\1=${application.base.path.convert}"/>
+		<replaceregexp file="${install.path}/${application_installer}/upgrade.properties" byline="true"
+				match="^(application.base.path)=(.*)"
+				replace="\1=${application.base.path.convert}"/>	
+        <replaceregexp file="${install.path}/${application_installer}/install.properties" byline="true"
+                match="^(dataStorage.fileSystem.baseDir)=(.*)"
+                replace="\1=${dataStorage.fileSystem.baseDir.convert}"/>
+        <replaceregexp file="${install.path}/${application_installer}/upgrade.properties" byline="true"
+                match="^(dataStorage.fileSystem.baseDir)=(.*)"
+                replace="\1=${dataStorage.fileSystem.baseDir.convert}"/> 
+	</target>
+	
+
+	<target name="install-application" >
+		<ant inheritAll="false" inheritRefs="false"
+			antfile="build.xml"			
+			dir="${install.path}/${application_installer}"
+			target="${build.file.target}"
+			>
+			<property name="install.path" value="${install.path}"/>
+			<property name="force.reinstall" value="true"/>
+			<property name="properties.file" value="${properties.file.target}"/>
+		</ant>
+	</target>
+	
+</project>

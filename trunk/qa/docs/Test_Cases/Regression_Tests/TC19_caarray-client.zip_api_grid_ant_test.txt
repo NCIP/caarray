@@ -1,0 +1,214 @@
+This is a test of the distribution artifact, caarray_client_XXX.zip
+
+1. Check out the released tag to SVN.
+E.g.,  Check out CAARRAY_XXX to C:\NCICB_CVS\CAARRAY_XXX (where "XXX" stands for the actual tag name).
+
+2. Run "ant dist" on C:\NCICB_SVN\CAARRAY_XXX\software\master_build
+
+3. We now have C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX.zip
+
+4. This is the caArray Client, which will be supplied to the community, and which should allow them to connect to caArray instances.
+   
+5. Unzip caarray_client_XXX.zip, e.g., to directory C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip
+
+6. There is documentation on how to use the client here: 
+
+   C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip\README.txt
+
+7. cd C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip
+
+8. At the coommand prompt, run one or more of the following ant targets:
+
+For local install, e.g., using the default ports of the BDA installer:
+> ant -Dhostname=localhost -Djndi.port=31099 -Dgrid.port=18080
+
+For LSD-32:
+> ant -Dhostname=cbapp-s1003 -Djndi.port=31099 -Dgrid.port=18080
+
+For LSD-64:
+> ant -Dhostname=cbapp-s1002 -Djndi.port=31099 -Dgrid.port=18080
+
+For QA-WM:
+> ant -Dhostname=cbvapp-q1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
+
+For QA-Standalone:
+> ant -Dhostname=cbapp-q1002.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
+
+For STAGE, run 
+> ant -Dhostname=cbapp-p1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
+
+For PROD, run 
+> ant -Dhostname=cbapp-s1001.nci.nih.gov -Djndi.port=8080 -Dgrid.port=59580
+
+9. The regression test should build 100% successfully:
+
+e.g., here's an example:
+
+E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip>ant -p
+Buildfile: build.xml
+
+Main targets:
+
+ test-clean  Invokes both the Java and caGrid APIs of a caArray server. By default, connects to array.nci.nih.gov on grid port 80 and JN
+DI port 8080. To configure this to run against different hosts/ports, invoke ant with the following properties: -Dhostname=<hostname> -D
+jndi.port=<JNDI port> -Dgrid.port=<grid service port>
+Default target: test-clean
+E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip>ant -Dhostname=cbvapp-q1001.nci.nih.gov -Djndi.
+port=8080 -Dgrid.port=59580
+Buildfile: build.xml
+
+clean:
+
+compile:
+    [mkdir] Created dir: E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\example\classes
+    [javac] Compiling 2 source files to E:\NCICB_CVS\CAARRAY_R2_0_2_PATCH1\software\caarray-client.jar\target\caarray-client_zip\example
+\classes
+
+test:java-api:
+     [java] Using values: cbvapp-q1001.nci.nih.gov:8080
+     [java] Successfully connected to server
+     [java] log4j:WARN No appenders could be found for logger (org.jboss.security.SecurityAssociation).
+     [java] log4j:WARN Please initialize the log4j system properly.
+     [java] [B Pixels, B532, B532 CV, B532 Mean, B532 Median, B532 SD, B635, B635 CV, B635 Mean, B635 Median, B635 SD, Circularity, Dia.
+, F Pixels, F532 CV, F532 Mean, F532 Mean - B532, F532 Median, F532 Median - B532, F532 % Sat., F532 SD, F532 Total Intensity, F635 CV,
+F635 Mean, F635 Mean - B635, F635 Median, F635 Median - B635, F635 % Sat., F635 SD, F635 Total Intensity, Flags, % > B532+1SD, % > B532+
+2SD, % > B635+1SD, % > B635+2SD, Sum of Means (635/532), Sum of Medians (635/532), X, Y, B3 Mean, B3 Median, B3 SD, B4 Mean, B4 Median,
+B4 SD, F3 Mean, F3 Mean - B3, F3 Median, F3 Median - B3, F3 % Sat., F3 SD, F4 Mean, F4 Mean - B4, F4 Median, F4 Median - B4, F4 % Sat.,
+F4 SD, % > B3+1SD, % > B3+2SD, % > B4+1SD, % > B4+2SD, NARRAYS, Avg_NBEADS]
+     [java] Successfully ran query
+
+test:grid-api:
+     [java] Using URL: http://cbvapp-q1001.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc
+     [java] CHPDetection
+     [java] CHPDetectionPvalue
+     [java] CHPPairs
+     [java] CHPPairsUsed
+     [java] CHPSignal
+     [java] CHPChange
+     [java] CHPChangePvalue
+     [java] CHPSignalLogRatio
+     [java] CHPSignalLogRatioHigh
+     [java] CHPSignalLogRatioLow
+     [java] CHPCommonPairs
+     [java] CHPAllele
+     [java] CHPAllelePvalue
+     [java] CHPAlleleRAS1
+     [java] CHPAlleleRAS2
+     [java] CELX
+     [java] CELY
+     [java] CELIntensity
+     [java] CELIntensityStdev
+     [java] CELMask
+     [java] CELOutlier
+     [java] CELPixels
+     [java] Autoflag
+     [java] B Pixels
+     [java] B532
+     [java] B532 CV
+     [java] B532 Mean
+     [java] B532 Median
+     [java] B532 SD
+     [java] B635
+     [java] B635 CV
+     [java] B635 Mean
+     [java] B635 Median
+     [java] B635 SD
+     [java] Circularity
+     [java] Dia.
+     [java] F Pixels
+     [java] F532 CV
+     [java] F532 Mean
+     [java] F532 Mean - B532
+     [java] F532 Median
+     [java] F532 Median - B532
+     [java] F532 % Sat.
+     [java] F532 SD
+     [java] F532 Total Intensity
+     [java] F635 CV
+     [java] F635 Mean
+     [java] F635 Mean - B635
+     [java] F635 Median
+     [java] F635 Median - B635
+     [java] F635 % Sat.
+     [java] F635 SD
+     [java] F635 Total Intensity
+     [java] Flags
+     [java] Log Ratio (635/532)
+     [java] Mean of Ratios (635/532)
+     [java] Median of Ratios (635/532)
+     [java] Normalize
+     [java] % > B532+1SD
+     [java] % > B532+2SD
+     [java] % > B635+1SD
+     [java] % > B635+2SD
+     [java] Ratio of Means (635/532)
+     [java] Ratio of Medians (635/532)
+     [java] Ratios SD (635/532)
+     [java] Rgn R2 (635/532)
+     [java] Rgn Ratio (635/532)
+     [java] SNR 532
+     [java] SNR 635
+     [java] Sum of Means (635/532)
+     [java] Sum of Medians (635/532)
+     [java] X
+     [java] Y
+     [java] B3 Mean
+     [java] B3 Median
+     [java] B3 SD
+     [java] B4 Mean
+     [java] B4 Median
+     [java] B4 SD
+     [java] F3 Mean
+     [java] F3 Mean - B3
+     [java] F3 Median
+     [java] F3 Median - B3
+     [java] F3 % Sat.
+     [java] F3 SD
+     [java] F4 Mean
+     [java] F4 Mean - B4
+     [java] F4 Median
+     [java] F4 Median - B4
+     [java] F4 % Sat.
+     [java] F4 SD
+     [java] Log Ratio (Ratio/2)
+     [java] Log Ratio (Ratio/3)
+     [java] Mean of Ratios (Ratio/2)
+     [java] Mean of Ratios (Ratio/3)
+     [java] Median of Ratios (Ratio/2)
+     [java] Median of Ratios (Ratio/3)
+     [java] % > B3+1SD
+     [java] % > B3+2SD
+     [java] % > B4+1SD
+     [java] % > B4+2SD
+     [java] Ratio of Means (Ratio/2)
+     [java] Ratio of Means (Ratio/3)
+     [java] Ratio of Medians (Ratio/2)
+     [java] Ratio of Medians (Ratio/3)
+     [java] Ratios SD (Ratio/2)
+     [java] Ratios SD (Ratio/3)
+     [java] Rgn R2 (Ratio/2)
+     [java] Rgn R2 (Ratio/3)
+     [java] Rgn Ratio (Ratio/2)
+     [java] Rgn Ratio (Ratio/3)
+     [java] MIN_Signal
+     [java] AVG_Signal
+     [java] MAX_Signal
+     [java] NARRAYS
+     [java] ARRAY_STDEV
+     [java] BEAD_STDEV
+     [java] Avg_NBEADS
+     [java] Detection
+     [java] AA_Freq
+     [java] AB_Freq
+     [java] BB_Freq
+     [java] Call_Freq
+     [java] Successfully ran query
+
+test:
+
+test-clean:
+
+BUILD SUCCESSFUL
+Total time: 15 seconds
+
+10. Requirements for passing the regression test are the generation of the two "[java] Successfully ran query" output lines, one for "test:java-api", and one for "test:grid-api". 

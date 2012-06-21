@@ -1,0 +1,33 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (${language})
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in ${language})
+
+--------------
+
+${applet_translation}
+
+--------------
+
+#if (${coppermine_filename})
+
+Translation for the CopperminePlugin part (in ${language})
+
+#if (${coppermine_filename} == "english.php")
+   The translation for ${language} doesn't exist. Please create a new one, based on the English translation below... 
+#else
+   Content of the <${coppermine_filename}> file.
+#end
+
+--------------
+
+${coppermine_translation}
+
+--------------
+
+#end

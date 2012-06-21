@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    
+    <!-- Exposed Objects' schemas are imported here -->
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" schemaLocation="./gov.nih.nci.caarray.domain.file.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" schemaLocation="./gov.nih.nci.caarray.domain.data.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" schemaLocation="./gov.nih.nci.caarray.domain.contact.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" schemaLocation="./gov.nih.nci.caarray.domain.array.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain" schemaLocation="./gov.nih.nci.caarray.domain.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" schemaLocation="./edu.georgetown.pir.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" schemaLocation="./gov.nih.nci.cabio.domain.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="./gov.nih.nci.caarray.domain.vocabulary.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" schemaLocation="./gov.nih.nci.caarray.domain.sample.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.publication" schemaLocation="./gov.nih.nci.caarray.domain.publication.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" schemaLocation="./gov.nih.nci.caarray.domain.protocol.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" schemaLocation="./gov.nih.nci.caarray.domain.project.xsd"/>
+	<xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.hybridization" schemaLocation="./gov.nih.nci.caarray.domain.hybridization.xsd"/>
+
+
+
+    <xs:group name="PermissibleCQLObjectResults">
+        <xs:choice>        
+        <!-- element references to exposed objects -->
+		<xs:element ref="ns0:CaArrayFile" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file"/>
+		<xs:element ref="ns0:HybridizationData" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:ArrayDataType" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:AbstractArrayData" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:DataSet" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:AbstractDataColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:Image" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:DesignElementList" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:DataRetrievalRequest" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:QuantitationType" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:DerivedArrayData" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:StringColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:LongColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:ShortColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:IntegerColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:RawArrayData" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:DoubleColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:BooleanColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:FloatColumn" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data"/>
+		<xs:element ref="ns0:Address" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"/>
+		<xs:element ref="ns0:AbstractContact" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"/>
+		<xs:element ref="ns0:Person" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"/>
+		<xs:element ref="ns0:Organization" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"/>
+		<xs:element ref="ns0:ArrayDesignDetails" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:AbstractProbeAnnotation" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:ArrayDesign" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:Array" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:AbstractDesignElement" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:ProbeGroup" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:ArrayGroup" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:Gene" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:SNPProbeAnnotation" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:PhysicalProbe" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:LogicalProbe" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:Feature" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:ExonProbeAnnotation" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:ExpressionProbeAnnotation" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:AbstractProbe" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"/>
+		<xs:element ref="ns0:AbstractCaArrayObject" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"/>
+		<xs:element ref="ns0:AbstractCaArrayEntity" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"/>
+		<xs:element ref="ns0:Organism" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir"/>
+		<xs:element ref="ns0:AdditionalOrganismName" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir"/>
+		<xs:element ref="ns0:ArrayReporter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"/>
+		<xs:element ref="ns0:TranscriptArrayReporter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"/>
+		<xs:element ref="ns0:ExpressionArrayReporter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"/>
+		<xs:element ref="ns0:ExonArrayReporter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"/>
+		<xs:element ref="ns0:SNPArrayReporter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"/>
+		<xs:element ref="ns0:Category" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"/>
+		<xs:element ref="ns0:Term" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"/>
+		<xs:element ref="ns0:TermSource" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"/>
+		<xs:element ref="ns0:AbstractBioMaterial" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:AbstractCharacteristic" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:TermBasedCharacteristic" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+        <xs:element ref="ns0:UserDefinedCharacteristic" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+        <xs:element ref="ns0:MeasurementCharacteristic" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:Extract" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:Sample" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:Source" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:LabeledExtract" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample"/>
+		<xs:element ref="ns0:Publication" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.publication"/>
+		<xs:element ref="ns0:ProtocolApplication" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+		<xs:element ref="ns0:Protocol" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+		<xs:element ref="ns0:Parameter" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+        <xs:element ref="ns0:AbstractParameterValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+        <xs:element ref="ns0:TermBasedParameterValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+        <xs:element ref="ns0:UserDefinedParameterValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+        <xs:element ref="ns0:MeasurementParameterValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"/>
+		<xs:element ref="ns0:ExperimentContact" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+		<xs:element ref="ns0:Experiment" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+		<xs:element ref="ns0:Factor" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+        <xs:element ref="ns0:AbstractFactorValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+        <xs:element ref="ns0:TermBasedFactorValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+        <xs:element ref="ns0:UserDefinedFactorValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+        <xs:element ref="ns0:MeasurementFactorValue" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+		<xs:element ref="ns0:Project" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"/>
+		<xs:element ref="ns0:Hybridization" xmlns:ns0="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.hybridization"/>
+ 
+        </xs:choice>
+    </xs:group>
+</xs:schema>

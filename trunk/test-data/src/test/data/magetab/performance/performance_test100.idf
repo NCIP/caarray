@@ -1,0 +1,50 @@
+Investigation Title	Performance Test 100	
+Experimental Design	disease_state_design	
+Experimental Design Term Source REF	MGED Ontology	
+Experimental Factor Name	GBM	
+Experimental Factor Type	disease_state	
+Experimental Factor Type Term Source REF	MGED Ontology	
+
+Person Last Name	Meyerson	Submission
+Person First Name	Matthew	GAP
+Person Mid Initials		
+Person Email	meyerson@broad.mit.edu	gap-sub@broad.mit.edu
+Person Phone	(617) 632-4768	(617) 252-1142
+Person Fax		
+Person Address	"7 Cambridge Center, Cambridge, MA 02142, USA"	"7 Cambridge Center, Cambridge, MA 02142, USA"
+Person Affiliation	"Broad Institue, MIT"	"Broad Institue, MIT"
+Person Roles	investigator	submitter
+Person Roles Term Source REF	MGED Ontology
+
+Quality Control Types	spike_quality_control
+Quality Control Types Term Source REF	MGED Ontology
+Replicate Type	
+Replicate Type Term Source REF	
+Normalization Type	
+Normalization Term Source REF	
+Date of Experiment	2007-05-10
+Public Release Date	2007-05-11
+Comment[ArrayExpressSubmissionDate]	
+
+PubMed ID	
+Publication DOI	
+Publication Author List	
+Publication Title	
+Publication Status				
+Publication Status Term Source REF				
+Experiment Description	TCGA Analysis of RNA Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A			
+
+Protocol Name	broad.mit.edu:labeling:HT_HG-U133A:01	broad.mit.edu:hybridization:HT_HG-U133A:01	broad.mit.edu:image_acquisition:HT_HG-U133A:01	broad.mit.edu:differential_expression:HT_HG-U133A:01
+Protocol Type	labeling	hybridization	image_acquisition	differential_expression
+Protocol Description	http://www.affymetrix.com/support/technical/index.affx	http://www.affymetrix.com/support/technical/index.affx	http://www.affymetrix.com/support/technical/index.affx	http://www.affymetrix.com/support/technical/index.affx
+Protocol Parameters				
+Protocol Hardware	liquid_handler	hybridization_station	array_scanner	
+Protocol Software			image_acquisition_software	bioassay_data_transformation_software
+Protocol Contact				
+Protocol Term Source REF	MGED Ontology	MGED Ontology	MGED Ontology	MGED Ontology
+
+SDRF Files	performance_test100.sdrf			
+
+Term Source Name	MGED Ontology	caArray	BCR	
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	http://caarraydb.nci.nih.gov/	http://www.tgen.org
+Term Source Version	1.3.1.1	1.4	

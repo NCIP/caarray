@@ -1,0 +1,61 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Selenium_RBT_TC9</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Selenium_RBT_TC9 SimpleSearch_KM_CN_SNP</td></tr>
+</thead><tbody>
+
+<!-- Login handled by a separate script
+     Start the script on a known tab on the application -->
+
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage Lists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Simple Search</td>
+	<td></td>
+</tr>
+
+<!-- Begin test case -->
+
+<tr>
+	<td>click</td>
+	<td>document.quickSearchForm.plot[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>quickSearchType</td>
+	<td>label=SNP Probe set ID</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>quickSearchName</td>
+	<td>SNP_A-1685977</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Samples with Amplification</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPopUp</td>
+	<td>clinicalPlots</td>
+	<td>30000</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

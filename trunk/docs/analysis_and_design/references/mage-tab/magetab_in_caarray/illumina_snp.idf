@@ -1,0 +1,50 @@
+#####################################################
+#[IDF]
+#
+# MAGE-TAB Submission
+#
+#
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html for tips on filling in the sections below.
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+# for ontology terms you may need in order to fill in the sections below.
+# All lines beginning with the '#' character are treated as comments and ignored.
+
+
+# This section contains the top-level information for your experiment.
+Investigation Title	My Analysis of Allele Specific Copy Number for Dry Run Samples Illumina 550K platform	
+Experiment Description	My Analysis of Allele Specific Copy Number for Dry Run Samples Illumina 550K platform
+Experimental Design	disease_state_design	
+Experimental Design Term Source REF	MGED Ontology	
+#
+# Please create as many Experimental Factors as you need, to describe the variables investigated by your experiment.
+Experimental Factor Name	tumor type	
+Experimental Factor Type	DiseaseState	
+Experimental Factor Type Term Source REF	MGED Ontology	
+
+"# Please list contact details in columns, below:"	
+Person Last Name	MyLastName	CollaboratorLastName
+Person Mid Initials	F	M
+Person First Name	MyFirstName	CollaboratorFirstName
+Person Email	MyUserName@MyInstitution.gov	Collaborator@OtherInstitution.gov
+Person Phone	xxx-xxx-xxxx	yyy-yyy-yyyy
+Person Address	"MyStreet, PO Box nnnn, MD nnnnn"	"AnotherStreet, Gotham City, VA nnnnn"
+Person Affiliation	MyInstitution	OtherInstitution
+Person Roles	submitter;investigator	investigator
+
+"# Please list all publications associated with this submission, in columns:"
+
+Date of Experiment	2007-06-01									
+Public Release Date	2007-06-19									
+
+
+# The next section describes the protocols used in your experiment.
+# Please select your own Protocol Names (e.g. 'GROWTH') for use within this spreadsheet.
+Protocol Name	stanford.edu:extension:HumanHap550:01	stanford.edu:hybridization:HumanHap550:01	stanford.edu:feature_extraction:HumanHap550:01	stanford.edu:genotyping:HumanHap550:02	stanford.edu:Paired_LogR:HumanHap550:02	stanford.edu:XandYintensity:HumanHap550:02	stanford.edu:B_allele_freq:HumanHap550:02	mged.sourceforge.net/ontologies/MGEDontology.php#harvest	mdanderson.org:biopsy:clin:01	intgen.org:03.002v2-DNA_RNA_Extraction_with_Allprep_Kit:01
+Protocol Type	labeling	hybridization	feature_extraction	bioassay_data_transformation	bioassay_data_transformation	bioassay_data_transformation	bioassay_data_transformation	cell harvest	biopsy	http://mged.sourceforge.net/ontologies/MGEDontology.php#nucleic_acid_extraction
+Protocol Description	Illumina Standard Protocol	Illumina Standard Protocol	Illumina Standard Protocol	"Genotypes are generated from the IDAT files with Illumina's   BeadStudio v.3, using the Illumina HumanHap550 cluster file and  default settings for call thresholds.  The genotypes are represented in the 'Forward' strand."	Paired LogR values are generated from the IDAT files with Illumina's BeadStudio v.3. The values represent the log2 of the ratio of total signal intensity for  a tumor to its paired normal sample (tumor/normal).	"X and Y intensity values are generated from the IDAT files with Illumina's BeadStudio v.3.  The values represent the normalized signal intensity for each allele at a given locus.  The X values correspond the the ""A"" allele and the Y values correspond to the 'B allele, as designated in Illumina's manifest file for the HumanHap550 array."	"B Allele frequencies are generated from the IDAT files with Illumina's BeadStudio v.3.  The values represent the proportion of total signal intensity that is produced by the 'B' allele (Y/(X+Y)), after correcting the X and Y values for inherent allelic bias at a given locus."	http://mged.sourceforge.net/ontologies/MGEDontology.php#harvest	http://mdanderson.org/	"ftp://ftp1.nci.nih.gov/tcga/tumor/gbm/bcr/intgen.org/03.002v2-DNA_RNA_Extraction_with_Allprep_Kit.doc.zip.   After extraction, the analyte code in TCGA-XX-XXXX-XXX-XX[DRTW], D = DNA, R = RNA, T = Total RNA (contains small RNA and used mainly for miRNA ass"
+
+SDRF Files	illumina_snp.sdrf
+
+Term Source Name	MGED Ontology	caArray	BCR	EVS	ncbitax
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	http://caarraydb.nci.nih.gov/	http://www.tgen.org	http://nciterms.nci.nih.gov/NCIBrowser/Connect.do?dictionary=NCI_Thesaurus&bookmarktag=1	http://www.ncbi.nlm.nih.gov/Taxonomy/

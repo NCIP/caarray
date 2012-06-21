@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-default-skin</artifactId>
+		<version>1.0</version>
+	</skin>
+	<poweredBy>
+		<logo name="Support this project" href="http://sourceforge.net/donate/index.php?group_id=59144" img="http://images.sourceforge.net/images/project-support.jpg" />
+	</poweredBy>
+	<body>
+		<menu name="Sourceforge project page">
+			<item name="Project presentation (and download)" href="http://sourceforge.net/projects/jupload/" />
+			<item name="Browse files" href="http://sourceforge.net/projects/jupload/files" />
+		</menu>
+		<menu name="JUpload samples">
+			<item name="Basic demo" href="applet-basic.html" />
+			<item name="Picture mode demo" href="applet-basic-picture.html" />
+			<item name="Advanced demo" href="advanced_js_demo.html" />
+		</menu>
+		<menu name="Project documentation">
+			<item name="General description" href="index.html" />
+			<item name="HowTo compile" href="howto-compile.html" />
+			<item name="HowTo sign the applet" href="howto-sign.html" />
+			<item name="HowTo customize" href="howto-customize.html" />
+			<item name="FAQ" href="faq.html" />
+			<item name="Release Notes" href="README.txt" />
+			<item name="HowTo get support" href="howto-support.html" />
+			<item name="HowTo debug" href="howto-debug.html" />
+			<item name="Issue Tracking" href="issue-tracking.html" />
+			<item name="Dependencies" href="dependencies.html" />
+		</menu>
+		<menu name="Translation">
+			<item name="HowTo translate" href="howto-translate.html" />
+			<item name="Available translations" href="available_translations.html" />
+		</menu>
+
+		<links>
+			<item name="Sourceforge project page" href="http://sourceforge.net/projects/jupload/" />
+			<item name="Support this project" img="http://images.sourceforge.net/images/project-support.jpg" href="http://sourceforge.net/donate/index.php?group_id=59144" />
+			<item name="Maven" href="http://maven.apache.org/" />
+		</links>
+
+		${reports}
+
+	</body>
+</project>

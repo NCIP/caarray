@@ -1,0 +1,527 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>JUpload project on Sourceforge - JUpload - File Upload Applet - HowTo-compile the applet ?</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            JUpload project on Sourceforge
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2011-10-13
+                      </div>
+            <div class="xright">            <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Sourceforge project page</a>
+            |
+                <a href="http://sourceforge.net/donate/index.php?group_id=59144" class="externalLink">Support this project</a>
+            |
+                <a href="http://maven.apache.org/" class="externalLink">Maven</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Sourceforge project page</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/" class="externalLink">Project presentation (and download)</a>
+          </li>
+              
+    <li class="none">
+                    <a href="http://sourceforge.net/projects/jupload/files" class="externalLink">Browse files</a>
+          </li>
+          </ul>
+              <h5>JUpload samples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="applet-basic.html">Basic demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="applet-basic-picture.html">Picture mode demo</a>
+          </li>
+              
+    <li class="none">
+                    <a href="advanced_js_demo.html">Advanced demo</a>
+          </li>
+          </ul>
+              <h5>Project documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">General description</a>
+          </li>
+              
+    <li class="none">
+              <strong>HowTo compile</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="howto-sign.html">HowTo sign the applet</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-customize.html">HowTo customize</a>
+          </li>
+              
+    <li class="none">
+                    <a href="faq.html">FAQ</a>
+          </li>
+              
+    <li class="none">
+                    <a href="README.txt">Release Notes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-support.html">HowTo get support</a>
+          </li>
+              
+    <li class="none">
+                    <a href="howto-debug.html">HowTo debug</a>
+          </li>
+              
+    <li class="none">
+                    <a href="issue-tracking.html">Issue Tracking</a>
+          </li>
+              
+    <li class="none">
+                    <a href="dependencies.html">Dependencies</a>
+          </li>
+          </ul>
+              <h5>Translation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="howto-translate.html">HowTo translate</a>
+          </li>
+              
+    <li class="none">
+                    <a href="available_translations.html">Available translations</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                                 
+                        
+                        
+            <a href="http://sourceforge.net/donate/index.php?group_id=59144" title="Support this project" class="poweredBy">
+                            <img alt="Support this project" src="http://images.sourceforge.net/images/project-support.jpg" />
+            </a>
+                               
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>HowTo-compile the applet ?</h2>
+<ul><li><a href="#HowTo-compile_the_applet_">HowTo-compile the applet ?</a><ul><li><a href="#General_consideration">General consideration</a></li>
+<li><a href="#Eclipse_Netbeans_or_another_IDE">Eclipse, Netbeans or another IDE?</a></li>
+<li><a href="#Ant_or_Maven_build">Ant or Maven build?</a></li>
+<li><a href="#Maven_HowTo">Maven HowTo</a><ul><li><a href="#How_to_install_Maven">How to install Maven?</a></li>
+<li><a href="#How_to_configure_Maven_for_JUpload">How to configure Maven for JUpload?</a></li>
+<li><a href="#How_to_compile_with_Maven">How to compile with Maven?</a></li>
+<li><a href="#How_to_build_the_JUpload_web_site_with_Maven">How to build the JUpload web site with Maven?</a></li>
+<li><a href="#How_to_generate_the_ant_build_file">How to generate the ant build file?</a></li>
+</ul>
+</li>
+<li><a href="#Compile_with_the_given_Ant_build_file">Compile with the given Ant build file</a></li>
+<li><a href="#How_to_install_Eclipse_and_work_with_JUpload_sources">How to install Eclipse and work with JUpload sources?</a><ul><li><a href="#Installation_of_Eclipse">Installation of Eclipse</a></li>
+<li><a href="#Install_the_Maven_Eclipse_plugin">Install the Maven Eclipse plugin</a></li>
+<li><a href="#Install_the_SVN_plugin_for_Eclipse">Install the SVN plugin for Eclipse</a></li>
+<li><a href="#Create_a_JUpload_project_for_Eclipse_from_a_JUpload_release">Create a JUpload project for Eclipse, from a JUpload release</a></li>
+<li><a href="#Create_a_JUpload_project_for_Eclipse_from_the_Subversion_repository">Create a JUpload project for Eclipse, from the Subversion repository </a></li>
+<li><a href="#Basic_compilation_with_Eclipse_using_ant_from_a_JUpload_release">Basic compilation, with Eclipse, using ant, from a JUpload release</a></li>
+</ul>
+</li>
+<li><a href="#How_to_install_Netbeans_and_work_with_JUpload_sources">How to install Netbeans and work with JUpload sources?</a></li>
+</ul>
+</li>
+</ul>
+<div class="section"><h3><a name="General_consideration">General consideration</a></h3>
+<p>The JUpload package is available from several sources:</p>
+<ul><li>Compiled applet, ready to use: from the central Maven Repository. You can just download the compiled and signed applet from this URL: <a href="http://repo1.maven.org/maven2/net/sf/jupload/" class="externalLink">http://repo1.maven.org/maven2/net/sf/jupload/</a>. Just browser to the version you're looking for (or the last one, if you don't know), and download it. This applet is signed with the JUpload demo certificate. You should sign it with your own certificate, before use. Check the <a href="./howto-sign.html">HowTo sign the applet</a> page, for details on this point.</li>
+<li>From JUpload release. Each release contains the <b>sources</b> and the <b>compiled and signed applet</b> jar file for the JUpload project. You can create a project in your favorite IDE. See below for details on Eclipse and Netbeans.</li>
+<li>From sourceforge Subversion, by using a SVN checkout. This should be done by JUpload developper or people understanding that work is being run on SVN, especially that there is a risk of unstable versions.<p>In both mode, we recommand to install <a href="http://maven.apache.org/" class="externalLink">maven</a>, to get the most up-to-date compilation way. You'll find all details, in the <a href="#D">How to install Maven?</a>, below. You can also use ant build, with the given build.xml file. See details in the <a href="#E">Compile with the given Ant build file</a> page, below.</p>
+</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Eclipse_Netbeans_or_another_IDE">Eclipse, Netbeans or another IDE?</a></h3>
+<p>You can work with the IDE you want. JUpload was tested with both <i>Eclipse</i> and <i>Netbeans</i>. <i>Eclipse</i> makes it simpler, because applet debugging is embedded. With Netbeans, you'll need to attach the debugger to the running applet (see below).</p>
+<p>But to compile within Eclipse, you'll need some specific tasks (installing the maven plugin or run the build.xml file), where Netbeans compilation of JUpload is native, starting from the 6.7 version of Netbeans. For previous version, you'll need to install the relevant plugin (see <a href="http://NetBeans.org" class="externalLink">Netbeans documentation</a>, for all details).</p>
+<p>So, we <b>recommand Eclipse</b> as an IDE for JUpload, if you currently have no IDE installed. Otherwise ... keep the one you have.</p>
+<p><b>Note:</b> If you're using another IDE, or have any comment on this documentation, please post a little 'howto' for JUpload compiling for your IDE. Please do this in the <a href="http://sourceforge.net/forum/forum.php?forum_id=199106" class="externalLink">open discussion</a> sourceforge forum. </p>
+</div>
+<div class="section"><h3><a name="Ant_or_Maven_build">Ant or Maven build?</a></h3>
+<p>You can build JUpload with both <b>ant</b> or <b>maven</b> tools. <i>ant</i> looks easier, as it is often installed with Java IDE, like Eclipse. But <i>maven</i> allows automatization of a lot of tasks, and is better on the long run. With both Eclipse (once the maven plugin is installed) and Netbeans, using maven is natural, and is recommanded.</p>
+<p>Here are the main points to take into account, <b>if you don't want to use maven</b>:</p>
+<ul><li><b>With eclipse, you must run the &lt;ant&gt; build.xml script at least once</b>. This will load the project dependencies, and configure the source and build path. Then, eclipse will allow you to debug the applet within the IDE.</li>
+<li>The <i>ant</i> build.xml script compiles and signs the applet, and deploy to the ./site (only available in release package) and in the ./target/site ... if it exists. But it doesn't build the JUpload site itself. In particular, ant build will not be available to construct the various reporting that are included in the maven build, and visible on the JUpload site.</li>
+<li>The <i>ant</i> build.xml script needs a real keystore, where maven generates a key if you doesn't provide it at compile time. See the <a href="./howto-sign.html">HowTo sign the applet</a> page, for details on this point.</li>
+<li>You'll have to provide the <i>jupload.keystore.alias</i>, <i>jupload.keystore.filename</i> and <i>jupload.keystore.storepass</i> properties to ant, either by defining them on the command line, with the -D option, or within the IDE configuration page.</li>
+<li>To run the JUnit tests, you'll jave to configure the JUnit 4.5 path to ant.</li>
+</ul>
+</div>
+<div class="section"><h3><a name="Maven_HowTo">Maven HowTo</a></h3>
+<p>Four parts here:</p>
+<ul></ul>
+<div class="section"><h4><a name="How_to_install_Maven">How to install Maven?</a></h4>
+<p>Since 5.0.0rc4, JUpload is built with Maven. The maven version used is 2.2.x. Previous JUpload versions are built with native Eclipse compilation or with the provided <i>build.xml</i> ant file.</p>
+<p>Maven has a lot of advantages, and some drawbacks.</p>
+<p>The main advantages are:</p>
+<ul><li>Standardization of the project structure: sources, resources, test...</li>
+<li>Total separation of sources and generated stuff (in the ./target/ folder). Release management.</li>
+<li>Easier compilation process</li>
+<li>Automatic execution of JUnit tests</li>
+<li>Easy add of build or reporting plugins. Here, for instance, are added several source quality tools, like cobertura, surefire, pmd...</li>
+<li>Automatic build and publishing of the JUpload site.</li>
+</ul>
+<p>The main drawbacks are:</p>
+<ul><li>Need specific installations (Eclipse plugin, command-line maven). The generated <i>build.xml</i> file should help, here.</li>
+<li>Slower than native build. Compilation can take some time, especially when creating a release. But it's due to what maven actually does: if maven wasn't there, we would less. For instance, JUnit test are run when building a release, building the web site...</li>
+</ul>
+<p><b>Maven command-line</b> can be downloaded from <a href="http://maven.apache.org/" class="externalLink">http://maven.apache.org/</a>. This tools is necessary to execute all commands starting with 'mvn'.</p>
+<p><b>Maven Eclipse plugin</b> installation is detailed, in the Eclipse paragraphe, below.</p>
+</div>
+<div class="section"><h4><a name="How_to_configure_Maven_for_JUpload">How to configure Maven for JUpload?</a></h4>
+<p>JUpload needs some specific information, especially for signing. To do this, you'll have to create a JUpload profile in your maven <b>settings.xml</b> file. For all details about this file, especially where it is, and how to protect passwords, please go to this page: <a href="http://maven.apache.org/settings.html" class="externalLink">http://maven.apache.org/settings.html</a></p>
+<p>The full profile, needed for JUpload, is:</p>
+<div class="source"><pre>&lt;settings&gt;
+...
+          &lt;profiles&gt;
+                ...
+                &lt;profile&gt;
+                 &lt;id&gt;jupload&lt;/id&gt;
+                                &lt;activation&gt;
+                                        &lt;activeByDefault&gt;false&lt;/activeByDefault&gt;
+                                &lt;/activation&gt;
+                 &lt;properties&gt;
+
+            &lt;!-- The next parameters are mandatory, for applet signing.
+              Default behavior, in the pom, is to generate these parameters, if you didn't define them in your settings.xml.
+              So, they are optional in your settings. If you don't define them, JUpload will use a generated keystore, with
+              a certificate generated at compile time.
+              BUT: if you want to PUBLISH the applet to real life users, you SHOULD define them.
+              See the howto-compile on the JUpload site, for details --&gt;
+            &lt;jupload.keystore.alias&gt;Alias for your key in your keystore&lt;/jupload.keystore.alias&gt;
+            &lt;jupload.keystore.filename&gt;Full path for your keystore file&lt;/jupload.keystore.filename&gt;
+            &lt;jupload.keystore.storepass&gt;Password for your keystore&lt;/jupload.keystore.storepass&gt;
+            
+                        &lt;!--
+                                The next parameters are mandatory only for publishing Maven artefact
+                                to your repositories, that is: when you use the &quot;deploy&quot; maven goal.
+                                Useless when you 'just' compile, that is: when you use the 'install'
+                                maven goal. There is currently no 'Central' jupload repository
+                        --&gt;
+                        &lt;jupload.distributionManagement.repository.id&gt;Id_for_your_main_repository&lt;/jupload.distributionManagement.repository.id&gt;
+                        &lt;jupload.distributionManagement.repository.name&gt;Name_for_your_main_repository&lt;/jupload.distributionManagement.repository.name&gt;
+                        &lt;jupload.distributionManagement.repository.url&gt;URL_for_your_main_repository&lt;/jupload.distributionManagement.repository.url&gt;
+                        &lt;jupload.distributionManagement.snapshotRepository.id&gt;Id_for_your_main_snapshotRepository&lt;/jupload.distributionManagement.snapshotRepository.id&gt;
+                        &lt;jupload.distributionManagement.snapshotRepository.name&gt;Name_for_your_main_snapshotRepository&lt;/jupload.distributionManagement.snapshotRepository.name&gt;
+                        &lt;jupload.distributionManagement.snapshotRepository.url&gt;URL_for_your_main_snapshotRepository&lt;/jupload.distributionManagement.snapshotRepository.url&gt;
+
+            &lt;!-- The next parameters are mandatory only for PGP signing. PGP signing is used only when performing
+                a release, that is: when executing the goal release:perform
+                Not used (so: optional) otherwise.
+                PGP signing is only used for developpers who would like to publish a new JUpload version 
+                to the Maven Central Repository. For all other users, you can let skip to true. --&gt; 
+            &lt;jupload.pgp.keyname&gt;Name of your PGP key&lt;/jupload.pgp.keyname&gt;
+            &lt;!-- The passphrase is optional: if not provided, it will be asked to the user --&gt;
+            &lt;jupload.pgp.passphrase&gt;Passphrase for your PGP key&lt;/jupload.pgp.passphrase&gt;
+            
+            &lt;!-- The next parameters are mandatory only for use of the maven release plugin.
+                Optionnal otherwise.
+                So for standard use of JUpload (without creating releases), you can let this parameter unchanged --&gt;
+            &lt;jupload.scm.username&gt;Login for the Sourceforge Source Configuration Manager&lt;/jupload.scm.username&gt;
+            &lt;jupload.scm.password&gt;Password for the Sourceforge Source Configuration Manager&lt;/jupload.scm.password&gt;
+
+                 &lt;/properties&gt;
+                &lt;/profile&gt;
+                ...
+        &lt;/profiles&gt;
+...
+&lt;/settings&gt;</pre>
+</div>
+</div>
+<div class="section"><h4><a name="How_to_compile_with_Maven">How to compile with Maven?</a></h4>
+<p>Compiling with Maven can be done by using your favorite IDE. You can also use any terminal or command window, and type this command</p>
+<div class="source"><pre>        mvn install</pre>
+</div>
+</div>
+<div class="section"><h4><a name="How_to_build_the_JUpload_web_site_with_Maven">How to build the JUpload web site with Maven?</a></h4>
+<p>The constructing of the whole site is included in the given pom.xml file, like any standard maven project. The standard command to build your web site is:</p>
+<div class="source"><pre>        mvn site</pre>
+</div>
+<p>This aboce command will construct the whole site <b>but not the applet</b>. You can then execute a <i>mvn install</i>, to add the built and signed applet to the existing site, or construct both the the site and the applet in one step:</p>
+<div class="source"><pre>        mvn site install</pre>
+</div>
+<p>The generation of the whole site is long, because of the reporting plugins which are added to the JUpload pom. To speed it, you can prevent the reporting to be executed. You can also prevent the JUnit test to be executed:</p>
+<div class="source"><pre>        mvn site install -Dskip.reporting -Dmaven.test.skip</pre>
+</div>
+</div>
+<div class="section"><h4><a name="How_to_generate_the_ant_build_file">How to generate the ant build file?</a></h4>
+<p>The ant build files can be generated from the maven pom.xml file, by the <i>I</i>maven-ant-plugin<i>/I</i>. This plugin will generate the maven-build.xml and maven-build.properties files. <b>Take care that your password will get copied in the maven-build.properties file!</b>. You'll have to 'clean' this file, before commiting this file to SVN.</p>
+<p>To generate these files, just execute this maven command:</p>
+<div class="source"><pre>        mvn ant:ant</pre>
+</div>
+<p>TODO: Use a specific profile, which will override your JUpload passwords.</p>
+</div>
+</div>
+<div class="section"><h3><a name="Compile_with_the_given_Ant_build_file">Compile with the given Ant build file</a></h3>
+<p>An ant build file is given with JUpload, to generate two main targets:</p>
+<ul><li>The default one, <i>eclipse_package</i>, create the compiled jar file, sign it, and copy it to the ./site and ./target/site folders, if they exist. Its main advantage, is that it creates or updates the /conf/svn.properties file, that contains the applet version (see wjhk.jupload2.JUploadApplet#VERSION attribute) and last SVN commit number.</li>
+<li>The 'dist' creates a jar containing a jupload release, including: sources and site directory, with javadoc.</li>
+</ul>
+<p><b>Prerequisites:</b></p>
+<ul><li>You need to create a keystore, to sign the applet. Please read the <a href="./howto-sign.html">HowTo sign the applet</a> page, for details on this point.</li>
+<li>You need to provide the <i>jupload.keystore.alias</i>, <i>jupload.keystore.filename</i> and <i>jupload.keystore.storepass</i> properties to ant, either by defining them on the command line, with the -D option, or within the IDE configuration page :<div class="source"><pre>ant -Djupload.keystore.alias=jupload -Djupload.keystore.filename=youKeystoreFile -Djupload.keystore.storepass=yourKeystorePass</pre>
+</div>
+</li>
+<li><b>For eclipse</b>, you <b>MUST</b> run the build.xml at least once, to define the source and build path.<ul><li>The ant build file (<i>build.xml</i>) is easily launched with Eclipse: just right on it, and choose <i>Run as / ant build</i>.</li>
+<li>You can define the properties jupload.keystore.alias, jupload.keystore.filename and jupload.keystore.storepass properties, by going in the menu Window / Preferences / Ant / Runtime / Properties </li>
+</ul>
+</li>
+<li><b>For other IDE</b>, please give feedback about their behavior. For netbeans, maven support is native, so ... please use maven ! ;-)</li>
+</ul>
+</div>
+<div class="section"><h3><a name="How_to_install_Eclipse_and_work_with_JUpload_sources">How to install Eclipse and work with JUpload sources?</a></h3>
+<div class="section"><h4>Installation of Eclipse</h4>
+<p>Eclipse is the easiest way to develop the java stuff, like the applet. Go to <a href="http://Eclipse.org" class="externalLink">http://Eclipse.org</a> to download it. You can take the Java Developper edition, for instance.</p>
+<p>You can then create your JUpload project from a JUpload release, or from the trunk.</p>
+</div>
+<div class="section"><h4>Install the Maven Eclipse plugin</h4>
+<p>Two Maven plugins for eclipse exist. Here is the doc to the m2eclipse plugin. It is available at <a href="http://m2Eclipse.sonatype.org/" class="externalLink">http://m2Eclipse.sonatype.org/</a>. You can install the core plugin from this Eclipse upload site: <a href="http://m2Eclipse.sonatype.org/sites/m2e" class="externalLink">http://m2Eclipse.sonatype.org/sites/m2e</a>. You should also, at least, install the SVN support from this Eclipse upload site: <a href="http://m2Eclipse.sonatype.org/sites/m2e-extras" class="externalLink">http://m2Eclipse.sonatype.org/sites/m2e-extras</a>.</p>
+<p><b>Caution:</b> To run the m2Eclipse plugin, you'll need that Eclipse uses a JDK instead of JRE, like in standard Eclipse installation. To do this, edit the Eclipse.ini (in the root Eclipse folder), and add these two lines:</p>
+<div class="source"><pre>-vm
+yourJDKPath/jdk1.6.0_14/bin      </pre>
+</div>
+</div>
+<div class="section"><h4>Install the SVN plugin for Eclipse</h4>
+<p>This step is necessary only if you plan to use SVN, for instance to check out the most up-to-date version of JUpload, from the sourceforge Subversion (conf management).</p>
+<p>There are two Eclipse plugins for SVN: subversion (on polarion.org) and subclipse (on tigris.org). Both are good. I use the second one. An easy way to install it is to use the Eclipse software management function.</p>
+<ul><li>Click on 'Help / Install New Software' <ul><li><b>For subclipse installation</b>. If there is no 'Subclipse update site', add a new remote site, with this URL: http://subclipse.tigris.org/update_1.2.x</li>
+<li><b>For subversive installation</b>. If there is no 'Subversive update site' in the list of update site you'll see there (that is: if you never installed a subversive for your Eclipse), add a new Eclipse update site, with this URL (for Eclipse 3.2 and 3.3): http://community.polarion.com/projects/subversive/download/Eclipse/2.0/galileo-site/ For details, you can go to <a href="http://www.polarion.org/index.php?page=overview&amp;project=subversive" class="externalLink">subclipse Eclipse plugin</a></li>
+</ul>
+</li>
+<li>Click on the <i>Next</i> button to see the available packages on the choosen Eclipse update site.</li>
+<li>Click on 'Finish'. Eclipse will install the selected packages.</li>
+</ul>
+</div>
+<div class="section"><h4>Create a JUpload project for Eclipse, from a JUpload release</h4>
+<p>To do this, you'll need to download a release file, from Sourceforge. The release files are zip files. The content of this zip files is described in the <a href="./index.html">./index.html</a> page. Two folders exist, on the root of this zip file:</p>
+<ul><li>/src contains the whole sources for the application, including the translation stuff.</li>
+<li>/site contains a generated web site, with a compiled applet. You can use this site to check that everything is Ok, and reuse the applet for you site. you <b>should sign the applet</b> with your own certificate. See the <a href="./howto-sign.html">./howto-sign.html</a> page for details.</li>
+</ul>
+<p>To create a new project for eclipse, you should:</p>
+<ul><li>Create a new Java empty project for eclipse. You can name it <i>jupload</i>, for instance.</li>
+<li>Right-click on the project, and select 'Import...'</li>
+<li>Then, choose 'General / Archive file', select the JUpload zip release file.</li>
+<li>You _must_ select the 'src' folder.</li>
+<li>You _can_ select the 'site' folder, if you need a ready to use applet and demo web site. You should remove this 'site' folder, once you successfully built a site with maven: this /site folder will remain unchanged, when you compiled an updated version of the applet.</li>
+<li>If you installed the maven plugin for eclipse, you should activate maven: Right-click on the project, then select Maven / Enable dependency management <ul><li>After that, it seems that refreshing the project is necessary for eclipse to clear any 'compilation error' tags. I had to do it twice. For this, you'll have to righ-click on the project, then choose the refresh menu item. </li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section"><h4>Create a JUpload project for Eclipse, from the Subversion repository </h4>
+<p>The release files contains the necessary stuff to compile or hack the JUpload code. If you do this, please do not hesitate to post a message on the <a href="http://sourceforge.net/forum/forum.php?forum_id=199106" class="externalLink">open discussion</a> sourceforge forum. You can then explain the enhancement(s) you did, and post a patch. The Patches tracker is nice enough for that. </p>
+<p>You must have Eclipse, with the subversion plugin installed, see details just above. Then, you have to do these steps:</p>
+<ul><li>Open the <i>SVN perspective</i> (menu: window / open perspective / Other, then select <i>SVN Repository exploring</i>).</li>
+<li>On the left panel (should be <i>SVN Repositories</i>), right click</li>
+<li>Select 'New / Repository Location'</li>
+<li>The URL is: https://jupload.svn.sourceforge.net/svnroot/jupload</li>
+<li>Click on 'Finish'</li>
+</ul>
+<p>You now have a SVN repository configured for the JUpload project. You'll now have to checkout the JUpload maven project. To do this:</p>
+<ul><li>Click on the '+' symbol, in front of the JUpload SVN repository.</li>
+<li>Right-click on the 'trunk' folder.</li>
+<li>Select <i>Check out as Maven project</i></li>
+<li>Let default option, and just click on <i>Finish</i>.<ul><li>If you wish, you can also go to the <i>Advanced</i> part, and change the <i>Name template</i>, to choose the project name that will be used in the Eclipse workspace.</li>
+</ul>
+</li>
+<li>For the first checkout, Eclipse will do a lot of stuff, like downloaded dependecies, and configuring the Eclipse workspace for the JUpload project.</li>
+<li>Go back to the <i>Java perspective</i> (menu: window / open perspective / java), or Ctrl+F8</li>
+<li>The <i>jupload</i> project is now created, and ready for use. You can then:<ul><li>Use the Eclipse IDE to edit the code (in /src/main/java)</li>
+<li>Use the Eclipse IDE to debug it, with standard options.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section"><h4>Basic compilation, with Eclipse, using ant, from a JUpload release</h4>
+<p>This is the simplest way to compile and run the applet. Use the sources of the JUpload releases, without connection to the sourceforge.net subversion.</p>
+<p>Create a new project:</p>
+<ul><li>menu : 'File / New / Project'</li>
+<li>In the dialog box: select 'Java / Java Project'. Click on 'Next'</li>
+<li>Enter a project name, and all other default values. Check that 'separate folders for sources and class files' is selected.</li>
+<li>Click on 'Finish',</li>
+<li>Right click on the newly created project</li>
+<li>Select 'Import...'</li>
+<li>In the dialog box: select 'General / Archive File' . Click on 'Next'</li>
+<li>Browse to the archive file. Click on 'Finish'</li>
+<li>Answer 'Yes' to all the 'overwrite' Eclipse validation.</li>
+</ul>
+<p>In order to sign the applet, for use on a web site, you need to define your keystore and its password. To do this, when using the and <i>biuld.xml</i> file, you must define the <b>jupload.keystore.filename</b> and <b>jupload.keystore.filename</b> ant properties:</p>
+<ul><li>Click on <i>Window</i> / <i>Preferences</i>,</li>
+<li>Then, <i>Ant</i> / <i>Runtime</i> / <i>Properties</i>,</li>
+<li>Then create or edit the <i>jupload.keystore.filename</i> and <i>jupload.keystore.filename</i>, and put your own values there. See the <a href="./howto-sign.html">./howto-sign.html</a> page for details.</li>
+</ul>
+<p>Then, to compile and sign the applet, you'll have to do this:</p>
+<ul><li>In Eclipse, right-click on the <i>build.xml</i> file, available in the root folder of your project,</li>
+<li>Select 'Run as', then 'Ant Build'</li>
+</ul>
+<p>To launch the applet:</p>
+<ul><li>Right-click on your project,</li>
+<li>Select 'Run as' or 'Debug as', then 'Java applet'</li>
+<li>Select the 'JUploadApplet'. This will let you to several errors in the console... but initialized the application in Eclipse... You now only have to set the applet parameters.</li>
+</ul>
+<p>To set applet parameters:</p>
+<ul><li>Open the menu 'Run / Open Debug Dialog...' (or 'Run / Open Run Dialog...')</li>
+<li>The JUploadApplet should be selected, in the 'Java applet' section. If not, select it.</li>
+<li>On the right panel, select the 'Parameter' entry</li>
+<li>Just add the necessary applet parameter. At least one: the postURL.</li>
+<li>Click on 'Debug'</li>
+</ul>
+<p>To launch the applet a second time:</p>
+<ul><li>Just click on the button looking like a 'bug', on the tool bar, or hit F11. It will launch the last launched application, in debug mode.</li>
+</ul>
+</div>
+</div>
+<div class="section"><h3><a name="How_to_install_Netbeans_and_work_with_JUpload_sources">How to install Netbeans and work with JUpload sources?</a></h3>
+<p>A general documentation, about using Maven with Netbeans, is available on this page: <a href="maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html">maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html</a>.</p>
+<p>Basically, maven support is native, starting from netbeans 6.8. But there is no debug support for the applet. So you have to connect yourself your debugger to the applet. </p>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2011
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

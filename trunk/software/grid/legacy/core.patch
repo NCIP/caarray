@@ -1,0 +1,353 @@
+Index: projects/transfer/server-config.wsdd
+===================================================================
+--- projects/transfer/server-config.wsdd	(revision 18707)
++++ projects/transfer/server-config.wsdd	(working copy)
+@@ -2,7 +2,7 @@
+ <deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:aggr="http://mds.globus.org/aggregator/types" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="defaultServerConfig">
+   <service name="SERVICE-INSTANCE-PREFIX/TransferServiceContext" provider="Handler" use="literal" style="document">
+     <parameter name="className" value="org.cagrid.transfer.context.service.globus.TransferServiceContextProviderImpl" />
+-    <wsdlFile>share/schema/TransferService/TransferServiceContext_service.wsdl</wsdlFile>
++    <wsdlFile>share/schema/transferService/TransferServiceContext_service.wsdl</wsdlFile>
+     <parameter name="securityDescriptor" value="ETC-PATH/TransferServiceContext-security-desc.xml" />
+     <parameter name="allowedMethods" value="*" />
+     <parameter name="handlerClass" value="org.globus.axis.providers.RPCProvider" />
+@@ -15,7 +15,7 @@
+   </service>
+   <service name="SERVICE-INSTANCE-PREFIX/TransferService" provider="Handler" use="literal" style="document">
+     <parameter name="className" value="org.cagrid.transfer.service.globus.TransferServiceProviderImpl" />
+-    <wsdlFile>share/schema/TransferService/TransferService_service.wsdl</wsdlFile>
++    <wsdlFile>share/schema/transferService/TransferService_service.wsdl</wsdlFile>
+     <parameter name="securityDescriptor" value="ETC-PATH/TransferService-security-desc.xml" />
+     <parameter name="allowedMethods" value="*" />
+     <parameter name="handlerClass" value="org.globus.axis.providers.RPCProvider" />
+Index: projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1pt5.java
+===================================================================
+--- projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1pt5.java	(working copy)
++++ projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1pt5.java	(working copy)
+@@ -18,13 +18,13 @@
+ 
+ 
+ /**
+- * TransferUpgrade1pt4to1p5
++ * TransferUpgrade1pt4to1pt5
+  * Updates transfer from 1.4 to 1.5
+  * 
+  * @author oster
+  * @author dervin
+  */
+-public class TransferUpgrade1pt4to1p5 extends ExtensionUpgraderBase {
++public class TransferUpgrade1pt4to1pt5 extends ExtensionUpgraderBase {
+ 
+     private static final String CAGRID_1_4_TRANSFER_JAR_PREFIX = "caGrid-Transfer";
+     private static final String CAGRID_1_4_TRANSFER_JAR_SUFFIX = "-1.4.jar";
+@@ -33,7 +33,7 @@
+     private File extensionSchemaDir = null;
+     private File extensionLibDir = null;
+ 
+-    public TransferUpgrade1pt4to1p5(ExtensionType extensionType, ServiceInformation serviceInfo, String servicePath,
++    public TransferUpgrade1pt4to1pt5(ExtensionType extensionType, ServiceInformation serviceInfo, String servicePath,
+         String fromVersion, String toVersion) {
+         super("TransferUpgrade1pt4to1pt5", extensionType, serviceInfo, servicePath, fromVersion, toVersion);
+         extensionDir = new File(ExtensionsLoader.getInstance().getExtensionsDir(), "caGrid_Transfer");
+Index: projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1p5.java
+===================================================================
+--- projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1p5.java	(revision 18707)
++++ projects/transfer/extension/src/org/cagrid/transfer/extension/upgrade/TransferUpgrade1pt4to1p5.java	(working copy)
+@@ -1,178 +0,0 @@
+-package org.cagrid.transfer.extension.upgrade;
+-
+-import gov.nih.nci.cagrid.common.Utils;
+-import gov.nih.nci.cagrid.introduce.beans.extension.ExtensionType;
+-import gov.nih.nci.cagrid.introduce.beans.namespace.NamespaceType;
+-import gov.nih.nci.cagrid.introduce.common.CommonTools;
+-import gov.nih.nci.cagrid.introduce.common.ServiceInformation;
+-import gov.nih.nci.cagrid.introduce.extension.ExtensionsLoader;
+-import gov.nih.nci.cagrid.introduce.extension.utils.ExtensionUtilities;
+-import gov.nih.nci.cagrid.introduce.upgrade.common.StatusBase;
+-import gov.nih.nci.cagrid.introduce.upgrade.one.x.ExtensionUpgraderBase;
+-
+-import java.io.File;
+-import java.io.FileFilter;
+-import java.io.IOException;
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-
+-/**
+- * TransferUpgrade1pt4to1p5
+- * Updates transfer from 1.4 to 1.5
+- * 
+- * @author oster
+- * @author dervin
+- */
+-public class TransferUpgrade1pt4to1p5 extends ExtensionUpgraderBase {
+-
+-    private static final String CAGRID_1_4_TRANSFER_JAR_PREFIX = "caGrid-Transfer";
+-    private static final String CAGRID_1_4_TRANSFER_JAR_SUFFIX = "-1.4.jar";
+-
+-    private File extensionDir = null;
+-    private File extensionSchemaDir = null;
+-    private File extensionLibDir = null;
+-
+-    public TransferUpgrade1pt4to1p5(ExtensionType extensionType, ServiceInformation serviceInfo, String servicePath,
+-        String fromVersion, String toVersion) {
+-        super("TransferUpgrade1pt4to1pt5", extensionType, serviceInfo, servicePath, fromVersion, toVersion);
+-        extensionDir = new File(ExtensionsLoader.getInstance().getExtensionsDir(), "caGrid_Transfer");
+-        extensionSchemaDir = new File(extensionDir, "schema");
+-        extensionLibDir = new File(extensionDir, "lib");
+-    }
+-
+-
+-    @Override
+-    protected void upgrade() throws Exception {
+-        upgradeJars();
+-        upgradeSchemas();
+-        getStatus().addIssue(TransferCallbackUpgradeNotes.ISSUE, TransferCallbackUpgradeNotes.RESOLUTION);
+-        getStatus().setStatus(StatusBase.UPGRADE_OK);
+-    }
+-    
+-    
+-    private void upgradeSchemas() throws Exception {
+-        final File[] newTransferSchemas = extensionSchemaDir.listFiles();
+-        FileFilter transferSchemaFilter = new FileFilter() {
+-            public boolean accept(File pathname) {
+-                String name = pathname.getName();
+-                for (File newSchema : newTransferSchemas) {
+-                    if (newSchema.getName().equals(name)) {
+-                        return true;
+-                    }
+-                }
+-                return false;
+-            }
+-        };
+-        String serviceName = getServiceInformation().getServices().getService(0).getName();
+-        File serviceSchemaDir = new File(getServicePath(), "schema" + File.separator + serviceName);
+-        File[] oldTransferSchemas = serviceSchemaDir.listFiles(transferSchemaFilter);
+-        for (File oldSchema : oldTransferSchemas) {
+-            oldSchema.delete();
+-            getStatus().addDescriptionLine("Removed 1.4 schema file: " + oldSchema.getName());
+-        }
+-        
+-        // copy in the caGrid transfer schema and add the namespace types for it
+-        File transferSchema = new File(extensionSchemaDir, "TransferServiceContextTypes.xsd");
+-        try {
+-            Utils.copyFile(
+-                transferSchema, new File(serviceSchemaDir, "TransferServiceContextTypes.xsd"));
+-            getStatus().addDescriptionLine("Copied caGrid 1.5 transfer schema " + transferSchema.getName());
+-        } catch (IOException e) {
+-            throw new RuntimeException(e.getMessage(), e);
+-        }
+-
+-        NamespaceType transferServiceNamespace = null;
+-        try {
+-            transferServiceNamespace = CommonTools.createNamespaceType(
+-                serviceSchemaDir + File.separator + "TransferServiceContextTypes.xsd", 
+-                serviceSchemaDir);
+-        } catch (Exception e) {
+-            throw new RuntimeException(e.getMessage(), e);
+-        }
+-        transferServiceNamespace.setGenerateStubs(new Boolean(false));
+-        transferServiceNamespace.setPackageName("org.cagrid.transfer.context.stubs.types");
+-        
+-        File transferDescSchema = new File(extensionSchemaDir, "caGrid_Transfer.xsd");
+-        try {
+-            Utils.copyFile(transferDescSchema, 
+-                new File(serviceSchemaDir, "caGrid_Transfer.xsd"));
+-            getStatus().addDescriptionLine("Copied caGrid 1.5 schema " + transferDescSchema.getName());
+-        } catch (IOException e) {
+-            throw new RuntimeException(e.getMessage(), e);
+-        }
+-
+-        NamespaceType transferDescNamespace = null;
+-        try {
+-            transferDescNamespace = CommonTools.createNamespaceType(
+-                serviceSchemaDir + File.separator + "caGrid_Transfer.xsd", 
+-                serviceSchemaDir);
+-        } catch (Exception e) {
+-            throw new RuntimeException(e.getMessage(), e);
+-        }
+-        transferDescNamespace.setGenerateStubs(new Boolean(false));
+-        transferDescNamespace.setPackageName("org.cagrid.transfer.descriptor");
+-        
+-        NamespaceType[] namespaces = getServiceInformation().getNamespaces().getNamespace();
+-        for (int i = 0; i < namespaces.length; i++) {
+-            if (namespaces[i].getNamespace().equals(transferDescNamespace.getNamespace())) {
+-                namespaces[i] = transferDescNamespace;
+-                getStatus().addDescriptionLine(
+-                    "Replaced transfer namespace type in service model: " + namespaces[i].getNamespace());
+-            }
+-            if (namespaces[i].getNamespace().equals(transferServiceNamespace.getNamespace())) {
+-                namespaces[i] = transferServiceNamespace;
+-                getStatus().addDescriptionLine(
+-                    "Replaced transfer namespace type in service model " + namespaces[i].getNamespace());
+-            }
+-        }
+-    }
+-
+-
+-    /**
+-     * Upgrade the jars which are required for Transfer
+-     */
+-    private void upgradeJars() {
+-        FileFilter transferLibFiler = new FileFilter() {
+-            public boolean accept(File pathname) {
+-                String name = pathname.getName();
+-                return name.endsWith(CAGRID_1_4_TRANSFER_JAR_SUFFIX) && name.startsWith(CAGRID_1_4_TRANSFER_JAR_PREFIX);
+-            }
+-        };
+-
+-        // locate the old data service libs in the service
+-        File serviceLibDir = new File(getServicePath(), "lib");
+-        File[] serviceTransferLibs = serviceLibDir.listFiles(transferLibFiler);
+-        // delete the old libraries
+-        for (File oldLib : serviceTransferLibs) {
+-            oldLib.delete();
+-            getStatus().addDescriptionLine("caGrid 1.4 library " + oldLib.getName() + " removed");
+-        }
+-        // copy new libraries in
+-        File[] transferLibs = extensionLibDir.listFiles();
+-        List<File> outLibs = new ArrayList<File>(transferLibs.length);
+-        for (File newLib : transferLibs) {
+-            File out = new File(serviceLibDir, newLib.getName());
+-            try {
+-                Utils.copyFile(newLib, out);
+-                getStatus().addDescriptionLine("caGrid 1.5 library " + newLib.getName() + " added");
+-            } catch (IOException ex) {
+-                // TODO: change this to use a better exception
+-                throw new RuntimeException("Error copying new transfer library: " + ex.getMessage(), ex);
+-            }
+-            outLibs.add(out);
+-        }
+-
+-        // update the Eclipse .classpath file
+-        File classpathFile = new File(getServicePath(), ".classpath");
+-        File[] outLibArray = new File[transferLibs.length];
+-        outLibs.toArray(outLibArray);
+-        try {
+-            ExtensionUtilities.syncEclipseClasspath(classpathFile, outLibArray);
+-            getStatus().addDescriptionLine("Eclipse .classpath file updated");
+-        } catch (Exception ex) {
+-            // TODO: change this to use a better exception
+-            throw new RuntimeException("Error updating Eclipse .classpath file: " + ex.getMessage(), ex);
+-        }
+-    }
+-}
+Index: projects/transfer/webapp/WEB-INF/web.xml
+===================================================================
+--- projects/transfer/webapp/WEB-INF/web.xml	(revision 18707)
++++ projects/transfer/webapp/WEB-INF/web.xml	(working copy)
+@@ -1,8 +1,6 @@
+ <?xml version="1.0" encoding="ISO-8859-1" ?>
+-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+-	version="2.4">
++<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
++<web-app>
+ 	<!-- please do not change the webapp dir or service mapping as this is in the code -->
+ 	<display-name>caGrid Transfer Service</display-name>
+ 	<description></description>
+@@ -10,7 +8,7 @@
+ 		<servlet-name>TransferServlet</servlet-name>
+ 		<display-name>Transfer Servlet</display-name>
+ 		<servlet-class>org.cagrid.transfer.servlet.TransferServlet</servlet-class>
+-		<load-on-startup>true</load-on-startup>
++		<load-on-startup>1</load-on-startup>
+ 	</servlet>
+ 	<servlet-mapping>
+ 		<servlet-name>TransferServlet</servlet-name>
+Index: projects/transfer/webapp/build.xml
+===================================================================
+--- projects/transfer/webapp/build.xml	(revision 18707)
++++ projects/transfer/webapp/build.xml	(working copy)
+@@ -361,8 +361,6 @@
+ 				<include name="wsrf_tools.jar" />
+ 				<include name="wss4j.jar" />
+ 				<include name="xalan.jar" />
+-				<include name="xercesImpl.jar" />
+-				<include name="xml-apis.jar" />
+ 				<include name="xmlsec.jar" />
+ 			</fileset>
+ 		</copy>
+Index: projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKSerializerFactory.java
+===================================================================
+--- projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKSerializerFactory.java	(revision 18707)
++++ projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKSerializerFactory.java	(working copy)
+@@ -16,4 +16,8 @@
+ 		super(SDKSerializer.class, xmlType, javaType);
+ 		LOG.debug("Initializing SDKSerializerFactory for class:" + javaType + " and QName:" + xmlType);
+ 	}
++
++    public static SDKSerializerFactory create(Class clazz, QName xmlType) {
++        return new SDKSerializerFactory(clazz, xmlType);
++    }
+ }
+Index: projects/core/src/java/gov/nih/nci/cagrid/encoding/EncodingUtils.java
+===================================================================
+--- projects/core/src/java/gov/nih/nci/cagrid/encoding/EncodingUtils.java	(revision 18707)
++++ projects/core/src/java/gov/nih/nci/cagrid/encoding/EncodingUtils.java	(working copy)
+@@ -42,6 +42,10 @@
+             public InputSource resolveEntity(String publicId, String systemId) {
+                 if (publicId.equals(CASTOR_MAPPING_DTD_ENTITY)) {
+                     InputStream in = ClassUtils.getResourceAsStream(EncodingUtils.class, CASTOR_MAPPING_DTD);
++                    if (in == null) {
++                        LOG.debug("Unable to resolve entity.  Falling back to default resolution for: " + systemId);
++                        return null;
++                    }
+                     return new InputSource(in);
+                 }
+                 return null;
+Index: projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKDeserializerFactory.java
+===================================================================
+--- projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKDeserializerFactory.java	(revision 18707)
++++ projects/core/src/java/gov/nih/nci/cagrid/encoding/SDKDeserializerFactory.java	(working copy)
+@@ -16,4 +16,8 @@
+ 		super(SDKDeserializer.class, xmlType, javaType);
+ 		LOG.debug("Initializing SDKDeserializerFactory for class:" + javaType + " and QName:" + xmlType);
+ 	}
++
++    public static SDKDeserializerFactory create(Class clazz, QName xmlType) {
++        return new SDKDeserializerFactory(clazz, xmlType);
++    }
+ }
+Index: projects/data/src/java/service/gov/nih/nci/cagrid/data/service/ServiceConfigUtil.java
+===================================================================
+--- projects/data/src/java/service/gov/nih/nci/cagrid/data/service/ServiceConfigUtil.java	(revision 18707)
++++ projects/data/src/java/service/gov/nih/nci/cagrid/data/service/ServiceConfigUtil.java	(working copy)
+@@ -136,8 +136,12 @@
+ 	        + propertyName.substring(1);
+ 	    Object serviceConfig = getServiceConfigObject();
+ 	    Class<?> configClass = serviceConfig.getClass();
+-	    Method getter = configClass.getMethod(getterName, new Class[] {});
+-	    return getter != null;
++        try {
++            Method getter = configClass.getMethod(getterName, new Class[] {});
++            return true;
++        } catch (NoSuchMethodException e) {
++            return false;
++        }
+ 	}
+ 	
+ 	
+Index: projects/introduce/antfiles/introduce-utils.xml
+===================================================================
+--- projects/introduce/antfiles/introduce-utils.xml	(revision 18707)
++++ projects/introduce/antfiles/introduce-utils.xml	(working copy)
+@@ -2,6 +2,8 @@
+ <!-- caGrid Analytical Utilities build file                                  -->
+ <!-- ======================================================================= -->
+ <project name="introduce_utilities" basedir="." default="usage">
++    
++    <import file="./build-updater.xml" />
+ 
+ 	<!-- ============================================================== -->
+ 	<!-- Globus properties                                              -->
+@@ -73,7 +75,7 @@
+ 		</if>
+ 	</target>
+ 	
+-	<target name="introduce" depends="checkGlobus, checkAntOpts, preparePortal" description="Execute the Introduce GDE">
++	<target name="introduce" depends="prepareUpdateManager, checkGlobus, checkAntOpts, preparePortal" description="Execute the Introduce GDE">
+ 		<runPortal/>
+ 		<runUpdater/>
+ 		<antcall target="reRunIntroduce" />

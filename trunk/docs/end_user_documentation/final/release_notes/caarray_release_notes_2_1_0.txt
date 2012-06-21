@@ -1,0 +1,233 @@
+Release Notes
+=============
+  #Product:#	caArray
+  #Version:#	2.1.0
+  #Date:#	August 2008
+
+Contents
+---------
+   1. Introduction
+   2. Release History
+   3. Anticipated Releases
+   4. Defects and Feature Addressed in This Release
+   5. Known Issues/Defects
+   6. Bug Reports, Feature Requests, and Support
+   7. Documentation and Files
+   8. NCICB Web Pages
+
+Introduction
+---------------------------
+ 
+caArray is an open-source, web and programmatically
+ accessible array data management system. caArray guides the 
+annotation and exchange of array data using a federated 
+model of local installations whose results are shareable 
+across the cancer Biomedical Informatics Grid (caBIG™). 
+caArray furthers translational cancer research through 
+acquisition, dissemination and aggregation of semantically 
+interoperable array data to support subsequent analysis by 
+tools and services on and off the Grid. As array technology 
+advances and matures, caArray will extend its logical 
+library of assay management.
+
+* https://array.nci.nih.gov/
+
+Release History
+------------------------
+    * caArray v2.1.0		-- August   2008    
+    * caArray v2.0.2		-- May      2008    
+    * caArray v2.0.1		-- April    2008
+    * caArray v2.0.0		-- February 2008
+    * caArray v1.6		-- November 2007
+    * caArray v1.5.0.2		-- August   2007
+    * caArray v1.5.0.1		-- July     2007
+    * caArray v1.5		-- June     2007
+    * caArray v1.4		-- October  2006
+    * caArray v1.3.1		-- March    2006
+
+Anticipated Releases
+------------------------
+ 
+    * caArray v2.1.1		-- September 2008 (Maintenance Release)
+
+Defects and Feature Addressed in This Release
+-----------------------------------------------
+This release represents a feature release of the caArray 2 software.  
+Sixteen new features and total of over one hundred issues were addressed.
+
+Highlights of caArray 2.1.0 include:
+
+* Improved efficiency of programmatic Grid API
+  * Grid Transfer makes for fast download of file contents.
+  * Grid retrieval of parsed array data is more efficient now.
+
+* Flexible association of data files to biomaterials
+  * System can auto-generate individual biomaterial chains; OR
+  * System can auto-generate a single biomaterial chain; OR
+  * User can associate data files to a specific biomaterial/hybridization.
+
+* New Sample-centric view
+  * A well-known URL to navigate directly to a Sample details page.
+  * Unique Sample External ID that is defined by the user.
+
+* Updated User Guide
+  * The User Guide has been updated with an Appendix containing detailed information on 
+the creation and use of MAGE-TAB with caArray.
+
+Defects and Features Addressed in This Release
+----------------------------------------------  
+* 13052 "On API retrieval of DataSet, HybridizationData objects returned have null ids."
+* 13660 import failing due to duplicate LSIDs for design element lists
+* 13688 Rambrant (large) data set validation could not proceed
+* 14202 MAGE-TAB Validate of incorrect files succeeds and subsequent Import never begins.
+* 14256 Upload: cannot upload array or data files when installed on Windows platform
+* 14416 caarray 202-patch1 - unexpected error when creating new experiment while dataset is importing
+* 14644 DataSet obtained via DataRetrievalService ignores quantitation types requested and returns all.
+* 14663 "Grid service artifacts have not been updated for 2.1.0 changes, causing grid clients to break."
+* 15021 Implement GridTransfer support for acquiring file data via Grid API
+* 15031 Stack Trace while viewing AbstractBioMaterial with hybs
+* 15192 GSK Mas5 Data Files Not Visible Through Anonymous Search
+* 15444 "For data import, Import options dialog shown off screen if experiment has large number of files"
+* 15755 Restrict non-MAGE-TAB imports to 150 files
+* 11277 Annotations are validated with Publish service type
+* 11426 Delete Imported Data File 
+* 11716 "Allow viewing / editing of multiple protocol applications for BioMaterials (Source, Sample etc) and Hybridizations"
+* 11756 Grid Service DataSet Retrieval 1000x Slower than RJAPI
+* 11922 Provide graceful validation failure for unsupported Affymetrix CDF files
+* 12252 Provide a mechanism to allow array data files to be associated with pre-populated annotations
+* 12407 Allow zipped array design files to be uploaded
+* 12440 Protocol Applications for a BioMaterial or Hybridization need to be ordered (a List)
+* 12540 Validation and import of files uploaded in ZIP files containing folder information fails
+* 12589 Error when accidentally trying to login twice in the same browser window
+* 12868 API search for DesignElementList associated with Illumina Human-WG_6 DataSet causes NullPointerException while object-graph-cutting.
+* 12869 MAGE-TAB import results in incorrect generation of biomaterial chains.
+* 12976 Experiment.arrays not properly populated / maintained
+* 13010 MAGE-TAB import does not generate associations for derived data correctly.
+* 13013 Improve UI for array design creation/update
+* 13024 Change configuration of temporary file location to use database-based configuration
+* 13129 Use MultiPartBlob functionality for array data
+* 13332 Draft Experiments should have No Visibility
+* 13373 Capture code coverage for functional tests
+* 13414 Manage Array Designs: Unexpected error when trying to edit Array Design details while import in progress
+* 13562 Cannot import IDF that is missing a Experiment Description field
+* 13564 Exception on PROD when trying to upload files
+* 13607 Discrepancy in number of files in the download tab from Public vs actual files in experiment
+* 13757 Improve Upload performance by eliminating superfluous file creation
+* 13956 Downloads for sources / samples /etc do not support grouped download
+* 14006 CaArraySvc_registration.xml advertises the wrong gridServices URL to caGrid Index server
+* 14208 Filters cause Manage Data tab to render incorrectly
+* 14247 Error loading Manage Collaboration Groups page
+* 14295 Editing array metadata causes it to go into IN_QUEUE status
+* 14534 Modify build to replace default log4j jar in JBoss with log4j 1.2.13
+* 14628 Downloading public data fails if not logged in
+* 14647 Files to which access has been restricted are still visible on the Download and Imported Data tabs.
+* 14648 Array Design File columns cause errors and should not be allowed in MAGE-TAB SDRFs
+* 14760 Javascript error with array design saving
+* 14769 PMRP - Provide ability to download files on a Sample page.
+* 14770 PMRP - Provide a well-known URL to navigate to a Sample page.
+* 15024 Validation failed during Import process but is not hyperlinked
+* 15027 Annotations: Download data page showing below all add new annotations pages
+* 15051 Searching caArray portal using the keyword TCGA takes much more than 10 seconds
+* 15056 Search caArray feature is very slow (pre-login)
+* 15086 some of the .cel file can not be validated without identified reason
+* 15150 Download files of a partciular type no longer works.
+* 15307 error trying to import array design
+* 15532 caarray2.1_RC2-local installation fails on target svn:getinfo: using ant redeploy 
+* 15586 GridServices does not work after local install of caArray2
+* 9547 Add cache control headers for static content
+* 9964 CSS Based Buttons are hard to click in Firefox
+* 10115 Cannot delete experiment
+* 10160 IE6 Inconsistent Display of Home Page when shrinking browser size
+* 10506 Manage Publications: Auto populate of fields based on pubmed ID not working
+* 10653 publication status: accepted for publication
+* 11751 Allow unzip of nested zip files for import
+* 11773 Usability:  Allow users to Change File Type across Files
+* 11869 An array design that fails import cannot be imported later
+* 12041 Search for and optimize all queries with subselects
+* 12343 "On Experiment Permissions page, provide a summary of currrent permissions settings"
+* 12654 Trying to validate/import a MAGE-TAB set with many large data files causes a &amp;amp;amp;quot;No space left on device&amp;amp;amp;quot; error.
+* 13014 Improve Download UI
+* 13015 Add ArrayDesign.description field to caArray registered model
+* 13066 Usability - importing only data files accidentally (because mage-tab file types were not auto-guessed)
+* 13141 PMRP - Support population of the Sample External ID field via MAGE-TAB
+* 13211 MAGE-TAB import: Term Source REFs to undefined term sources should be flagged as validation errors
+* 13333 Upgrade process enhancements
+* 13359 Clean up custom javascript files
+* 13387 Do not attempt to connect to NCI LDAP if local installers have his/her own database for user accounts
+* 13567 Submitting the file upload form with no file selected not handled properly
+* 13753 repeated factors with split import
+* 13755 Unexpected error editing a conditiion/disease state vocabulary term
+* 13759 Make all CaArray temporary file creation use the database-configured directory location
+* 13790 Register Module Java Excepetion Error 
+* 13905 GridService fails. ServletException: Failed to initialize 'cagrid/CaArraySvc' service
+* 14025 Stack trace when clicking on download group link if session times out
+* 14038 Blank biomaterial names in mage-tab cause NullPointerException
+* 14176 Display file sizes in a more human readable fashion
+* 14187 "Confusing behavior - if there is an upload error, javascript popup makes it seem that it worked"
+* 14265 Download function broken -Download data not displayed in download queue - QA-VM and QA-standalone display inconsistent behavior for the same function
+* 14269 Temporary folders created for downloads are not deleted from /local/content/caarray
+* 14381 GridService won't start. ConnectException: Connection refused
+* 14385 Manage Array Design Page Edit button is throwing an unexpecte error
+* 14412 Manage User  Variable is missing on QA -VM / Stage 
+* 14498 Manage Vocabulay &amp;amp;amp;amp; Protocols: unexpected error when adding a duplicate souce that exist in dropdown
+* 14649 An unspecified Experimental Factor Name field in an IDF causes generic import failure
+* 14678 MAGE-TAB import does not handle Characteristics followed by Unit correctly.
+* 14895 Download Data: Download queue job size &amp;amp;gt; Zero when files in queue = Zero
+* 14987 UI distorted when downloading large data set from Annotations
+* 15032 "Annotations Module  -&amp;amp;gt; Source ,Samples, labeled Extracts ,Extracts, tabs are  geeting a Java Exception"
+* 15083 Greater than 1.5gb biomaterial download opens on wrong page
+* 15104 Download Queue reflects wrong number of files when using + (Add all) files 
+* 15160 Manage Publications: create new/edit  publication -  Duplicate values appear in status drop down
+* 15198 Manage User link is pointing to wrong version of User Provisioning Tool (UPT )
+* 15441 Manage Data &amp;quot;refresh status&amp;quot; button followed by sort causes strange UI behavior
+* 15496 In Technical document  tab  FAQ &amp;amp; caArray 2.0 at NCICB tabs are Page not found
+* 15582 Local installations don't display Tag name on splash screen
+* 15731 project.properties file has inaccurate hard-coded value for caarray.version
+* 12800 Display Contact information from MAGE-TAB IDF file in the user interface
+* 13803 Required field  are  accepting a null value  's in Experiment Design Detail
+* 14782 An unexplained stack trace periodically appears in the logs (does not seem to affect functionality)
+* 10432 Prune unused .jars from project
+
+Known Issues/Defects
+------------------------
+ 
+See the GForge tracker for the latest use cases (implemented 
+and deferred), existing open defects, community requests, 
+resolutions and feature requests. The following issues are 
+highlighted. 
+
+
+https://gforge.nci.nih.gov/tracker/?group_id=305
+
+* 15416 Intermittent failure to import large sets of data files after successful validation
+* 14630 A collaborator that uploads files cannot see them in the manage data tab
+
+
+Bug Reports, Feature Requests, And Support
+------------------------------------------
+
+Send email to ncicb@pop.nci.nih.gov to request technical support.  To 
+report a bug or request a new feature, please visit the Molecular Analysis Tools 
+Knowledge Center resources at:
+
+https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
+
+Existing requests and resolution may be viewed at the caArray GForge URL:
+
+    * https://gforge.nci.nih.gov/tracker/?group_id=305
+
+
+Documentation And Files
+-----------------------
+
+Links to all documentation and files can be found at: 
+
+http://caarray.nci.nih.gov/
+
+
+NCICB Web Pages
+---------------
+
+    * The NCI Center for Bioinformatics, http://ncicb.nci.nih.gov/
+    * NCICB Application Support, http://ncicb.nci.nih.gov/NCICB/support
+    * NCICB Download Center, http://ncicb.nci.nih.gov/download/

@@ -1,0 +1,5 @@
+Test Case,API,File,Array Design,Expected Bytes,Min Bytes
+392,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,13550438,
+393,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,13550438,
+395,java,,Test3,,1000000
+396,grid,,Test3,,1000000

@@ -1,0 +1,17 @@
+- Add discussion that Grid API is the preferred (most generally used) to access.
+
+	- Code example
+
+- Add discussion to why FileAccessService exists (resiliency)
+
+- Remove, replace file?
+
+	- Add remove
+	
+- ProjectManagement add files, FileManagement 
+
+- Break out -ilities?
+	
+	- Performance
+
+- Future, perceived-to-be risks?

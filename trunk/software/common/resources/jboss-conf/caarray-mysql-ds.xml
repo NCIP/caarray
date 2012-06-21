@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>jdbc/CaArrayDataSource</jndi-name>
+    <connection-url>jdbc:mysql://@database.server@:@database.port@/@database.name@?useServerPrepStmts=false&amp;cachePrepStmts=true</connection-url>
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    <user-name>@database.user@</user-name>
+    <password>@database.password@</password>
+    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</exception-sorter-class-name>
+    <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLValidConnectionChecker</valid-connection-checker-class-name>
+    <min-pool-size>5</min-pool-size>
+    <max-pool-size>25</max-pool-size>
+    <idle-timeout-minutes>30</idle-timeout-minutes>
+    <!--
+        We would like to set this to true, but cannot due to the following hibernate bug:
+        http://opensource.atlassian.com/projects/hibernate/browse/HHH-1312
+        When we upgrade to 3.2.6 (or later), change to true and debug any stracktraces that follow.
+     -->
+    <track-statements>false</track-statements>
+
+    <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
+    <metadata>
+       <type-mapping>mySQL</type-mapping>
+    </metadata>
+
+  </local-tx-datasource>
+</datasources>

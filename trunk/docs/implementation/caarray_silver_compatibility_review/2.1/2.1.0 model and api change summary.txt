@@ -1,0 +1,16 @@
+2.1.0 model and API change summary
+----------------------------------
+Domain model changes:
+
+* AbstractBioMaterial.protocolApplications is now an ordered list (instead of a set)
+* Hybridization.protocolApplications is now an ordered list (instead of a set)
+* RawArrayData.hybridizations is now many-to-many
+* ArrayDesign.designFile is now ArrayDesign.designFiles, a many-to-many
+* Other changes as requested by the last silver review, including dropping the edu.wustl.catissuecore.domain package and the gov.nih.nci.cabio.domain.MicroArray class
+----------------------------------
+API service changes:
+
+* New caGRID Analytical Service method added to download the contents of a file using Grid Transfer:
+public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference createFileTransfer(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile)
+* New test for the above: GridTransferFileDownload.java
+

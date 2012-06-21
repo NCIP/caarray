@@ -1,0 +1,8 @@
+<atlassian-plugin key="agilent-platform" name="Agilent Array Platform" plugins-version="2">
+	<plugin-info>
+		<version>1.0.0</version>
+	</plugin-info>
+	<platform key="agilent-platform">
+		<platform-module class="gov.nih.nci.caarray.plugins.agilent.AgilentModule"/>
+	</platform>
+</atlassian-plugin>

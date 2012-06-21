@@ -1,0 +1,2 @@
+Source Name	Hybridization Name	Array Design REF	Term Source REF	Protocol REF:Affymetrix:Protocol:	Array Data File	Protocol REF	Derived Array Data Matrix File	Protocol REF	Derived Array Data Matrix File	Factor Value [EF1](genotype)	Term Source REF
+TK6neo replicate 1	H_TK6neo replicate 1	Affymetrix.com:PhysicalArrayDesign:Test3	ArrayExpress	Scan	test1.CEL	derived-data-protocol-1	test.data	derived-data-protocol-2	test2.data	SF91neo oncoretrovirus	MO

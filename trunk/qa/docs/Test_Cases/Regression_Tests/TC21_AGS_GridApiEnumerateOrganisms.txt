@@ -1,0 +1,551 @@
+Regression test for the Analytical Grid API. Enumerate Organisms.
+
+1. Check out latest caArray tag of interest (lets call it CAARRAY_XXX, where XXX is "R2_3_0_ALPHA3" etc) to C:\NCICB_SVN\CAARRAY_XXX, if it's not already checked out.
+
+2. Look for file with a name simliar to this: C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip
+   If it doesn't exist, create it by running the following from the command line:
+
+   >cd C:\NCICB_SVN\CAARRAY_XXX\software
+   >ant dist
+
+3. If not already done, unzip the file C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip to a folder named C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip.
+
+4. Copy this file: 
+https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC21_Artifacts/GridApiEnumerateOrganism.java
+
+Copy it to this directory:
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip\example\src\gov\nih\nci\caarray\example\external\v1_0\
+
+4. Copy this file: 
+
+https://gforge.nci.nih.gov/svnroot/caarray2/trunk/qa/docs/Test_Cases/Regression_Tests/TC21_Artifacts/build_QA_test.xml
+
+Copy it to this directory:
+C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip
+
+5. You need to copy these three jar files:
+C:\NCICB_SVN\CAARRAY_XXX\software\lib\caarray-project\activation-1.1.jar
+C:\NCICB_SVN\CAARRAY_XXX\software\lib\caarray-project\mail-1.2.jar
+C:\NCICB_SVN\CAARRAY_XXX\software\grid\v1_0\lib\caGrid-wsEnum-1.2.jar
+
+Copy each one to this directory:
+
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip\grid\lib
+
+6. Open a command prompt to this location:
+
+C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip
+
+7. Run the following:
+
+ant -f build_QA_test.xml test:grid-api-external-v1_0-enumerate-organisms -Dhostname=cbapp-q1002.nci.nih.gov -Dgrid.port=59580
+
+You should get something similar to this (e.g. from ncicbcaqa-1):
+
+C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip>ant -f build_QA_test.xml test:grid-api-external-v1_0-enumerate-organisms -Dh
+ostname=cbapp-q1002.nci.nih.gov -Dgrid.port=59580
+Buildfile: build_QA_test.xml
+
+compile:
+    [mkdir] Created dir: C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip\example\classes
+    [javac] Compiling 5 source files to C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip\example\classes
+    [javac] Note: C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip\example\src\gov\nih\nci\caarray\example\JavaApiExample.jav
+a uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+
+test:grid-api-external-v1_0-enumerate-organisms:
+
+     [java]
+     [java] client.url = http://cbapp-q1002.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc_v1_0
+     [java]
+     [java] i = 1 Organism CommonName = thale cress
+     [java] i = 1 Organism ScientificName = Arabidopsis thaliana
+     [java] i = 1 Organism Accession = null
+     [java] i = 1 Organism Url = null
+     [java] i = 1 Organism Value = Arabidopsis thaliana
+     [java] i = 1 Organism ID = 5
+     [java] i = 1 Organism TermSource Name = ncbitax
+     [java] i = 1 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 1 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 2 Organism CommonName = null
+     [java] i = 2 Organism ScientificName = Bacillus subtilis
+     [java] i = 2 Organism Accession = null
+     [java] i = 2 Organism Url = null
+     [java] i = 2 Organism Value = Bacillus subtilis
+     [java] i = 2 Organism ID = 6
+     [java] i = 2 Organism TermSource Name = ncbitax
+     [java] i = 2 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 2 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 3 Organism CommonName = cattle
+     [java] i = 3 Organism ScientificName = Bos taurus
+     [java] i = 3 Organism Accession = null
+     [java] i = 3 Organism Url = null
+     [java] i = 3 Organism Value = Bos taurus
+     [java] i = 3 Organism ID = 7
+     [java] i = 3 Organism TermSource Name = ncbitax
+     [java] i = 3 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 3 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 4 Organism CommonName = nematode
+     [java] i = 4 Organism ScientificName = Caenorhabditis elegans
+     [java] i = 4 Organism Accession = null
+     [java] i = 4 Organism Url = null
+     [java] i = 4 Organism Value = Caenorhabditis elegans
+     [java] i = 4 Organism ID = 10
+     [java] i = 4 Organism TermSource Name = ncbitax
+     [java] i = 4 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 4 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 5 Organism CommonName = dog
+     [java] i = 5 Organism ScientificName = Canis familiaris
+     [java] i = 5 Organism Accession = null
+     [java] i = 5 Organism Url = null
+     [java] i = 5 Organism Value = Canis familiaris
+     [java] i = 5 Organism ID = 8
+     [java] i = 5 Organism TermSource Name = ncbitax
+     [java] i = 5 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 5 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 6 Organism CommonName = domestic guinea pig
+     [java] i = 6 Organism ScientificName = Cavia porcellus
+     [java] i = 6 Organism Accession = null
+     [java] i = 6 Organism Url = null
+     [java] i = 6 Organism Value = Cavia porcellus
+     [java] i = 6 Organism ID = 9
+     [java] i = 6 Organism TermSource Name = ncbitax
+     [java] i = 6 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 6 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 7 Organism CommonName = null
+     [java] i = 7 Organism ScientificName = Chlamydomonas reinhardtii
+     [java] i = 7 Organism Accession = null
+     [java] i = 7 Organism Url = null
+     [java] i = 7 Organism Value = Chlamydomonas reinhardtii
+     [java] i = 7 Organism ID = 11
+     [java] i = 7 Organism TermSource Name = ncbitax
+     [java] i = 7 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 7 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 8 Organism CommonName = zebrafish
+     [java] i = 8 Organism ScientificName = Danio rerio
+     [java] i = 8 Organism Accession = null
+     [java] i = 8 Organism Url = null
+     [java] i = 8 Organism Value = Danio rerio
+     [java] i = 8 Organism ID = 12
+     [java] i = 8 Organism TermSource Name = ncbitax
+     [java] i = 8 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 8 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 9 Organism CommonName = null
+     [java] i = 9 Organism ScientificName = Danio rerio
+     [java] i = 9 Organism Accession = null
+     [java] i = 9 Organism Url = null
+     [java] i = 9 Organism Value = Danio rerio
+     [java] i = 9 Organism ID = 42
+     [java] i = 9 Organism TermSource Name = NCI_Thesaurus
+     [java] i = 9 Organism TermSource Url = http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+     [java] i = 9 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3
+     [java]
+     [java]
+     [java] i = 10 Organism CommonName = null
+     [java] i = 10 Organism ScientificName = Dictyostelium discoideum
+     [java] i = 10 Organism Accession = null
+     [java] i = 10 Organism Url = null
+     [java] i = 10 Organism Value = Dictyostelium discoideum
+     [java] i = 10 Organism ID = 13
+     [java] i = 10 Organism TermSource Name = ncbitax
+     [java] i = 10 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 10 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 11 Organism CommonName = fruit fly
+     [java] i = 11 Organism ScientificName = Drosophila melanogaster
+     [java] i = 11 Organism Accession = null
+     [java] i = 11 Organism Url = null
+     [java] i = 11 Organism Value = Drosophila melanogaster
+     [java] i = 11 Organism ID = 14
+     [java] i = 11 Organism TermSource Name = ncbitax
+     [java] i = 11 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 11 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 12 Organism CommonName = null
+     [java] i = 12 Organism ScientificName = Escherichia coli
+     [java] i = 12 Organism Accession = null
+     [java] i = 12 Organism Url = null
+     [java] i = 12 Organism Value = Escherichia coli
+     [java] i = 12 Organism ID = 15
+     [java] i = 12 Organism TermSource Name = ncbitax
+     [java] i = 12 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 12 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 13 Organism CommonName = domestic cat
+     [java] i = 13 Organism ScientificName = Felis catus
+     [java] i = 13 Organism Accession = null
+     [java] i = 13 Organism Url = null
+     [java] i = 13 Organism Value = Felis catus
+     [java] i = 13 Organism ID = 16
+     [java] i = 13 Organism TermSource Name = ncbitax
+     [java] i = 13 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 13 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 14 Organism CommonName = chicken
+     [java] i = 14 Organism ScientificName = Gallus gallus
+     [java] i = 14 Organism Accession = null
+     [java] i = 14 Organism Url = null
+     [java] i = 14 Organism Value = Gallus gallus
+     [java] i = 14 Organism ID = 17
+     [java] i = 14 Organism TermSource Name = ncbitax
+     [java] i = 14 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 14 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 15 Organism CommonName = null
+     [java] i = 15 Organism ScientificName = Hepatitis C virus
+     [java] i = 15 Organism Accession = null
+     [java] i = 15 Organism Url = null
+     [java] i = 15 Organism Value = Hepatitis C virus
+     [java] i = 15 Organism ID = 18
+     [java] i = 15 Organism TermSource Name = ncbitax
+     [java] i = 15 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 15 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 16 Organism CommonName = null
+     [java] i = 16 Organism ScientificName = Home sapien
+     [java] i = 16 Organism Accession = null
+     [java] i = 16 Organism Url = null
+     [java] i = 16 Organism Value = Home sapien
+     [java] i = 16 Organism ID = 36
+     [java] i = 16 Organism TermSource Name = ncbitax
+     [java] i = 16 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/
+     [java] i = 16 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:14
+     [java]
+     [java]
+     [java] i = 17 Organism CommonName = human
+     [java] i = 17 Organism ScientificName = Homo sapiens
+     [java] i = 17 Organism Accession = null
+     [java] i = 17 Organism Url = null
+     [java] i = 17 Organism Value = Homo sapiens
+     [java] i = 17 Organism ID = 1
+     [java] i = 17 Organism TermSource Name = ncbitax
+     [java] i = 17 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 17 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 18 Organism CommonName = null
+     [java] i = 18 Organism ScientificName = Homo Sapiens
+     [java] i = 18 Organism Accession = null
+     [java] i = 18 Organism Url = null
+     [java] i = 18 Organism Value = Homo Sapiens
+     [java] i = 18 Organism ID = 39
+     [java] i = 18 Organism TermSource Name = NCI_Thesaurus
+     [java] i = 18 Organism TermSource Url = http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+     [java] i = 18 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3
+     [java]
+     [java]
+     [java] i = 19 Organism CommonName = null
+     [java] i = 19 Organism ScientificName = Homo sapiens
+     [java] i = 19 Organism Accession = null
+     [java] i = 19 Organism Url = null
+     [java] i = 19 Organism Value = Homo sapiens
+     [java] i = 19 Organism ID = 37
+     [java] i = 19 Organism TermSource Name = caArray
+     [java] i = 19 Organism TermSource Url = https://caarray.nci.nih.gov
+     [java] i = 19 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:4
+     [java]
+     [java]
+     [java] i = 20 Organism CommonName = null
+     [java] i = 20 Organism ScientificName = Homo sapiens
+     [java] i = 20 Organism Accession = null
+     [java] i = 20 Organism Url = null
+     [java] i = 20 Organism Value = Homo sapiens
+     [java] i = 20 Organism ID = 34
+     [java] i = 20 Organism TermSource Name = ncbitax
+     [java] i = 20 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/
+     [java] i = 20 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:14
+     [java]
+     [java]
+     [java] i = 21 Organism CommonName = null
+     [java] i = 21 Organism ScientificName = Homo sapiens
+     [java] i = 21 Organism Accession = null
+     [java] i = 21 Organism Url = null
+     [java] i = 21 Organism Value = Homo sapiens
+     [java] i = 21 Organism ID = 35
+     [java] i = 21 Organism TermSource Name = ncbitax
+     [java] i = 21 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/
+     [java] i = 21 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:24
+     [java]
+     [java]
+     [java] i = 22 Organism CommonName = null
+     [java] i = 22 Organism ScientificName = Homo sapiens
+     [java] i = 22 Organism Accession = null
+     [java] i = 22 Organism Url = null
+     [java] i = 22 Organism Value = Homo sapiens
+     [java] i = 22 Organism ID = 38
+     [java] i = 22 Organism TermSource Name = ncbitax
+     [java] i = 22 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/
+     [java] i = 22 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:26
+     [java]
+     [java]
+     [java] i = 23 Organism CommonName = null
+     [java] i = 23 Organism ScientificName = Human
+     [java] i = 23 Organism Accession = null
+     [java] i = 23 Organism Url = null
+     [java] i = 23 Organism Value = Human
+     [java] i = 23 Organism ID = 40
+     [java] i = 23 Organism TermSource Name = NCI_Thesaurus
+     [java] i = 23 Organism TermSource Url = http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+     [java] i = 23 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3
+     [java]
+     [java]
+     [java] i = 24 Organism CommonName = rhesus monkey
+     [java] i = 24 Organism ScientificName = Macaca mulatta
+     [java] i = 24 Organism Accession = null
+     [java] i = 24 Organism Url = null
+     [java] i = 24 Organism Value = Macaca mulatta
+     [java] i = 24 Organism ID = 19
+     [java] i = 24 Organism TermSource Name = ncbitax
+     [java] i = 24 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 24 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 25 Organism CommonName = golden hamster
+     [java] i = 25 Organism ScientificName = Mesocricetus auratus
+     [java] i = 25 Organism Accession = null
+     [java] i = 25 Organism Url = null
+     [java] i = 25 Organism Value = Mesocricetus auratus
+     [java] i = 25 Organism ID = 20
+     [java] i = 25 Organism TermSource Name = ncbitax
+     [java] i = 25 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 25 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 26 Organism CommonName = null
+     [java] i = 26 Organism ScientificName = monkey
+     [java] i = 26 Organism Accession = null
+     [java] i = 26 Organism Url = null
+     [java] i = 26 Organism Value = monkey
+     [java] i = 26 Organism ID = 44
+     [java] i = 26 Organism TermSource Name = caArray
+     [java] i = 26 Organism TermSource Url = https://caarray.nci.nih.gov
+     [java] i = 26 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:4
+     [java]
+     [java]
+     [java] i = 27 Organism CommonName = null
+     [java] i = 27 Organism ScientificName = Mouse
+     [java] i = 27 Organism Accession = null
+     [java] i = 27 Organism Url = null
+     [java] i = 27 Organism Value = Mouse
+     [java] i = 27 Organism ID = 41
+     [java] i = 27 Organism TermSource Name = NCI_Thesaurus
+     [java] i = 27 Organism TermSource Url = http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+     [java] i = 27 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3
+     [java]
+     [java]
+     [java] i = 28 Organism CommonName = house mouse
+     [java] i = 28 Organism ScientificName = Mus musculus
+     [java] i = 28 Organism Accession = null
+     [java] i = 28 Organism Url = null
+     [java] i = 28 Organism Value = Mus musculus
+     [java] i = 28 Organism ID = 2
+     [java] i = 28 Organism TermSource Name = ncbitax
+     [java] i = 28 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 28 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 29 Organism CommonName = null
+     [java] i = 29 Organism ScientificName = Mycoplasma pneumoniae
+     [java] i = 29 Organism Accession = null
+     [java] i = 29 Organism Url = null
+     [java] i = 29 Organism Value = Mycoplasma pneumoniae
+     [java] i = 29 Organism ID = 21
+     [java] i = 29 Organism TermSource Name = ncbitax
+     [java] i = 29 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 29 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 30 Organism CommonName = rice
+     [java] i = 30 Organism ScientificName = Oryza sativa
+     [java] i = 30 Organism Accession = null
+     [java] i = 30 Organism Url = null
+     [java] i = 30 Organism Value = Oryza sativa
+     [java] i = 30 Organism ID = 22
+     [java] i = 30 Organism TermSource Name = ncbitax
+     [java] i = 30 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 30 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 31 Organism CommonName = malaria parasite
+     [java] i = 31 Organism ScientificName = Plasmodium falciparum
+     [java] i = 31 Organism Accession = null
+     [java] i = 31 Organism Url = null
+     [java] i = 31 Organism Value = Plasmodium falciparum
+     [java] i = 31 Organism ID = 23
+     [java] i = 31 Organism TermSource Name = ncbitax
+     [java] i = 31 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 31 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 32 Organism CommonName = null
+     [java] i = 32 Organism ScientificName = Pneumocystis carinii
+     [java] i = 32 Organism Accession = null
+     [java] i = 32 Organism Url = null
+     [java] i = 32 Organism Value = Pneumocystis carinii
+     [java] i = 32 Organism ID = 24
+     [java] i = 32 Organism TermSource Name = ncbitax
+     [java] i = 32 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 32 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 33 Organism CommonName = null
+     [java] i = 33 Organism ScientificName = Pseudomonas aeruginosa
+     [java] i = 33 Organism Accession = null
+     [java] i = 33 Organism Url = null
+     [java] i = 33 Organism Value = Pseudomonas aeruginosa
+     [java] i = 33 Organism ID = 25
+     [java] i = 33 Organism TermSource Name = ncbitax
+     [java] i = 33 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 33 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 34 Organism CommonName = norway rat
+     [java] i = 34 Organism ScientificName = Rattus norvegicus
+     [java] i = 34 Organism Accession = null
+     [java] i = 34 Organism Url = null
+     [java] i = 34 Organism Value = Rattus norvegicus
+     [java] i = 34 Organism ID = 3
+     [java] i = 34 Organism TermSource Name = ncbitax
+     [java] i = 34 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 34 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 35 Organism CommonName = black rat
+     [java] i = 35 Organism ScientificName = Rattus rattus
+     [java] i = 35 Organism Accession = null
+     [java] i = 35 Organism Url = null
+     [java] i = 35 Organism Value = Rattus rattus
+     [java] i = 35 Organism ID = 4
+     [java] i = 35 Organism TermSource Name = ncbitax
+     [java] i = 35 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 35 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 36 Organism CommonName = baker's yeast
+     [java] i = 36 Organism ScientificName = Saccharomyces cerevisiae
+     [java] i = 36 Organism Accession = null
+     [java] i = 36 Organism Url = null
+     [java] i = 36 Organism Value = Saccharomyces cerevisiae
+     [java] i = 36 Organism ID = 26
+     [java] i = 36 Organism TermSource Name = ncbitax
+     [java] i = 36 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 36 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 37 Organism CommonName = fission yeast
+     [java] i = 37 Organism ScientificName = Schizosaccharomyces pombe
+     [java] i = 37 Organism Accession = null
+     [java] i = 37 Organism Url = null
+     [java] i = 37 Organism Value = Schizosaccharomyces pombe
+     [java] i = 37 Organism ID = 28
+     [java] i = 37 Organism TermSource Name = ncbitax
+     [java] i = 37 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 37 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 38 Organism CommonName = null
+     [java] i = 38 Organism ScientificName = Staphylococcus aureus
+     [java] i = 38 Organism Accession = null
+     [java] i = 38 Organism Url = null
+     [java] i = 38 Organism Value = Staphylococcus aureus
+     [java] i = 38 Organism ID = 29
+     [java] i = 38 Organism TermSource Name = ncbitax
+     [java] i = 38 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 38 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 39 Organism CommonName = Pig
+     [java] i = 39 Organism ScientificName = Sus scrofa
+     [java] i = 39 Organism Accession = null
+     [java] i = 39 Organism Url = null
+     [java] i = 39 Organism Value = Sus scrofa
+     [java] i = 39 Organism ID = 27
+     [java] i = 39 Organism TermSource Name = ncbitax
+     [java] i = 39 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 39 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 40 Organism CommonName = torafugu
+     [java] i = 40 Organism ScientificName = Takifugu rubripes
+     [java] i = 40 Organism Accession = null
+     [java] i = 40 Organism Url = null
+     [java] i = 40 Organism Value = Takifugu rubripes
+     [java] i = 40 Organism ID = 30
+     [java] i = 40 Organism TermSource Name = ncbitax
+     [java] i = 40 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 40 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 41 Organism CommonName = african clawed frog
+     [java] i = 41 Organism ScientificName = Xenopus laevis
+     [java] i = 41 Organism Accession = null
+     [java] i = 41 Organism Url = null
+     [java] i = 41 Organism Value = Xenopus laevis
+     [java] i = 41 Organism ID = 31
+     [java] i = 41 Organism TermSource Name = ncbitax
+     [java] i = 41 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 41 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 42 Organism CommonName = null
+     [java] i = 42 Organism ScientificName = Xenopus laevis
+     [java] i = 42 Organism Accession = null
+     [java] i = 42 Organism Url = null
+     [java] i = 42 Organism Value = Xenopus laevis
+     [java] i = 42 Organism ID = 43
+     [java] i = 42 Organism TermSource Name = NCI_Thesaurus
+     [java] i = 42 Organism TermSource Url = http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+     [java] i = 42 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3
+     [java]
+     [java]
+     [java] i = 43 Organism CommonName = western clawed frog
+     [java] i = 43 Organism ScientificName = Xenopus tropicalis
+     [java] i = 43 Organism Accession = null
+     [java] i = 43 Organism Url = null
+     [java] i = 43 Organism Value = Xenopus tropicalis
+     [java] i = 43 Organism ID = 32
+     [java] i = 43 Organism TermSource Name = ncbitax
+     [java] i = 43 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 43 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+     [java] i = 44 Organism CommonName = null
+     [java] i = 44 Organism ScientificName = Zea mays
+     [java] i = 44 Organism Accession = null
+     [java] i = 44 Organism Url = null
+     [java] i = 44 Organism Value = Zea mays
+     [java] i = 44 Organism ID = 33
+     [java] i = 44 Organism TermSource Name = ncbitax
+     [java] i = 44 Organism TermSource Url = http://www.ncbi.nlm.nih.gov/Taxonomy/
+     [java] i = 44 Organism TermSource ID = URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:2
+     [java]
+     [java]
+
+BUILD SUCCESSFUL
+Total time: 10 seconds
+C:\NCICB_SVN\CAARRAY_R2_3_0_ALPHA3\software\dist\caarray_client_2_3_0_zip>
+

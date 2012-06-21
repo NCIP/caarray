@@ -1,0 +1,1947 @@
+ATF	1			
+8	5			
+Type=GenePix ArrayList V1.0				
+URL=http://nciarray.nci.nih.gov/cgi-bin/clone_report.cgi?navigation=1&CRITERIA=clone&PARAMETER=[ID]				
+BlockCount=4				
+BlockType=0				
+"Block1=	2690	, 18890, 	125	, 22	, 190, 	22	, 190"				
+"Block2=	7280	, 18890, 	125	, 22, 	190	, 22	, 190"				
+"Block3=	11840	, 18890	, 125, 	22	, 190, 	22	, 190"				
+"Block4=	16270	, 18890	, 125	, 22	, 190	, 22	, 190"				
+Block	Row	Column	ID	Name
+1	1	1	IMAGE:281465	"PIGB--phosphatidylinositol glycan, cla"
+1	1	2	IMAGE:756373	ARHGEF16--Rho guanine exchange factor
+1	1	3	IMAGE:665658	MSX2--msh (Drosophila) homeo box homol
+1	1	4	IMAGE:23772	LZTR1--leucine-zipper-like transcripti
+1	1	5	IMAGE:247587	MN7--D15F37 (pseudogene)
+1	1	6	IMAGE:205090	C6ORF32--chromosome 6 open reading fra
+1	1	7	IMAGE:49344	KIAA0350--KIAA0350 protein
+1	1	8	IMAGE:757381	PCDHA9--protocadherin alpha 9
+1	1	9	IMAGE:123061	RANBP2L1--RAN binding protein 2-like 1
+1	1	10	IMAGE:136536	PCDHGB4--protocadherin gamma subfamily
+1	1	11	IMAGE:296190	KIAA0321--KIAA0321 protein
+1	1	12	IMAGE:809944	KIAA0310--KIAA0310 gene product
+1	1	13	IMAGE:284734	"WASF1--WAS protein family, member 1"
+1	1	14	IMAGE:140716	KIAA0265--KIAA0265 protein
+1	1	15	IMAGE:301380	KIAA0260--KIAA0260 protein
+1	1	16	IMAGE:295255	KIAA0254--KIAA0254 gene product
+1	1	17	IMAGE:110653	KIAA0250--KIAA0250 gene product
+1	1	18	IMAGE:767769	SLC7A6--solute carrier family 7 (catio
+1	1	19	IMAGE:195138	KIAA0205--KIAA0205 gene product
+1	1	20	IMAGE:23431	KIAA0203--KIAA0203 gene product
+1	1	21	IMAGE:40365	SCAP--SREBP CLEAVAGE-ACTIVATING PROTEI
+1	1	22	IMAGE:362729	KIAA0193--KIAA0193 gene product
+1	2	1	IMAGE:43977	KIAA0182--KIAA0182 protein
+1	2	2	IMAGE:753987	ADPRTL1--ADP-ribosyltransferase (NAD+;
+1	2	3	IMAGE:124781	SQLE--squalene epoxidase
+1	2	4	IMAGE:131653	MRPS12--mitochondrial ribosomal protei
+1	2	5	IMAGE:752652	TCF7L2--transcription factor 7-like 2
+1	2	6	IMAGE:232933	DPYS--dihydropyrimidinase
+1	2	7	IMAGE:123730	SKAP55--src kinase-associated phosphop
+1	2	8	IMAGE:306771	"TMSNB--thymosin, beta, identified in n"
+1	2	9	IMAGE:165878	"ITGA8--integrin, alpha 8"
+1	2	10	IMAGE:165857	INPP4B--inositol polyphosphate-4-phosp
+1	2	11	IMAGE:810391	HYAL1--hyaluronoglucosaminidase 1
+1	2	12	IMAGE:359395	NAPG--N-ethylmaleimide-sensitive facto
+1	2	13	IMAGE:129644	SSH3BP1--spectrin SH3 domain binding p
+1	2	14	IMAGE:380394	EIF1AY--eukaryotic translation initiat
+1	2	15	IMAGE:470930	"ACTR2--ARP2 (actin-related protein 2,"
+1	2	16	IMAGE:128530	"SNTB1--syntrophin, beta 1 (dystrophin-"
+1	2	17	IMAGE:209841	TEB4--similar to S. cerevisiae SSM4
+1	2	18	IMAGE:281978	RAC3--ras-related C3 botulinum toxin s
+1	2	19	IMAGE:42118	"P2RX4--purinergic receptor P2X, ligand"
+1	2	20	IMAGE:377152	NDUFS4--NADH dehydrogenase (ubiquinone
+1	2	21	IMAGE:30502	DLL1--Delta=ligand for Notch receptor=
+1	2	22	IMAGE:811842	SRP72--Signal recognition particle 72
+1	3	1	IMAGE:262996	CHD1--CHD1=nuclear protein with chromo
+1	3	2	IMAGE:203351	BET1--Bet1 (S. cerevisiae) homolog
+1	3	3	IMAGE:202904	"SFRS7--splicing factor, arginine/serin"
+1	3	4	IMAGE:358850	TMP21--transmembrane trafficking prote
+1	3	5	IMAGE:840364	AHCY--S-adenosylhomocysteine hydrolase
+1	3	6	IMAGE:759948	"S100B--S100 calcium-binding protein, b"
+1	3	7	IMAGE:773246	RING1--ring finger protein 1
+1	3	8	IMAGE:788511	RPS6KA1--Ribosomal protein S6 kinase 9
+1	3	9	IMAGE:208001	CD59--CD59=LY-6-like protein regulatin
+1	3	10	IMAGE:897835	Unknown
+1	3	11	IMAGE:509484	RDBP--RD RNA-binding protein
+1	3	12	IMAGE:773319	RPS6KB1--Ribosomal protein S6 kinase 7
+1	3	13	IMAGE:795888	RBBP2--retinoblastoma-binding protein
+1	3	14	IMAGE:898148	IQGAP1--IQ motif containing GTPase act
+1	3	15	IMAGE:511816	ESTs
+1	3	16	IMAGE:824024	NMOR2--NAD(P)H menadione oxidoreductas
+1	3	17	IMAGE:772455	PPP4C--protein phosphatase 4 (formerly
+1	3	18	IMAGE:950445	PPP2CA--protein phosphatase 2 (formerl
+1	3	19	IMAGE:609663	"PRKAR2B--protein kinase, cAMP-dependen"
+1	3	20	IMAGE:897669	"SMARCA1--SWI/SNF related, matrix assoc"
+1	3	21	IMAGE:843134	PBP--prostatic binding protein
+1	3	22	IMAGE:363569	PTGER4--prostaglandin E receptor 4 (su
+1	4	1	IMAGE:67654	PDGFB--platelet-derived growth factor
+1	4	2	IMAGE:70692	SERPINB2--serine (or cysteine) protein
+1	4	3	IMAGE:503097	PRPS2--phosphoribosyl pyrophosphate sy
+1	4	4	IMAGE:773771	PLN--phospholamban
+1	4	5	IMAGE:843174	PGM1--phosphoglucomutase 1
+1	4	6	IMAGE:383089	"PDE6G--phosphodiesterase 6G, cGMP-spec"
+1	4	7	IMAGE:199158	DKFZP586D222--DKFZP586D2223 protein
+1	4	8	IMAGE:198694	"ESTs, Weakly similar to RSU1_HUMAN RAS"
+1	4	9	IMAGE:144740	CGI-52--similar to phosphatidylcholine
+1	4	10	IMAGE:358885	FOXC1--IPFK-2=inducible 6-phosphofruct
+1	4	11	IMAGE:292512	MLL3--myeloid/lymphoid or mixed-lineag
+1	4	12	IMAGE:320834	UBE4B--ubiquitination factor E4B (homo
+1	4	13	IMAGE:124070	LOC51608--CGI-20 protein
+1	4	14	IMAGE:66556	DKFZP564I122--DKFZP564I122 protein
+1	4	15	IMAGE:340712	FBXL11--f-box and leucine-rich repeat
+1	4	16	IMAGE:203905	FLJ13611--hypothetical protein FLJ1361
+1	4	17	IMAGE:292938	"ANK1--ankyrin 1, erythrocytic"
+1	4	18	IMAGE:66354	FLJ11806--hypothetical protein FLJ1180
+1	4	19	IMAGE:306380	MGC4276--hypothetical protein MGC4276
+1	4	20	IMAGE:292731	LOC51773--HBV pX associated protein-8
+1	4	21	IMAGE:198509	NUDEL--LIS1-interacting protein NUDEL;
+1	4	22	IMAGE:123649	DAB1--disabled (Drosophila) homolog 1
+1	5	1	IMAGE:130868	KIAA1320--KIAA1320 protein
+1	5	2	IMAGE:201274	ALS2CR3--amyotrophic lateral sclerosis
+1	5	3	IMAGE:122077	LOC54499--putative membrane protein
+1	5	4	IMAGE:193394	"ESTs, Weakly similar to AF187016 1 myo"
+1	5	5	IMAGE:135431	POLYDOM--likely ortholog of mouse poly
+1	5	6	IMAGE:246449	MGP--matrix Gla protein
+1	5	7	IMAGE:121533	C11ORF4--chromosome 11 open reading fr
+1	5	8	IMAGE:244684	"ESTs, Weakly similar to Similarity to"
+1	5	9	IMAGE:430153	EPRS--glutamyl-prolyl-tRNA synthetase
+1	5	10	IMAGE:488386	PRO1584--hypothetical protein PRO1584
+1	5	11	IMAGE:243603	Unknown
+1	5	12	IMAGE:770887	D6S52E--HLA-B associated transcript-3
+1	5	13	IMAGE:321739	IRF2--interferon regulatory factor 2
+1	5	14	IMAGE:269815	"INHBA--inhibin, beta A (activin A, act"
+1	5	15	IMAGE:415700	HNRPK--heterogeneous nuclear ribonucle
+1	5	16	IMAGE:126284	FLJ11198--hypothetical protein FLJ1119
+1	5	17	IMAGE:357626	FAH--fumarylacetoacetate
+1	5	18	IMAGE:429555	"FGA--fibrinogen, A alpha polypeptide"
+1	5	19	IMAGE:491559	"FABP3--fatty acid binding protein 3, m"
+1	5	20	IMAGE:344648	KLF2--Kruppel-like factor 2 (lung)
+1	5	21	IMAGE:487819	CEBPD--CCAAT/enhancer binding protein
+1	5	22	IMAGE:309515	COMP--cartilage oligomeric matrix prot
+1	6	1	IMAGE:782439	"ATP5I--ATP synthase, H+ transporting,"
+1	6	2	IMAGE:427692	"ESTs, Highly similar to 1313352A apoli"
+1	6	3	IMAGE:1031045	"SLC4A3--solute carrier family 4, anion"
+1	6	4	IMAGE:323371	APP--amyloid beta (A4) precursor prote
+1	6	5	IMAGE:67002	Unknown
+1	6	6	IMAGE:109310	"HAAO--3-hydroxyanthranilate 3,4-dioxyg"
+1	6	7	IMAGE:259462	LOC54675--hypothetical protein
+1	6	8	IMAGE:809490	ESTs
+1	6	9	IMAGE:249895	ESTs
+1	6	10	IMAGE:284479	DUSP7--dual specificity phosphatase 7
+1	6	11	IMAGE:503098	FLJ20758--hypothetical protein FLJ2075
+1	6	12	IMAGE:321456	ESTs
+1	6	13	IMAGE:323028	Smad3=hMAD-3=Homologue of Mothers Agai
+1	6	14	IMAGE:758293	FLJ10773--hypothetical protein FLJ1077
+1	6	15	IMAGE:341051	"PNN--pinin, desmosome associated prote"
+1	6	16	IMAGE:346360	LAT--linker for activation of T cells
+1	6	17	IMAGE:490251	"PPP1R2--protein phosphatase 1, regulat"
+1	6	18	IMAGE:502593	"CACNA1C--calcium channel, voltage-depe"
+1	6	19	IMAGE:810002	"ESTs, Weakly similar to A4P_HUMAN INTE"
+1	6	20	IMAGE:795197	UBE2E2--ubiquitin-conjugating enzyme E
+1	6	21	IMAGE:810263	"Homo sapiens cDNA: FLJ23241 fis, clone"
+1	6	22	IMAGE:770860	"ESTs, Moderately similar to ALU4_HUMAN"
+1	7	1	IMAGE:782792	"Homo sapiens chromosome 19, cosmid R26"
+1	7	2	IMAGE:490471	INPP4A--inositol polyphosphate-4-phosp
+1	7	3	IMAGE:782140	SQV7L--nucleotide-sugar transporter si
+1	7	4	IMAGE:366353	DKFZP564C186--DKFZP564C186 protein
+1	7	5	IMAGE:294580	EST
+1	7	6	IMAGE:502142	"SAP30--sin3-associated polypeptide, 30"
+1	7	7	IMAGE:323322	ESTs
+1	7	8	IMAGE:366481	KRT6A--keratin 6 isoform K6b=KRT6B
+1	7	9	IMAGE:141234	"Homo sapiens cDNA: FLJ23458 fis, clone"
+1	7	10	IMAGE:782702	LOC56270--hypothetical protein 628
+1	7	11	IMAGE:418004	BMI1--murine leukemia viral (bmi-1) on
+1	7	12	IMAGE:308412	EEF1A1--eukaryotic translation elongat
+1	7	13	IMAGE:265655	ESTs
+1	7	14	IMAGE:327228	"Homo sapiens PRO2751 mRNA, complete cd"
+1	7	15	IMAGE:276898	Unknown
+1	7	16	IMAGE:173561	"Homo sapiens PAK2 mRNA, complete cds"
+1	7	17	IMAGE:356732	"Homo sapiens cDNA FLJ13613 fis, clone"
+1	7	18	IMAGE:489476	RIL--LIM domain protein
+1	7	19	IMAGE:358748	ESTs
+1	7	20	IMAGE:277187	KIAA1700--KIAA1700
+1	7	21	IMAGE:343731	KLF2--Kruppel-like factor 2 (lung)
+1	7	22	IMAGE:207838	"ESTs, Weakly similar to 2115357A TYKi"
+1	8	1	IMAGE:195357	PXMP3--peroxisomal membrane protein 3
+1	8	2	IMAGE:194381	ESTs
+1	8	3	IMAGE:291537	KIAA1249--KIAA1249 protein
+1	8	4	IMAGE:415144	ESTs
+1	8	5	IMAGE:289919	PTB--neural polypyrimidine tract bindi
+1	8	6	IMAGE:196781	FLJ12716--hypothetical protein FLJ1271
+1	8	7	IMAGE:243968	ESTs
+1	8	8	IMAGE:264537	"ESTs, Moderately similar to ALU1_HUMAN"
+1	8	9	IMAGE:214604	KIAA1321--KIAA1321 protein
+1	8	10	IMAGE:200151	ESTs
+1	8	11	IMAGE:241861	ESTs
+1	8	12	IMAGE:416154	ESTs
+1	8	13	IMAGE:244012	ESTs
+1	8	14	IMAGE:200692	ESTs
+1	8	15	IMAGE:744980	KIAA0304--KIAA0304 gene product
+1	8	16	IMAGE:39922	DOCK3--dedicator of cyto-kinesis 3
+1	8	17	IMAGE:51178	KIAA0281--KIAA0281 gene product
+1	8	18	IMAGE:40102	KIAA0266--KIAA0266 gene product
+1	8	19	IMAGE:740742	KIAA0257--KIAA0257 protein
+1	8	20	IMAGE:756627	KIAA0255--KIAA0255 gene product
+1	8	21	IMAGE:364448	IKKE--KIAA0151=serine/threonine kinase
+1	8	22	IMAGE:270975	KIAA0129--KIAA0129 gene product
+1	9	1	IMAGE:68320	AFP--alpha-fetoprotein
+1	9	2	IMAGE:769751	KIAA0095--KIAA0095 gene product
+1	9	3	IMAGE:361996	KIAA0087--KIAA0087 gene product
+1	9	4	IMAGE:304908	E2F3--E2F-3=pRB-binding transcription
+1	9	5	IMAGE:611407	HABP2--hyaluronan-binding protein 2
+1	9	6	IMAGE:430465	SCYA19--small inducible cytokine subfa
+1	9	7	IMAGE:811024	BST2--bone marrow stromal cell antigen
+1	9	8	IMAGE:344243	UMPK--uridine monophosphate kinase
+1	9	9	IMAGE:263229	LAF4--lymphoid nuclear protein related
+1	9	10	IMAGE:415086	KLRC3--killer cell lectin-like recepto
+1	9	11	IMAGE:770059	HSPG2--heparan sulfate proteoglycan 2
+1	9	12	IMAGE:32664	GNAO1--guanine nucleotide binding prot
+1	9	13	IMAGE:33096	"GRIK1--glutamate receptor, ionotropic,"
+1	9	14	IMAGE:586685	"LGALS4--lectin, galactoside-binding, s"
+1	9	15	IMAGE:855864	PTK2--PTK2 protein tyrosine kinase 2
+1	9	16	IMAGE:772425	FAP--fibroblast activation protein=int
+1	9	17	IMAGE:796297	KIAA1605--KIAA1605 protein
+1	9	18	IMAGE:436741	KIAA0443--KIAA0443 gene product
+1	9	19	IMAGE:455123	KIAA0429--KIAA0429 gene product
+1	9	20	IMAGE:41430	KIAA0427--KIAA0427 gene product
+1	9	21	IMAGE:588609	ARHGEF9--Cdc42 guanine exchange factor
+1	9	22	IMAGE:183103	KIAA0420--KIAA0420 gene product
+1	10	1	IMAGE:212115	TSSC3--tumor suppressing subtransferab
+1	10	2	IMAGE:869233	DLC1--deleted in liver cancer 1
+1	10	3	IMAGE:34102	"GOLGA1--golgi autoantigen, golgin subf"
+1	10	4	IMAGE:22883	FPGT--fucose-1-phosphate guanylyltrans
+1	10	5	IMAGE:796689	NPFF--neuropeptide FF-amide peptide pr
+1	10	6	IMAGE:755526	EDG4--Edg-4=G protein-coupled receptor
+1	10	7	IMAGE:153541	EPHB1--EphB1
+1	10	8	IMAGE:970591	HMG1--high-mobility group (nonhistone
+1	10	9	IMAGE:971212	HIVEP2--human immunodeficiency virus t
+1	10	10	IMAGE:773568	POU4F1--RDC-1=POU domain transcription
+1	10	11	IMAGE:868332	Human mRNA for SB classII histocompati
+1	10	12	IMAGE:52881	NHLH2--nescient helix loop helix 2
+1	10	13	IMAGE:884283	H.sapiens mRNA for retrotransposon
+1	10	14	IMAGE:278483	HSRTSBETA--rTS beta protein
+1	10	15	IMAGE:151449	PTPN21--protein-tyrosine-phosphatase D
+1	10	16	IMAGE:30175	PTPRO--Protein tyrosine phosphatase (P
+1	10	17	IMAGE:724893	GCS1--glucosidase I
+1	10	18	IMAGE:203003	NME4--nucleoside-diphosphate kinase
+1	10	19	IMAGE:814792	USP10--ubiquitin specific protease 10
+1	10	20	IMAGE:837905	C9orf10--C9orf10 protein
+1	10	21	IMAGE:79710	KIAA0174--KIAA0174 gene product
+1	10	22	IMAGE:180195	SUPT6H--suppressor of Ty (S.cerevisiae
+1	11	1	IMAGE:840620	KIAA0152--KIAA0152 gene product
+1	11	2	IMAGE:815530	P85SPR--PAK-interacting exchange facto
+1	11	3	IMAGE:898032	KIAA0097--KIAA0097 gene product
+1	11	4	IMAGE:788721	KIAA0090--KIAA0090 protein
+1	11	5	IMAGE:229537	KIAA0088--KIAA0088 protein
+1	11	6	IMAGE:815529	KIAA0084--KIAA0084
+1	11	7	IMAGE:780937	KIAA0080--KIAA0080 protein
+1	11	8	IMAGE:725223	KIAA0077--KIAA0077 protein
+1	11	9	IMAGE:809530	MCM2--minichromosome maintenance defic
+1	11	10	IMAGE:811930	KIAA0020--KIAA0020 gene product
+1	11	11	IMAGE:840878	KIAA0018--seladin-1
+1	11	12	IMAGE:814319	KIAA0009--KIAA0009 gene product
+1	11	13	IMAGE:773922	KIAA0005--KIAA0005 gene product
+1	11	14	IMAGE:666377	ZNF161--zinc finger protein 161
+1	11	15	IMAGE:814546	"PSCD1--pleckstrin homology, Sec7 and c"
+1	11	16	IMAGE:726236	BA108L7.2--similar to rat tricarboxyla
+1	11	17	IMAGE:80924	HARSL--histidyl-tRNA synthetase
+1	11	18	IMAGE:949934	HNRPA0--heterogeneous nuclear ribonucl
+1	11	19	IMAGE:71545	MAP4K1--HPK1=hematopoietic progenitor
+1	11	20	IMAGE:52629	CAMK1--cam kinase I
+1	11	21	IMAGE:783836	ZNF143--zinc finger protein 143 (clone
+1	11	22	IMAGE:193913	LYN--lyn=tyrosine kinase
+1	12	1	IMAGE:258589	REL--c-rel=NF-kB family member frequen
+1	12	2	IMAGE:267634	RAF1--v-raf-1 murine leukemia viral on
+1	12	3	IMAGE:760148	UROD--uroporphyrinogen decarboxylase
+1	12	4	IMAGE:191664	THBS2--thrombospondin 2
+1	12	5	IMAGE:85805	"RBP4--retinol-binding protein 4, inter"
+1	12	6	IMAGE:824340	NCF1--47-kD autosomal chronic granulom
+1	12	7	IMAGE:80109	HLA-DQA1--major histocompatibility com
+1	12	8	IMAGE:110788	LSP1--lymphocyte-specific protein 1
+1	12	9	IMAGE:115281	CD79A--CD79A=BCR alpha chain=mb-1
+1	12	10	IMAGE:242578	TROAP--trophinin associated protein (t
+1	12	11	IMAGE:788486	"LAP70--apyrase, lysosomal"
+1	12	12	IMAGE:240505	HCDI--HCDI protein
+1	12	13	IMAGE:510760	KIAA0226--KIAA0226 gene product
+1	12	14	IMAGE:758365	OS4--conserved gene amplified in osteo
+1	12	15	IMAGE:788421	MADH4--MAD (mothers against decapentap
+1	12	16	IMAGE:842939	"ADARB1--adenosine deaminase, RNA-speci"
+1	12	17	IMAGE:83120	RBM10--RNA binding motif protein 10
+1	12	18	IMAGE:632137	SIVA--CD27 Binding Protein=Siva=proapo
+1	12	19	IMAGE:841695	Novel human gene mapping to chomosome
+1	12	20	IMAGE:787938	"SLC4A4--solute carrier family 4, sodiu"
+1	12	21	IMAGE:199180	PON3--paraoxonase 3
+1	12	22	IMAGE:841282	SFRP4--frizzled related protein frpHE
+1	13	1	IMAGE:32205	DBCCR1--deleted in bladder cancer chro
+1	13	2	IMAGE:47204	CPNE6--copine VI (neuronal)
+1	13	3	IMAGE:45607	LOC57863--hypothetical protein FLJ1069
+1	13	4	IMAGE:51338	Homo sapiens clone 23608 mRNA sequence
+1	13	5	IMAGE:70218	KIAA1464--KIAA1464 protein
+1	13	6	IMAGE:51547	ESTs
+1	13	7	IMAGE:49953	"ESTs, Weakly similar to ALU6_HUMAN ALU"
+1	13	8	IMAGE:46286	TRIP8--thyroid hormone receptor intera
+1	13	9	IMAGE:52086	Unknown
+1	13	10	IMAGE:85403	WBP2--WW domain binding protein 2
+1	13	11	IMAGE:49533	ESTs
+1	13	12	IMAGE:46289	ESTs
+1	13	13	IMAGE:50219	ESTs
+1	13	14	IMAGE:46496	"Homo sapiens cDNA: FLJ23573 fis, clone"
+1	13	15	IMAGE:52577	Homo sapiens clone 23579 mRNA sequence
+1	13	16	IMAGE:52730	CPNE4--copine IV
+1	13	17	IMAGE:47362	ADAM23--a disintegrin and metalloprote
+1	13	18	IMAGE:33293	"PSCD4--pleckstrin homology, Sec7 and c"
+1	13	19	IMAGE:49842	ESTs
+1	13	20	IMAGE:50559	ESTs
+1	13	21	IMAGE:52339	ESTs
+1	13	22	IMAGE:50491	BAI3--brain-specific angiogenesis inhi
+1	14	1	IMAGE:83180	MGP--matrix Gla protein
+1	14	2	IMAGE:85060	CGI-44--CGI-44 protein; sulfide dehydr
+1	14	3	IMAGE:35770	Unknown
+1	14	4	IMAGE:239075	Unknown
+1	14	5	IMAGE:363185	"ESTs, Moderately similar to ALU1_HUMAN"
+1	14	6	IMAGE:566024	ESTs
+1	14	7	IMAGE:739852	"ESTs, Moderately similar to ALU4_HUMAN"
+1	14	8	IMAGE:800278	Unknown
+1	14	9	IMAGE:990792	5730420M11Ri--RIKEN cDNA 5730420M11 ge
+1	14	10	IMAGE:990899	Rpl12--ribosomal protein L12
+1	14	11	IMAGE:990981	ESTs
+1	14	12	IMAGE:991093	1110014F24Ri--RIKEN cDNA 1110014F24 ge
+1	14	13	IMAGE:1374564	ESTs
+1	14	14	IMAGE:1374595	"ESTs, Weakly similar to ALUB_HUMAN !!!"
+1	14	15	IMAGE:1454483	Unknown
+1	14	16	IMAGE:1454534	"ESTs, Weakly similar to S35305 zinc fi"
+1	14	17	IMAGE:1454526	Unknown
+1	14	18	IMAGE:1454883	Unknown
+1	14	19	IMAGE:1861132	Unknown
+1	14	20	IMAGE:1861158	Unknown
+1	14	21	IMAGE:1861822	Unknown
+1	14	22	IMAGE:1861884	ESTs
+1	15	1	IMAGE:1861968	Unknown
+1	15	2	IMAGE:1862084	ESTs
+1	15	3	IMAGE:1862104	Unknown
+1	15	4	IMAGE:1862171	ESTs
+1	15	5	IMAGE:2216450	Unknown
+1	15	6	IMAGE:2216580	EST
+1	15	7	IMAGE:2216612	Unknown
+1	15	8	IMAGE:2216672	EST
+1	15	9	IMAGE:2216738	Unknown
+1	15	10	IMAGE:2216766	SUPT3H--suppressor of Ty (S.cerevisiae
+1	15	11	IMAGE:2217123	EST
+1	15	12	IMAGE:2217299	EST
+1	15	13	IMAGE:2217374	Unknown
+1	15	14	IMAGE:2217455	Unknown
+1	15	15	IMAGE:2217459	Unknown
+1	15	16	IMAGE:2217460	Unknown
+1	15	17	IMAGE:2217878	EST
+1	15	18	IMAGE:2217890	ESTs
+1	15	19	IMAGE:2217979	Unknown
+1	15	20	IMAGE:2218058	Unknown
+1	15	21	IMAGE:2218108	Unknown
+1	15	22	IMAGE:2218130	Unknown
+1	16	1	IMAGE:2218729	ESTs
+1	16	2	IMAGE:2218751	Unknown
+1	16	3	IMAGE:2218778	Unknown
+1	16	4	IMAGE:2218801	Unknown
+1	16	5	IMAGE:2218839	EST
+1	16	6	IMAGE:2218910	EST
+1	16	7	IMAGE:320336	@WASF3--Brush-1=expressed in nl. breast
+1	16	8	IMAGE:267569	MLH1--MLH1=DNA mismatch repair mutL ho
+1	16	9	IMAGE:267758	DPP4--CD26=dipeptidylpeptidase IV Yes
+1	16	10	IMAGE:269124	MLANA--MART-1=melanoma antigen recogni
+1	16	11	IMAGE:269783	RAC1--randomly sequenced mRNA
+1	16	12	IMAGE:270770	IRF4--IRF-4=LSIRF=Mum1=homologue of Pi
+1	16	13	IMAGE:283048	MAN2A1--golgi alpha-mannosidaseII
+1	16	14	IMAGE:289743	PLXNB1--plexin B1=KIAA0407=transmembra
+1	16	15	IMAGE:289965	"PTPN12--Protein tyrosine phosphatase,"
+1	16	16	IMAGE:290563	PTGS1--Prostaglandin-endoperoxide synt
+1	16	17	IMAGE:290871	ITGA3--CD49C=Integrin alpha 3
+1	16	18	IMAGE:291660	SLC25A5--Adenine nucleotide translocat
+1	16	19	IMAGE:295826	CD53--CD53
+1	16	20	IMAGE:296688	KIAA0265--KIAA0265
+1	16	21	IMAGE:297219	CTSB--cathepsin B
+1	16	22	IMAGE:297739	DFFA--DNA fragmentation factor-45
+1	17	1	IMAGE:297810	PPP2R5B--protein phosphatase 2A B56-be
+1	17	2	IMAGE:298147	PDGFRA--PDGF Receptor Alpha
+1	17	3	IMAGE:302191	CSK--csk=C-SRC-kinase
+1	17	4	IMAGE:302527	CSNK1D--Casein kinase I delta
+1	17	5	IMAGE:302937	MAX--max=myc interacting HLH protein
+1	17	6	IMAGE:306139	BCL7A--BCL-7A
+1	17	7	IMAGE:306578	TNK1--tyrosine kinase (Tnk1)
+1	17	8	IMAGE:307293	RAP1A--Krev-1=RAP-1A
+1	17	9	IMAGE:378364	PIG6--PRODH=proline dehydrogenase/prol
+1	17	10	IMAGE:380403	ARHA--RhoA=GTP-binding protein
+1	17	11	IMAGE:381327	PCDHGA11--protocadherin 43 for abbrevi
+1	17	12	IMAGE:382913	RALB--RAL-B=GTP-binding protein
+1	17	13	IMAGE:384692	KIAA0515--OX-40
+1	17	14	EmptyWell	EmptyWell
+1	17	15	IMAGE:428011	ZNF220--MOZ=monocytic leukaemia zinc f
+1	17	16	IMAGE:428741	FYB--SLAP-130=SLP-76 associated protei
+1	17	17	IMAGE:429091	H2AFL--histone 2A-like protein (H2A/l)
+1	17	18	IMAGE:429830	"ALDH1B1--Aldehyde dehydrogenase, mitoc"
+1	17	19	IMAGE:430038	FYB--SLAP-130=SLP-76 associated protei
+1	17	20	IMAGE:855843	@UQCRB--Ubiquinol cytochrome C reductas
+1	17	21	IMAGE:470074	PRNP--PrP=prion protein
+1	17	22	IMAGE:470185	TAB1--TAB1=activator of TAK1 MAPKKK (T
+1	18	1	IMAGE:470615	FCGR1A--CD64=high affinity immunogobul
+1	18	2	IMAGE:470953	HLA-DRB1--MHC Class II=DR beta
+1	18	3	IMAGE:471218	TCF8--AREB6=ZEB=zinc finger homeodomai
+1	18	4	IMAGE:471495	AOX1--aldehyde oxidase=hAOX
+1	18	5	IMAGE:486108	PGAM1--phosphoglycerate mutase brain i
+1	18	6	IMAGE:486233	PRO2706--RAB-7
+1	18	7	IMAGE:486617	PDGFRA--PDGF Receptor Alpha
+1	18	8	IMAGE:486700	CYR61--CYR61=gig1=growth-factor induci
+1	18	9	IMAGE:487770	IRF6--IRF-6=interferon regulatory fact
+1	18	10	IMAGE:488178	C10=predicted protein adjacent to SHP-
+1	18	11	IMAGE:667996	FUBP3--FBP3=FUSE binding protein 3
+1	18	12	IMAGE:668262	XPA--XPA=Nucleotide excision repair DN
+1	18	13	IMAGE:668495	PIK3C3--Phosphatidylinositol 3-kinase
+1	18	14	IMAGE:668898	NUP153--hnup153=nuclear pore complex p
+1	18	15	IMAGE:669523	CEBPD--NF-IL6 beta
+1	18	16	IMAGE:682207	IRF4--IRF-4=LSIRF=Mum1=homologue of Pi
+1	18	17	IMAGE:686306	@LRMP--JAW1=lymphoid-restricted membran
+1	18	18	IMAGE:685022	DGKE--Diacylglycerol kinase epsilon Ye
+1	18	19	IMAGE:724303	@EIF3S9--eIF-3=translation initiation f
+1	18	20	IMAGE:685909	NDR--Ndr protein kinase Yes
+1	18	21	IMAGE:686884	G protein-linked receptor (clone GPCR
+1	18	22	IMAGE:687592	OSMR--oncostatin-M specific receptor b
+1	19	1	IMAGE:701422	IL7--IL-7
+1	19	2	IMAGE:701574	TK1--Thymidine kinase 1 soluble
+1	19	3	IMAGE:703764	RFC3--Replication factor C 38kD subuni
+1	19	4	IMAGE:703894	"EST from ccr2b (ccr2), ccr2a (ccr2), c"
+1	19	5	IMAGE:704548	REL--c-rel=NF-kB family member frequen
+1	19	6	IMAGE:704891	IDUA--alpha-L-iduronidase (IDUA)
+1	19	7	IMAGE:724303	EIF3S9--eIF-3=translation initiation f
+1	19	8	IMAGE:724426	"PHKG2--Phosphorylase kinase, gamma 2 c"
+1	19	9	IMAGE:724632	CISH--Cytokine inducible SH2-containin
+1	19	10	IMAGE:725067	EEF1A1--EF-1 alpha=Elongation factor 1
+1	19	11	IMAGE:725588	BCKDHA--branched-chain alpha-keto acid
+1	19	12	IMAGE:726209	HLA-DRA--MHC Class II=DR alpha
+1	19	13	IMAGE:1326908	ADARB1--DRADA2a=dsRNA adenosine deamin
+1	19	14	IMAGE:1335255	SLP65--BLNK=SLP-76 homologue involved
+1	19	15	IMAGE:1336608	MAP3K1--MEKK1=MEK kinase 1=MAP kinase
+1	19	16	IMAGE:1337358	"ABH--alkB=E.coli AlkB homolog, a prote"
+1	19	17	IMAGE:1339831	RFX5--RFX5=mutated in bare lymphocyte
+1	19	18	IMAGE:1350545	SPIB--Spi-B transcription factor Yes
+1	19	19	IMAGE:1371613	VASP=Vasodilator-stimulated phosphopro
+1	19	20	IMAGE:1371945	Glucocorticoid receptor alpha
+1	19	21	IMAGE:1376215	SCGF--SCGF-beta=lymphocyte secreted C-
+1	19	22	1377154	DNA damage repair and recombination pr
+1	20	1	1392225	"ROCK1--Rho-associated, coiled-coil con"
+1	20	2	IMAGE:684996	@BRAF--B-raf Ser/Thr protein kinase
+1	20	3	IMAGE:1427788	Unknown
+1	20	4	IMAGE:1457955	Unknown
+1	20	5	IMAGE:1470297	BCL9--BCL-9
+1	20	6	IMAGE:1476529	OSTF1--osteoclast stimulating factor=c
+1	20	7	IMAGE:1517353	ZNF22--HKR-T1=Lymphoid-restricted krup
+1	20	8	IMAGE:1523215	CDKN2A--p14-INK4b=p15-INK4b=Cyclin-dep
+1	20	9	IMAGE:901023	@STK18--SAK=serine/threonine protein ki
+1	20	10	EmptyWell	EmptyWell
+1	20	11	EmptyWell	EmptyWell
+1	20	12	EmptyWell	EmptyWell
+1	20	13	EmptyWell	EmptyWell
+1	20	14	EmptyWell	EmptyWell
+1	20	15	IMAGE:753923	"PRKCB1--PKC beta =Protein kinase C, be"
+1	20	16	IMAGE:324815	@PLCB4--PLCB4=phospholipase C beta 4
+1	20	17	IMAGE:68977	PSMB10--Proteasome-like subunit (MECL-
+1	20	18	IMAGE:200814	MME--CD10=CALLA=Neprilysin=enkepalinas
+1	20	19	IMAGE:813256	ABCB1--MDR1=Multidrug resistance prote
+1	20	20	IMAGE:244355	IL2RG--IL-2/IL-4/IL-7/IL-9/IL-15 recep
+1	20	21	IMAGE:810331	AKT1--BPGF-1=bone-derived growth facto
+1	20	22	IMAGE:755054	IL18R1--putative transmembrane recepto
+1	21	1	IMAGE:342378	DUSP5--DUSP5=Dual specificity phosphat
+1	21	2	IMAGE:342378	@DUSP5--DUSP5=Dual specificity phosphat
+1	21	3	IMAGE:50614	SNW1--Skip=ski oncogene interacting nu
+1	21	4	IMAGE:810743	MLF2--MLF2=myelodysplasia/myeloid leuk
+1	21	5	IMAGE:30170	CASP3--CASPASE-3=CPP32 isoform alpha=y
+1	21	6	IMAGE:768496	EBI3--EBI3=cytokine receptor
+1	21	7	IMAGE:813426	GS3955--cancellous bone osteoblast GS3
+1	21	8	IMAGE:813166	TRAF6--TRAF6=TNF receptor associated f
+1	21	9	IMAGE:138917	MYCL1--L-myc
+1	21	10	IMAGE:34852	BIRC2--c-IAP1=MIHB=IAP homolog B Yes
+1	21	11	IMAGE:768497	SCYA18--PARC=DC-CK1=CC chemokine targe
+1	21	12	IMAGE:144932	DOC1--putative oral tumor suppressor p
+1	21	13	IMAGE:47475	PIR121--inducible protein Yes
+1	21	14	EmptyWell	EmptyWell
+1	21	15	IMAGE:811842	SRP72--Signal recognition particle 72
+1	21	16	IMAGE:668442	DDR2--Receptor protein tyrosine kinase
+1	21	17	IMAGE:266106	YWHAE--14-3-3 epsilon
+1	21	18	IMAGE:243882	PPM1D--protein phosphatase Wip1
+1	21	19	IMAGE:590774	MAPK13--p38delta mRNA=stress-activated
+1	21	20	IMAGE:214985	NDP52--ndp52=nuclear domain 10 protein
+1	21	21	IMAGE:124575	ZNF200--Pyrin (MEFV)=Marenostrin=Zinc
+1	21	22	IMAGE:755952	PLXNB1--plexin B1=KIAA0407=transmembra
+1	22	1	IMAGE:842825	@GSPT1--G1 to S phase transition 1
+1	22	2	IMAGE:289570	NSMAF--FAN=WD-repeat protein coupling
+1	22	3	IMAGE:429368	HOX11--HOX-11 homeobox protein
+1	22	4	EmptyWell	EmptyWell
+1	22	5	IMAGE:277507	GSTM5--Glutathione S-transferase M5
+1	22	6	IMAGE:34140	GCL--grancalcin=EF-hand calcium-bindin
+1	22	7	IMAGE:472008	CCR1--C-C chemokine receptor 1=CC CK1=
+1	22	8	IMAGE:415102	CDC25C--cdc25C=M-phase inducer phospha
+1	22	9	IMAGE:307471	TM4SF2--TALLA=T-cell acute lymphoblast
+1	22	10	IMAGE:428103	CD1C--CD1C Yes
+1	22	11	IMAGE:344430	BMP7--OP-1=osteogenic protein in the T
+1	22	12	IMAGE:342181	BCL2--BCL-2
+1	22	13	IMAGE:154493	IFI41--HNPP=nuclear phosphoprotein Yes
+1	22	14	IMAGE:290607	NEK1--Similar to nek1=S/T/Y kinase rel
+1	22	15	IMAGE:290607	@NEK1--Similar to nek1=S/T/Y kinase rel
+1	22	16	IMAGE:196488	P2Y5--purinergic receptor P2Y5=RB into
+1	22	17	IMAGE:309288	RFC4--replication factor C
+1	22	18	IMAGE:26997	RAD51C--RAD51C=Recombination/repair Ra
+1	22	19	empty	"Empty, Spot Not Printed"
+1	22	20	empty	"Empty, Spot Not Printed"
+1	22	21	empty	"Empty, Spot Not Printed"
+1	22	22	empty	"Empty, Spot Not Printed"
+2	1	1	IMAGE:210368	KIAA0125--KIAA0125 gene product
+2	1	2	IMAGE:211206	KIAA0110--gene predicted from cDNA wit
+2	1	3	IMAGE:234907	KIAA0094--KIAA0094 protein
+2	1	4	IMAGE:713653	MESDC2--mesoderm development candidate
+2	1	5	IMAGE:563403	"PSMD5--proteasome (prosome, macropain)"
+2	1	6	IMAGE:25755	"SETDB1--SET domain, bifurcated 1"
+2	1	7	IMAGE:229723	SP140--LYSP100=SP140
+2	1	8	IMAGE:120881	"RAB31--RAB31, member RAS oncogene fami"
+2	1	9	IMAGE:550355	"PRKCL2--PRK2=lipid-activated, protein"
+2	1	10	IMAGE:325062	SLC20A1--solute carrier family 20 (pho
+2	1	11	IMAGE:592359	HKE4--HLA class II region expressed ge
+2	1	12	IMAGE:234559	TM4SF4--transmembrane 4 superfamily me
+2	1	13	IMAGE:769645	NDST2--N-deacetylase/N-sulfotransferas
+2	1	14	IMAGE:810063	"GFER--growth factor, erv1 (S. cerevisi"
+2	1	15	IMAGE:360168	RABIF--RAB interacting factor
+2	1	16	IMAGE:145001	Homo sapiens similar to son of sevenle
+2	1	17	IMAGE:753285	GYG--glycogenin
+2	1	18	IMAGE:34671	CRH--corticotropin releasing hormone
+2	1	19	IMAGE:46518	"DTNA--dystrobrevin, alpha"
+2	1	20	IMAGE:345586	TNFRSF12--DR3=Apo3=WSL-1=TRAMP=LARD=de
+2	1	21	IMAGE:768496	EBI3--EBI3=cytokine receptor
+2	1	22	IMAGE:30170	CASP3--CASPASE-3=CPP32 isoform alpha=y
+2	2	1	IMAGE:767798	"ATOX1--ATX1 (antioxidant protein 1, ye"
+2	2	2	IMAGE:113298	FLJ23018--hypothetical protein FLJ2301
+2	2	3	IMAGE:770868	NAB2--NGFI-A binding protein 2 (ERG1 b
+2	2	4	IMAGE:77897	KHK--ketohexokinase (fructokinase)
+2	2	5	IMAGE:112629	"MAN1A1--mannosidase, alpha, class 1A,"
+2	2	6	IMAGE:810986	"PPP1R11--protein phosphatase 1, regula"
+2	2	7	IMAGE:50506	MAPK6--erk3=extracellular signal-regul
+2	2	8	IMAGE:144834	MAP7--microtubule-associated protein 7
+2	2	9	IMAGE:296757	GYPA--glycophorin A (includes MN blood
+2	2	10	IMAGE:45632	GYS1--glycogen synthase 1 (muscle)
+2	2	11	IMAGE:136235	GSTP1--glutathione S-transferase pi
+2	2	12	IMAGE:823928	TPM1--tropomyosin 1 (alpha)
+2	2	13	IMAGE:137940	GSTM3--glutathione S-transferase M3 (b
+2	2	14	IMAGE:381812	Unknown
+2	2	15	IMAGE:153340	GRO2--GRO2 oncogene
+2	2	16	IMAGE:134748	GCSH--glycine cleavage system protein
+2	2	17	IMAGE:203721	"GCLC--glutamate-cysteine ligase, catal"
+2	2	18	IMAGE:753467	SLC2A3--solute carrier family 2 (facil
+2	2	19	IMAGE:214990	"GSN--gelsolin (amyloidosis, Finnish ty"
+2	2	20	IMAGE:562927	LRRFIP1--Leucine rich repeat (in FLII)
+2	2	21	IMAGE:197525	FMO5--flavin containing monooxygenase
+2	2	22	IMAGE:811162	FMOD--fibromodulin
+2	3	1	IMAGE:809464	FGFR2=Fibroblast growth factor recepto
+2	3	2	IMAGE:121722	FBN2--fibrillin 2 (congenital contract
+2	3	3	IMAGE:66728	FECH--ferrochelatase (protoporphyria)
+2	3	4	IMAGE:813757	FOLR2--folate receptor 2 (fetal)
+2	3	5	IMAGE:79629	CXCR4--CXC chemokine receptor 4= fusin
+2	3	6	IMAGE:897646	"COL9A3--collagen, type IX, alpha 3"
+2	3	7	IMAGE:80399	"SFRS1--splicing factor, arginine/serin"
+2	3	8	IMAGE:80549	PBX2--pbx-2 = pre-B cell leukemia tran
+2	3	9	IMAGE:823779	Unknown
+2	3	10	IMAGE:768638	SLC15A2--solute carrier family 15 (H+/
+2	3	11	IMAGE:839623	D1S155E--NRAS-related gene
+2	3	12	IMAGE:788472	NUCB1--nucleobindin 1
+2	3	13	IMAGE:774751	NEDD4--neural precursor cell expressed
+2	3	14	IMAGE:814615	MTHFD2--NAD-dependent methylenetetrahy
+2	3	15	IMAGE:815542	MX1--MxA=interferon-induced cellular r
+2	3	16	IMAGE:824070	MTM1--myotubular myopathy 1
+2	3	17	IMAGE:840942	HLA-DPB1--major histocompatibility com
+2	3	18	IMAGE:71432	MST1--MSP=MST1=macrophage stimulating
+2	3	19	IMAGE:713469	MEF2A--MADS box transcription enhancer
+2	3	20	IMAGE:949914	EPRS--glutamyl-prolyl-tRNA synthetase
+2	3	21	IMAGE:809598	HLA-DQB1--major histocompatibility com
+2	3	22	IMAGE:824547	MHC2TA--CIITA-8=MHC class II transacti
+2	4	1	IMAGE:897567	LDHA--Lactate dehydrogenase A
+2	4	2	IMAGE:842836	SERPINB1--serine (or cysteine) protein
+2	4	3	IMAGE:85202	SDS--serine dehydratase
+2	4	4	IMAGE:592540	KRT5--keratin 5 (epidermolysis bullosa
+2	4	5	IMAGE:842980	DRG1--developmentally regulated GTP-bi
+2	4	6	IMAGE:754436	KNS2--Kinesin light chain
+2	4	7	IMAGE:363377	GTF2IRD1--GTF2I repeat domain-containi
+2	4	8	IMAGE:232908	PX19--px19-like protein
+2	4	9	IMAGE:115447	DKFZP564N136--DKFZP564N1363 protein
+2	4	10	IMAGE:359713	ESTs
+2	4	11	IMAGE:754490	SLC25A16--solute carrier family 25 (mi
+2	4	12	IMAGE:214077	Homo sapiens clone FLC0578 PRO2852 mRN
+2	4	13	IMAGE:197474	ESTs
+2	4	14	IMAGE:247233	ESTs
+2	4	15	IMAGE:201322	ESTs
+2	4	16	IMAGE:247925	DRIM--down-regulated in metastasis
+2	4	17	IMAGE:113488	ESTs
+2	4	18	IMAGE:208769	"ESTs, Weakly similar to ALU2_HUMAN ALU"
+2	4	19	IMAGE:202168	Unknown
+2	4	20	IMAGE:356707	RPS6--ribosomal protein S6
+2	4	21	IMAGE:283715	"ESTs, Moderately similar to LCP2_HUMAN"
+2	4	22	IMAGE:340722	MLF1--myeloid leukemia factor 1
+2	5	1	IMAGE:470379	STAC--src homology three (SH3) and cys
+2	5	2	IMAGE:345128	"Homo sapiens, Similar to rhotekin, clo"
+2	5	3	IMAGE:156211	"ATP6B1--ATPase, H+ transporting, lysos"
+2	5	4	IMAGE:297148	"ESTs, Moderately similar to E2BA_HUMAN"
+2	5	5	IMAGE:123087	"PTMA--prothymosin, alpha (gene sequenc"
+2	5	6	IMAGE:306484	CRSP6--cofactor required for Sp1 trans
+2	5	7	IMAGE:122063	SLC7A7--solute carrier family 7 (catio
+2	5	8	IMAGE:136303	LOC57799--RAR (RAS like GTPASE)
+2	5	9	IMAGE:503760	Homo sapiens mRNA for KIAA1726 protein
+2	5	10	IMAGE:795640	MSH5--mutS (E. coli) homolog 5
+2	5	11	IMAGE:501651	"Homo sapiens cDNA: FLJ21893 fis, clone"
+2	5	12	IMAGE:505425	ESTs
+2	5	13	IMAGE:505000	ESTs
+2	5	14	IMAGE:795208	"NME5--non-metastatic cells 5, protein"
+2	5	15	IMAGE:299721	CBFA2T1--ETO=putative zinc finger tran
+2	5	16	IMAGE:269246	"Homo sapiens cDNA: FLJ23005 fis, clone"
+2	5	17	IMAGE:487912	POP2--popeye protein 2
+2	5	18	IMAGE:340949	KIAA1014--KIAA1014 protein
+2	5	19	IMAGE:129227	KIAA0020--KIAA0020 gene product
+2	5	20	IMAGE:259017	ESTs
+2	5	21	IMAGE:322067	"DNAJC8--DnaJ (Hsp40) homolog, subfamil"
+2	5	22	IMAGE:282500	PLXNB3--plexin B3
+2	6	1	IMAGE:142579	TCL6--T-cell leukemia/lymphoma 6
+2	6	2	IMAGE:302286	WNT2--wingless-type MMTV integration s
+2	6	3	IMAGE:505005	TERF1--telomeric repeat binding factor
+2	6	4	IMAGE:358083	KIAA0226--KIAA0226 gene product
+2	6	5	IMAGE:308467	KIAA1357--KIAA1357 protein
+2	6	6	IMAGE:258263	ESTs
+2	6	7	IMAGE:310138	FOXF2--forkhead box F2
+2	6	8	IMAGE:502819	NUCKS--similar to rat nuclear ubiquito
+2	6	9	IMAGE:282978	TGFB2--TGF beta-2
+2	6	10	IMAGE:281769	Unknown
+2	6	11	IMAGE:782433	ESTs
+2	6	12	IMAGE:782806	ESTs
+2	6	13	IMAGE:795424	Homo sapiens mRNA; cDNA DKFZp434D024 (
+2	6	14	IMAGE:771326	CD81--CD81 antigen (target of antiprol
+2	6	15	IMAGE:795358	"COPB--coatomer protein complex, subuni"
+2	6	16	IMAGE:770979	FLJ22252--hypothetical protein FLJ2225
+2	6	17	IMAGE:770969	Homo sapiens mRNA; cDNA DKFZp434G0920
+2	6	18	IMAGE:771142	LOC51279--complement C1r-like proteina
+2	6	19	IMAGE:782141	"ESTs, Moderately similar to A33391 cal"
+2	6	20	IMAGE:782771	ESTs
+2	6	21	IMAGE:232697	"ESTs, Weakly similar to YOJ1_CAEEL HYP"
+2	6	22	IMAGE:782490	ESTs
+2	7	1	IMAGE:809792	RAB3-GAP150--rab3 GTPase-activating pr
+2	7	2	IMAGE:809583	TZFP--testis zinc finger protein
+2	7	3	IMAGE:811069	ESTs
+2	7	4	IMAGE:795564	"Homo sapiens, clone IMAGE:3610712, mRN"
+2	7	5	IMAGE:795736	FKBP6--FK506-binding protein 6 (36kD)
+2	7	6	IMAGE:795833	"ESTs, Weakly similar to putative p150"
+2	7	7	IMAGE:211227	"ESTs, Moderately similar to ALU7_HUMAN"
+2	7	8	IMAGE:795185	XPR1--xenotropic and polytropic retrov
+2	7	9	IMAGE:795293	Homo sapiens mRNA; cDNA DKFZp434I0623
+2	7	10	IMAGE:365149	FECH--ferrochelatase (protoporphyria)
+2	7	11	IMAGE:108851	"ESTs, Moderately similar to ALU1_HUMAN"
+2	7	12	IMAGE:110393	PPP2R3--Protein phosphatase 2 (formerl
+2	7	13	IMAGE:360854	"RBP3--retinol-binding protein 3, inter"
+2	7	14	IMAGE:755689	"RARG--retinoic acid receptor, gamma"
+2	7	15	IMAGE:487777	RB1--RB = retinoblastoma susceptibilit
+2	7	16	IMAGE:361323	RGS1--regulator of G-protein signallin
+2	7	17	IMAGE:383188	RCV1--recoverin
+2	7	18	IMAGE:971276	Unknown
+2	7	19	IMAGE:415828	PAPPA--pregnancy-associated plasma pro
+2	7	20	IMAGE:454822	ITIH1--inter-alpha (globulin) inhibito
+2	7	21	IMAGE:780947	"POLD1--polymerase (DNA directed), delt"
+2	7	22	IMAGE:435099	GP9--glycoprotein IX (platelet)
+2	8	1	IMAGE:586803	"PGF--placental growth factor, vascular"
+2	8	2	IMAGE:454475	"PHKA2--Phosphorylase kinase, alpha 2 ("
+2	8	3	IMAGE:205239	"PRKCQ--PKC theta=Protein kinase C, the"
+2	8	4	IMAGE:434833	EPB41--erythrocyte membrane protein ba
+2	8	5	IMAGE:756709	USP8--ubiquitin specific protease 8
+2	8	6	IMAGE:362718	KCNA1--potassium voltage-gated channel
+2	8	7	IMAGE:263727	"D5S346--DNA segment, single copy probe"
+2	8	8	IMAGE:731029	"PIK4CA--phosphatidylinositol 4-kinase,"
+2	8	9	IMAGE:773330	GPNMB--glycoprotein (transmembrane) nm
+2	8	10	IMAGE:154790	NGFR--nerve growth factor receptor (TN
+2	8	11	IMAGE:743188	NUP214--nucleoporin 214kD (CAIN)
+2	8	12	IMAGE:1031203	NCYM--DNA-binding transcriptional acti
+2	8	13	IMAGE:436554	MPO--myeloperoxidase
+2	8	14	IMAGE:611255	MYF6--myogenic factor 6 (herculin)
+2	8	15	IMAGE:323500	CASP6--CASPASE-6=mch2 alpha
+2	8	16	IMAGE:854668	CDKN1B--cyclin-dependent kinase inhibi
+2	8	17	IMAGE:757222	HMGCS2--3-hydroxy-3-methylglutaryl-Coe
+2	8	18	IMAGE:770199	KIAA1564--KIAA1564 protein
+2	8	19	IMAGE:49567	Human clone 23948 mRNA sequence
+2	8	20	IMAGE:280155	Unknown
+2	8	21	IMAGE:510002	CSNK1G2--casein kinase I gamma 2 Yes
+2	8	22	IMAGE:252953	GS3786--predicted osteoblast protein
+2	9	1	IMAGE:177772	CTNNA2--catenin (cadherin-associated p
+2	9	2	IMAGE:756490	BCAT2--branched chain aminotransferase
+2	9	3	IMAGE:23012	BLZF1--basic leucine zipper nuclear fa
+2	9	4	IMAGE:50519	ARNTL--aryl hydrocarbon receptor nucle
+2	9	5	IMAGE:279970	ADORA2A--adenosine A2a receptor
+2	9	6	IMAGE:773478	ACK1--activated p21cdc42Hs kinase
+2	9	7	IMAGE:757404	VBP1--von Hippel-Lindau binding protei
+2	9	8	IMAGE:80633	TLR2--toll-like receptor 2
+2	9	9	IMAGE:502486	TANK--TRAF family member-associated NF
+2	9	10	IMAGE:857874	TAB1--transforming growth factor beta-
+2	9	11	IMAGE:161373	PMS2L4--PMS6=DNA mismatch repair prote
+2	9	12	IMAGE:263159	PL6--PL6 protein
+2	9	13	IMAGE:141852	"P2RY2--purinergic receptor P2Y, G-prot"
+2	9	14	IMAGE:156437	"ATP1A2--ATPase, Na+/K+ transporting, a"
+2	9	15	IMAGE:432072	NFATC1--nuclear factor of activated T-
+2	9	16	IMAGE:470122	KCNMB1--potassium large conductance ca
+2	9	17	IMAGE:845419	"FANCA--Fanconi anemia, complementation"
+2	9	18	IMAGE:866882	FDFT1--farnesyl-diphosphate farnesyltr
+2	9	19	IMAGE:884867	EIF5--eukaryotic translation initiatio
+2	9	20	IMAGE:725321	ESR1--Estrogen receptor
+2	9	21	IMAGE:743041	KIAA0632--KIAA0632 protein
+2	9	22	IMAGE:745214	KDELR2--KDEL (Lys-Asp-Glu-Leu) endopla
+2	10	1	IMAGE:153505	DPT--dermatopontin
+2	10	2	IMAGE:755228	DNM1--dynamin 1
+2	10	3	IMAGE:878468	DPH2L1--diptheria toxin resistance pro
+2	10	4	IMAGE:770880	"PRIM2A--primase, polypeptide 2A (58kD)"
+2	10	5	IMAGE:433162	"POLE--polymerase (DNA directed), epsil"
+2	10	6	IMAGE:293689	DSC2--desmocollin 2
+2	10	7	IMAGE:83549	"C1R--complement component 1, r subcomp"
+2	10	8	IMAGE:460470	C4BPB--complement component 4-binding
+2	10	9	IMAGE:713974	CSF1R--CD115=fms=CSF-1 receptor
+2	10	10	IMAGE:769959	"COL4A2--collagen, type IV, alpha 2"
+2	10	11	IMAGE:433155	F5--coagulation factor V (proaccelerin
+2	10	12	IMAGE:344759	"CSTF1--cleavage stimulation factor, 3'"
+2	10	13	IMAGE:415102	CDC25C--cdc25C=M-phase inducer phospha
+2	10	14	IMAGE:377461	"CAV1--caveolin 1, caveolae protein, 22"
+2	10	15	IMAGE:845355	CTSC--cathepsin C
+2	10	16	IMAGE:377314	"CSNK2A2--casein kinase 2, alpha prime"
+2	10	17	IMAGE:745402	SSP29--acidic protein rich in leucines
+2	10	18	IMAGE:80221	CPA3--carboxypeptidase A3 (mast cell)
+2	10	19	IMAGE:109888	"ESTs, Highly similar to Z169_HUMAN ZIN"
+2	10	20	IMAGE:789014	SLC12A4--solute carrier family 12 (pot
+2	10	21	IMAGE:842906	HRI--heme-regulated initiation factor
+2	10	22	IMAGE:711680	Ikaros=LyF-1=hIk-1 Yes
+2	11	1	IMAGE:843069	PWP1--nuclear phosphoprotein similar t
+2	11	2	IMAGE:841093	CUL1--cullin 1
+2	11	3	IMAGE:739126	TSTA3--tissue specific transplantation
+2	11	4	IMAGE:815285	ERPROT213-21--protein with polyglutami
+2	11	5	IMAGE:814101	TFDP2--DP-2=E2F interacting transcript
+2	11	6	IMAGE:591907	"ARHD--ras homolog gene family, member"
+2	11	7	IMAGE:843312	DDX17--DEAD/H (Asp-Glu-Ala-Asp/His) bo
+2	11	8	IMAGE:48906	"Homo sapiens Cri-du-chat region mRNA,"
+2	11	9	IMAGE:814270	CCNA2--Cyclin A
+2	11	10	IMAGE:827120	HIBCH--3-hydroxyisobutyryl-Coenzyme A
+2	11	11	IMAGE:814306	TPD52--tumor protein D52
+2	11	12	IMAGE:711450	P84--p84=RB binding nuclear matrix pro
+2	11	13	IMAGE:826166	HRIHFB2206--HRIHFB2206 protein
+2	11	14	IMAGE:897636	SEC13L1--SEC13 (S. cerevisiae)-like 1
+2	11	15	IMAGE:781019	PON2--paraoxonase 2
+2	11	16	IMAGE:782692	"PIK4CB--phosphatidylinositol 4-kinase,"
+2	11	17	IMAGE:838676	CAPN6--calpain 6
+2	11	18	IMAGE:85682	Unknown
+2	11	19	IMAGE:684634	KPNB1--karyopherin (importin) beta 1
+2	11	20	IMAGE:381866	GUCA1A--guanylate cyclase activator 1A
+2	11	21	IMAGE:214162	MT1H--metallothionein
+2	11	22	IMAGE:609332	"COL14A1--collagen, type XIV, alpha 1;"
+2	12	1	IMAGE:42076	TFG--TRK-fused gene
+2	12	2	IMAGE:782339	FLJ20984--hypothetical protein FLJ2098
+2	12	3	IMAGE:33051	FOXG1B--forkhead box G1B
+2	12	4	IMAGE:838359	"GUCY1B3--guanylate cyclase 1, soluble,"
+2	12	5	IMAGE:121316	JAG1--jagged 1 (Alagille syndrome)
+2	12	6	IMAGE:135608	FLJ20363--hypothetical protein FLJ2036
+2	12	7	IMAGE:382773	CS-1--calcineurin-binding protein cals
+2	12	8	IMAGE:207087	KIAA0606--KIAA0606 protein; SCN Circad
+2	12	9	IMAGE:366341	AHR--aryl hydrocarbon receptor
+2	12	10	IMAGE:26566	POMT1--protein-O-mannosyltransferase 1
+2	12	11	IMAGE:841278	MIR--myosin regulatory light chain int
+2	12	12	IMAGE:66535	OAZ2--ornithine decarboxylase antizyme
+2	12	13	IMAGE:112865	"ESTs, Weakly similar to no similaritie"
+2	12	14	IMAGE:121530	"Homo sapiens, Similar to hypothetical"
+2	12	15	IMAGE:202607	ESTs
+2	12	16	IMAGE:240945	ESTs
+2	12	17	IMAGE:66774	IMPACT--hypothetical protein IMPACT
+2	12	18	IMAGE:233365	HP1-BP74--HP1-BP74
+2	12	19	IMAGE:201986	"ESTs, Weakly similar to KIAA0349 [H.sa"
+2	12	20	IMAGE:141627	FLJ20037--hypothetical protein FLJ2003
+2	12	21	IMAGE:292719	FLJ12707--hypothetical protein FLJ1270
+2	12	22	IMAGE:137581	CTL2--CTL2 gene
+2	13	1	IMAGE:813614	SPRR1B--small proline-rich protein 1B
+2	13	2	IMAGE:205633	SCYA4--MIP-1 beta=SCAY2=G-26=HC21=pAT
+2	13	3	IMAGE:49970	SSB--Sjogren syndrome antigen B (autoa
+2	13	4	IMAGE:82871	SHBG--sex hormone-binding globulin
+2	13	5	IMAGE:186132	SELE--ELAM1=endothelial leukocyte adhe
+2	13	6	IMAGE:49591	"STS--steroid sulfatase (microsomal), a"
+2	13	7	IMAGE:809578	RPS5--ribosomal protein S5
+2	13	8	IMAGE:322561	RPL31--ribosomal protein L31
+2	13	9	IMAGE:810617	RPL21--ribosomal protein L21
+2	13	10	IMAGE:123117	KDELR2--KDEL (Lys-Asp-Glu-Leu) endopla
+2	13	11	IMAGE:223098	ROM1--retinal outer segment membrane p
+2	13	12	IMAGE:26616	RPA2--replication protein A2 (32kD)
+2	13	13	IMAGE:230205	"RAB4--RAB4, member RAS oncogene family"
+2	13	14	IMAGE:30093	RANBP1--RAN binding protein 1
+2	13	15	IMAGE:127841	"PKLR--Pyruvate kinase, liver"
+2	13	16	IMAGE:756452	TYK2--tyk2=non-receptor protein tyrosi
+2	13	17	IMAGE:137531	PTPRG--R-PTP-gamma=receptor protein ty
+2	13	18	IMAGE:240099	"PTPRA--protein tyrosine phosphatase, r"
+2	13	19	IMAGE:134544	"PSMA1--proteasome (prosome, macropain)"
+2	13	20	IMAGE:713685	"PRSS2--protease, serine, 2 (trypsin 2)"
+2	13	21	IMAGE:753211	PTGER3--prostaglandin E receptor 3 (su
+2	13	22	IMAGE:235934	"PFC--properdin P factor, complement"
+2	14	1	IMAGE:245242	CPB2--carboxypeptidase B2 (plasma)
+2	14	2	IMAGE:130541	PECAM1--platelet/endothelial cell adhe
+2	14	3	IMAGE:1983008	Unknown
+2	14	4	IMAGE:1983027	Unknown
+2	14	5	IMAGE:1983075	Unknown
+2	14	6	IMAGE:1983158	EST
+2	14	7	IMAGE:1983180	Unknown
+2	14	8	IMAGE:1983218	Unknown
+2	14	9	IMAGE:1983823	Unknown
+2	14	10	IMAGE:1983913	Unknown
+2	14	11	IMAGE:1984400	EST
+2	14	12	IMAGE:1984410	Unknown
+2	14	13	IMAGE:1984438	Unknown
+2	14	14	IMAGE:1984416	Unknown
+2	14	15	IMAGE:1984594	EST
+2	14	16	IMAGE:1984591	Unknown
+2	14	17	IMAGE:1984642	Unknown
+2	14	18	IMAGE:1984672	Unknown
+2	14	19	IMAGE:1984717	Unknown
+2	14	20	IMAGE:1984731	Unknown
+2	14	21	IMAGE:1985021	EST
+2	14	22	IMAGE:1985040	ESTs
+2	15	1	IMAGE:1985053	Unknown
+2	15	2	IMAGE:1985074	Unknown
+2	15	3	IMAGE:1985101	Unknown
+2	15	4	IMAGE:1985116	Unknown
+2	15	5	IMAGE:2219249	Unknown
+2	15	6	IMAGE:2219300	Unknown
+2	15	7	IMAGE:2219328	Unknown
+2	15	8	IMAGE:2219378	Unknown
+2	15	9	IMAGE:2219482	Unknown
+2	15	10	IMAGE:2219563	EST
+2	15	11	IMAGE:2219899	EST
+2	15	12	IMAGE:2220016	Unknown
+2	15	13	IMAGE:2220036	ESTs
+2	15	14	IMAGE:2220085	Unknown
+2	15	15	IMAGE:2220171	"EST, Weakly similar to RL1X_HUMAN 60S"
+2	15	16	IMAGE:2220214	Unknown
+2	15	17	IMAGE:2220453	EST
+2	15	18	IMAGE:2220494	ESTs
+2	15	19	IMAGE:2220572	EST
+2	15	20	IMAGE:2220600	ESTs
+2	15	21	IMAGE:2221674	"ESTs, Moderately similar to putative p"
+2	15	22	IMAGE:2257921	Unknown
+2	16	1	IMAGE:2260690	Unknown
+2	16	2	IMAGE:2260719	"EST, Weakly similar to AF114816 1 KRAB"
+2	16	3	IMAGE:2260727	EST
+2	16	4	IMAGE:2260730	Unknown
+2	16	5	IMAGE:2260785	Unknown
+2	16	6	IMAGE:2260825	EST
+2	16	7	IMAGE:42502	NEO1--Neogenin (chicken) homolog 1=DCC
+2	16	8	IMAGE:130613	SDC1--Syndecan-1
+2	16	9	IMAGE:130784	RAD23B--HHR23B=XPC p58 subunit
+2	16	10	IMAGE:131577	NFATC4--NFAT3=NFATc4
+2	16	11	IMAGE:133288	MAZ--MAZ=Myc-associated zinc-finger pr
+2	16	12	IMAGE:133909	DUSP1--MKP-1=CL100=MAP kinase phosphat
+2	16	13	IMAGE:144662	CNK--PRK=putative serine/threonine pro
+2	16	14	IMAGE:145696	KLRD1--CD94=NKG2-C type II membrane pr
+2	16	15	IMAGE:146227	MADH4--Smad4=DPC4=Homologue of Mothers
+2	16	16	IMAGE:146987	NPAT--NPAT=E14=gene in ATM locus
+2	16	17	IMAGE:147251	H-plk--H-plk=Krueppel-related zinc fin
+2	16	18	IMAGE:148052	MDM2--MDM2=p53-binding protein
+2	16	19	IMAGE:156636	PPP1R2--Protein phosphatase inhibitor
+2	16	20	IMAGE:1131287	@TRIP10--CIP4=Cdc42-interacting protein
+2	16	21	IMAGE:158368	PSMB9--Proteosome chain 7=LMP2=major h
+2	16	22	IMAGE:158946	POR--Cytochrome P450 reductase Yes
+2	17	1	IMAGE:159381	RARA--RAR-alpha-1=Retinoic acid recept
+2	17	2	EmptyWell	EmptyWell
+2	17	3	IMAGE:49950	FEN1--FLAP endonuclease-1=Maturation f
+2	17	4	IMAGE:50437	MCL1--MCL1=myeloid cell differentiatio
+2	17	5	IMAGE:50865	SCYD1--CX3C chemokine=orthologue of mo
+2	17	6	IMAGE:51825	LOC51285--Similar to RIT=ras-like GTPa
+2	17	7	IMAGE:51894	RAN--RAN=GTP-binding nuclear protein Y
+2	17	8	IMAGE:52489	FGF9--FHF-3=fibroblast growth factor h
+2	17	9	IMAGE:489585	CD97--CD97
+2	17	10	IMAGE:700619	@BNIP3--BNIP3=NIP3=E1B 19K/Bcl-2-intera
+2	17	11	IMAGE:491166	HLA-DRB1--MHC Class II=DR beta
+2	17	12	IMAGE:491243	SCYB10--IP-10
+2	17	13	IMAGE:501897	ADSL--Adenylosuccinate lyase
+2	17	14	IMAGE:501952	GLRX--Glutaredoxin=catalyzes GSH (redu
+2	17	15	IMAGE:510324	@SIAH2--SIAH-2=Seven in absentia homolo
+2	17	16	IMAGE:510151	DTR--HB-EGF=Heparin binding EGF-like g
+2	17	17	IMAGE:51973	@SET--SET=fused to can in acute undiffe
+2	17	18	IMAGE:510383	IFITM1--Interferon-inducible protein
+2	17	19	IMAGE:504248	@VCL--vinculin Yes
+2	17	20	IMAGE:1016231	@OCLN--Occludin=tight junction protein
+2	17	21	IMAGE:525692	CDKN2A--p16-INK4a=Cyclin-dependent kin
+2	17	22	IMAGE:525825	IGF1R--Insulin-like growth factor 1 re
+2	18	1	IMAGE:526335	MMP9--MMP-9=Matrix metalloproteinase 9
+2	18	2	IMAGE:527073	CTNNA1--Catenin alpha1(E)
+2	18	3	IMAGE:530495	CD59--CD59=LY-6-like protein regulatin
+2	18	4	IMAGE:531313	NME2--nm23-H2=NDP kinase B=Nucleoside
+2	18	5	IMAGE:548924	EPHA5--receptor protein-tyrosine kinas
+2	18	6	IMAGE:549080	CALM2--Calmodulin 1 (phosphorylase kin
+2	18	7	IMAGE:34140	@GCL--grancalcin=EF-hand calcium-bindin
+2	18	8	IMAGE:565039	@CKN1--Cockayne syndrome 1 (classical)
+2	18	9	IMAGE:550255	DARS--aspartyl-tRNA synthetase alpha-2
+2	18	10	IMAGE:566123	@ETV5--ERM=ets family transcription fac
+2	18	11	IMAGE:730653	MLH1--MLH1=DNA mismatch repair mutL ho
+2	18	12	IMAGE:746146	@FGFR1--FGFR1=Fibroblast growth factor
+2	18	13	IMAGE:740117	@IRF7--IRF-7=interferon regulatory fact
+2	18	14	IMAGE:741088	HLA-DPB1--MHC Class II=DP beta
+2	18	15	IMAGE:741897	"PPP1CA--Protein phosphatase 1, catalyt"
+2	18	16	IMAGE:744128	CTAG1--Autoimmunogenic cancer/testis a
+2	18	17	IMAGE:727266	@ZFP36--TTP=tristetraproline=GOS24=zinc
+2	18	18	IMAGE:758495	UBL1--ubiquitin-homology domain protei
+2	18	19	IMAGE:759142	Integrin beta 6
+2	18	20	IMAGE:759500	BMPR1A--bone morphogenetic protein rec
+2	18	21	IMAGE:767804	ALDH3A2--Aldehyde dehydrogenase 10 (fa
+2	18	22	IMAGE:768151	ELF2--NERF=ets family transcription fa
+2	19	1	IMAGE:774222	PDCD6--Alg-2=Probable calcium-binding
+2	19	2	IMAGE:774621	STAT2=IFN alpha/beta-responsive transc
+2	19	3	IMAGE:783355	NCOR1--N-CoR=transcriptional corepress
+2	19	4	IMAGE:784012	RPS21--40S ribosomal protein S21
+2	19	5	IMAGE:1367795	@ESTs
+2	19	6	IMAGE:785838	GSK3A--GSK3=glycogen synthase kinase 3
+2	19	7	IMAGE:796533	UP--uridine phosphorylase Yes
+2	19	8	IMAGE:797060	RARG--RAR-gamma-1=Retinoic acid recept
+2	19	9	IMAGE:809851	ADRBK1--bark1=beta-adrenergic receptor
+2	19	10	IMAGE:811669	GLA--alpha-galactosidase A
+2	19	11	IMAGE:813829	FGF1--FGF-1=Fibroblast growth factor 1
+2	19	12	IMAGE:814068	Gap1m=brain ras GTPase-activating prot
+2	19	13	IMAGE:182264	@SELP--CD62P=P-selectin=gmp140=PADGEM
+2	19	14	IMAGE:730921	@GSTM3--Glutathione S-transferase M3 (b
+2	19	15	IMAGE:546451	@EIF4E--Eukaryotic translation initiati
+2	19	16	IMAGE:841361	@GRO2--GRO2=GRO beta=MIP2 alpha=macroph
+2	19	17	IMAGE:755176	@ZNF173--acid finger protein Yes
+2	19	18	IMAGE:324039	@LIF--LIF
+2	19	19	IMAGE:28140	@DUSP7--Dual specificity protein phosph
+2	19	20	IMAGE:428011	@ZNF220--MOZ=monocytic leukaemia zinc f
+2	19	21	IMAGE:773439	@PDGFRB--Platelet-derived growth factor
+2	19	22	IMAGE:42062	"@PTPRK--Protein tyrosine phosphatase, r"
+2	20	1	IMAGE:130202	@ATRX--ATRX=RAD54L=Recombination and DN
+2	20	2	IMAGE:1367790	@SP100--SP100=Nuclear body protein
+2	20	3	IMAGE:147097	@EGFR--EGF Receptor=epidermal growth fa
+2	20	4	IMAGE:149355	@TRAM--TRAMP protein=endoplasmic reticu
+2	20	5	IMAGE:155467	@SLC9A3R2--NHE3 kinase A regulatory pro
+2	20	6	IMAGE:156520	@TNFAIP6--TSG-6=tumor necrosis factor-i
+2	20	7	IMAGE:1350451	@DNMT1--DNA (cytosine-5-)-methyltransfe
+2	20	8	IMAGE:52408	@ABR--ABR=guanine nucleotide regulatory
+2	20	9	IMAGE:262914	@TIEG--TGF-beta inducible early protein
+2	20	10	IMAGE:229509	@F5--coagulation factor V Yes
+2	20	11	IMAGE:238363	@JUN--c-jun
+2	20	12	IMAGE:248295	@CCNI--Cyclin I
+2	20	13	IMAGE:250126	@BST1--BST-1=surface molecule of bone m
+2	20	14	IMAGE:257626	@RB1--RB = retinoblastoma susceptibilit
+2	20	15	IMAGE:51746	RGS7--BL34=RGS1=regulator of G-protein
+2	20	16	IMAGE:815774	SLA--SLAP=src-like adapter protein Yes
+2	20	17	IMAGE:825442	PTP4A2--Protein tyrosine phosphatase t
+2	20	18	IMAGE:504877	MAP3K5--MEKK5=ASK1=MAP kinase kinase k
+2	20	19	IMAGE:824117	VRK2--VRK2 kinase Yes
+2	20	20	IMAGE:758037	HIVEP1--MBP-1=PRDII-BF1=Zinc finger pr
+2	20	21	IMAGE:841332	ARHGDIB--LyGDI=Rho GDP-dissociation in
+2	20	22	IMAGE:788247	CUL2--CUL-2=VHL tumor suppressor bindi
+2	21	1	IMAGE:772261	MAPK14--p38 mitogen activated protein
+2	21	2	IMAGE:814478	@BCL2A1--A1=Bfl-1=GRs=Bcl-2 related pro
+2	21	3	IMAGE:897910	OSF-2--OSF-2os=osteoblast-specific fac
+2	21	4	IMAGE:788107	BIN1--bin1=myc interacting protein=amp
+2	21	5	IMAGE:587847	"GPX2--Glutathione peroxidase 2, gastro"
+2	21	6	IMAGE:82710	GSTA2--Glutathione S-transferase A2
+2	21	7	IMAGE:23073	FGF2--FGF-2=bFGF=Basic fibroblast grow
+2	21	8	IMAGE:705274	Diacylglycerol kinase delta
+2	21	9	IMAGE:45641	MAP2K3--Dual specificity mitogen-activ
+2	21	10	EmptyWell	EmptyWell
+2	21	11	IMAGE:490368	CD58--CD58=LFA-3
+2	21	12	IMAGE:704459	CD69--CD69=early activation antigen
+2	21	13	IMAGE:739183	CD68--CD68 Yes
+2	21	14	EmptyWell	EmptyWell
+2	21	15	IMAGE:115281	CD79A--CD79A=BCR alpha chain=mb-1
+2	21	16	IMAGE:203132	TNFSF10--TRAIL=Apo-2 ligand
+2	21	17	IMAGE:279085	MYO9B--myosin-IXb
+2	21	18	IMAGE:124034	Lymphotoxin-Beta receptor precursor=Tu
+2	21	19	IMAGE:251682	TINF2--TIN2=TRF1-interacting nuclear f
+2	21	20	IMAGE:488499	CHUK--IKK alpha=IkB kinase alpha subun
+2	21	21	IMAGE:592125	RIPK1--RIP protein kinase
+2	21	22	IMAGE:139304	GPR1--GPR1=G protein-coupled receptor
+2	22	1	IMAGE:810383	EWSR1--EWS=RNA binding protein
+2	22	2	EmptyWell	EmptyWell
+2	22	3	IMAGE:1049030	4-1BB ligand=TNF family member
+2	22	4	IMAGE:686081	PTPN7--LPTPase=inducible lymphoid-spec
+2	22	5	IMAGE:814251	SLAM--SLAM=signaling lymphocytic activ
+2	22	6	IMAGE:704690	HIPK3--Dyrk6=Ser/Thr protein kinase
+2	22	7	IMAGE:1486194	PRO0823--SLAP-130=SLP-76 associated pr
+2	22	8	IMAGE:149809	GATA2--GATA-binding protein 2
+2	22	9	IMAGE:682418	ELF4--MEF=myeloid elf-1 like factor
+2	22	10	IMAGE:796365	RECQL--DNA helicase Q1
+2	22	11	IMAGE:128306	CYP3A7--Cytochrome P450 IIIA7 (P450-HF
+2	22	12	IMAGE:201976	@ELF1--ELF-1=ets family transcription f
+2	22	13	IMAGE:469297	BHLHB2--DEC1=basic helix-loop-helix pr
+2	22	14	IMAGE:770804	TRAF2--TRAF2=TRAP3=TNFR1 associated pr
+2	22	15	IMAGE:754106	TIMP3--TIMP-3=Tissue inhibitor of meta
+2	22	16	IMAGE:365681	@GATA3--GATA-3=T-cell specific transcri
+2	22	17	IMAGE:712492	"PPP2R5C--Protein phosphatase 2A, regul"
+2	22	18	IMAGE:712829	LMO2--TTG-2=Rhombotin-2=translocated i
+2	22	19	empty	"Empty, Spot Not Printed"
+2	22	20	empty	"Empty, Spot Not Printed"
+2	22	21	empty	"Empty, Spot Not Printed"
+2	22	22	empty	"Empty, Spot Not Printed"
+3	1	1	IMAGE:810010	PDGFRL--PDGF receptor beta-like tumor
+3	1	2	IMAGE:196539	"CBFA2T1--core-binding factor, runt dom"
+3	1	3	IMAGE:184240	ADAM11--a disintegrin and metalloprote
+3	1	4	IMAGE:810551	LRP1--low density lipoprotein-related
+3	1	5	IMAGE:812968	PTPRN2--KIAA0387 Yes
+3	1	6	IMAGE:364921	CTNND1--catenin (cadherin-associated p
+3	1	7	IMAGE:281904	KIAA0349--KIAA0349 protein
+3	1	8	IMAGE:35271	NRCAM--neuronal cell adhesion molecule
+3	1	9	IMAGE:753770	KIAA0335--KIAA0335 gene product
+3	1	10	IMAGE:180885	KIAA0322--KIAA0322 protein
+3	1	11	IMAGE:40844	AKAP6--A kinase (PRKA) anchor protein
+3	1	12	IMAGE:147630	KIAA0308--KIAA0308 protein
+3	1	13	IMAGE:20115	SLC9A6--solute carrier family 9 (sodiu
+3	1	14	IMAGE:214448	RNF10--ring finger protein 10
+3	1	15	IMAGE:200136	TOPBP1--topoisomerase (DNA) II binding
+3	1	16	IMAGE:199645	KIAA0253--nicastrin
+3	1	17	IMAGE:120551	LPIN2--lipin 2
+3	1	18	IMAGE:358344	KIAA0244--KIAA0244 protein
+3	1	19	IMAGE:302031	KIAA0204--Ste20-related serine/threoni
+3	1	20	IMAGE:27104	"MAML1--mastermind (Drosophila), homolo"
+3	1	21	IMAGE:33299	KIAA0197--KIAA0197 protein
+3	1	22	IMAGE:212703	Homo sapiens mRNA; cDNA DKFZp564F093 (
+3	2	1	IMAGE:112131	KIAA0180--KIAA0180 protein
+3	2	2	IMAGE:34616	KIAA0176--KIAA0176 protein
+3	2	3	IMAGE:244703	Unknown
+3	2	4	IMAGE:166004	LTBP4--latent transforming growth fact
+3	2	5	IMAGE:770192	"LGALS9--lectin, galactoside-binding, s"
+3	2	6	IMAGE:129865	STK15--serine/threonine kinase 15
+3	2	7	IMAGE:206994	INADL--PDZ domain protein (Drosophila
+3	2	8	IMAGE:299679	PSPHL--phosphoserine phosphatase-like
+3	2	9	IMAGE:207288	INSIG1--insulin induced gene 1
+3	2	10	IMAGE:47475	PIR121--inducible protein Yes
+3	2	11	IMAGE:243358	ING1--p33ING1=growth inhibitor and can
+3	2	12	IMAGE:33478	FPGS--folylpolyglutamate synthase
+3	2	13	IMAGE:770910	ELF3--ELF-3=ESE-1=ESX=epithelial-speci
+3	2	14	IMAGE:144932	DOC1--putative oral tumor suppressor p
+3	2	15	IMAGE:283301	KIAA0914--KIAA0914 gene product
+3	2	16	IMAGE:43207	GFRA2--GDNF family receptor alpha 2
+3	2	17	IMAGE:755416	ESTs
+3	2	18	IMAGE:347373	TCEB1--transcription elongation factor
+3	2	19	IMAGE:207794	NFE2--nuclear factor (erythroid-derive
+3	2	20	IMAGE:245136	KIAA0431--KIAA0431 protein
+3	2	21	IMAGE:139573	RNPEP--arginyl aminopeptidase (aminope
+3	2	22	IMAGE:243580	CHD2--chromodomain helicase DNA bindin
+3	3	1	IMAGE:130820	PAXIP1L--PAX transcription activation
+3	3	2	IMAGE:340558	ARPC5--actin related protein 2/3 compl
+3	3	3	IMAGE:293916	FAP48--FKBP-associated protein
+3	3	4	IMAGE:138991	"COL6A3--collagen, type VI, alpha 3"
+3	3	5	IMAGE:79502	MAT2A--methionine adenosyltransferase
+3	3	6	IMAGE:53099	Homo sapiens ryanodine receptor 2 (car
+3	3	7	IMAGE:323506	MAPK1--mitogen-activated protein kinas
+3	3	8	IMAGE:66686	RPL10--ribosomal protein L10
+3	3	9	IMAGE:32684	RPL32--ribosomal protein L32
+3	3	10	IMAGE:210887	ST13--progesterone receptor-associated
+3	3	11	IMAGE:108815	RYK--RYK receptor-like tyrosine kinase
+3	3	12	IMAGE:773599	RBBP4--retinoblastoma-binding protein
+3	3	13	IMAGE:525566	MEL--mel transforming oncogene (derive
+3	3	14	IMAGE:704905	RAP1A--Krev-1=RAP-1A
+3	3	15	IMAGE:79520	"RAB2--RAB2, member RAS oncogene family"
+3	3	16	IMAGE:826077	PDHB--Pyruvate dehydrogenase (lipoamid
+3	3	17	IMAGE:898096	"Protein phosphatase 2 (formerly 2A), r"
+3	3	18	IMAGE:756666	"PPP1CA--Protein phosphatase 1, catalyt"
+3	3	19	IMAGE:712378	PKIA--Protein kinase inhibitor
+3	3	20	IMAGE:155434	"PSMA2--proteasome (prosome, macropain)"
+3	3	21	IMAGE:824568	LOC51073--CGI-28 protein
+3	3	22	IMAGE:382654	PCSK2--proprotein convertase subtilisi
+3	4	1	IMAGE:85979	PLG--plasminogen
+3	4	2	IMAGE:898123	GART--phosphoribosylglycinamide formyl
+3	4	3	IMAGE:77915	"PLA2G2A--phospholipase A2, group IIA ("
+3	4	4	IMAGE:897673	PGD--phosphogluconate dehydrogenase
+3	4	5	IMAGE:950682	"PFKP--Phosphofructokinase, platelet"
+3	4	6	IMAGE:788136	"PDE4B--phosphodiesterase 4B, cAMP-spec"
+3	4	7	IMAGE:299663	FLJ10287--hypothetical protein
+3	4	8	IMAGE:321455	KIAA0524--KIAA0524 protein
+3	4	9	IMAGE:66336	"PPFIBP2--PTPRF interacting protein, bi"
+3	4	10	IMAGE:294304	LOC51023--CGI-134 protein
+3	4	11	IMAGE:321605	"Homo sapiens IMAA mRNA for hLAT1-3TM,"
+3	4	12	IMAGE:243155	FLJ12549--hypothetical protein FLJ1254
+3	4	13	IMAGE:204211	"SUDD--sudD (suppressor of bimD6, Asper"
+3	4	14	IMAGE:66594	ESTs
+3	4	15	IMAGE:377191	LOC51123--HSPC038 protein
+3	4	16	IMAGE:197791	SH3GLB1--SH3-containing protein SH3GLB
+3	4	17	IMAGE:322794	FLJ11729--hypothetical protein FLJ1172
+3	4	18	IMAGE:196866	FLJ13340--hypothetical protein FLJ1334
+3	4	19	IMAGE:244654	ELAC1--elaC (E.coli) homolog 1
+3	4	20	IMAGE:127682	LOC51201--rec
+3	4	21	IMAGE:66894	PRO2207--presenilins associated rhombo
+3	4	22	IMAGE:140289	HSPC014--hypothetical protein
+3	5	1	IMAGE:205049	H11--protein kinase H11; small stress
+3	5	2	IMAGE:137353	PEF--peflin
+3	5	3	IMAGE:205745	HSPC117--hypothetical protein
+3	5	4	IMAGE:292882	UBQLN1--ubiquilin 1
+3	5	5	IMAGE:246789	Unknown
+3	5	6	IMAGE:202034	"Homo sapiens cDNA FLJ11801 fis, clone"
+3	5	7	IMAGE:299085	HGRG8--high-glucose-regulated protein
+3	5	8	IMAGE:265494	"Human mRNA for unknown product, partia"
+3	5	9	IMAGE:809422	LOC51719--MO25 protein
+3	5	10	IMAGE:191826	LOC51312--mitochondrial solute carrier
+3	5	11	IMAGE:344825	LAS--lipoic acid synthetase
+3	5	12	IMAGE:195723	KNG--kininogen gene encoding bradykini
+3	5	13	IMAGE:487087	LOC51141--insulin induced protein 2
+3	5	14	IMAGE:262053	E2IG3--putative nucleotide binding pro
+3	5	15	IMAGE:505573	"Homo sapiens cDNA FLJ13555 fis, clone"
+3	5	16	IMAGE:345523	"LGALS7--lectin, galactoside-binding, s"
+3	5	17	IMAGE:291097	LOC51303--FK506 binding protein precur
+3	5	18	IMAGE:279195	"FABP7--fatty acid binding protein 7, b"
+3	5	19	IMAGE:322961	CAPZB--capping protein (actin filament
+3	5	20	IMAGE:323917	EHD1--EH domain containing 1
+3	5	21	IMAGE:357681	NCF4--neutrophil cytosolic factor 4 (4
+3	5	22	IMAGE:771272	"RPS6KA4--ribosomal protein S6 kinase,"
+3	6	1	IMAGE:321163	HSU79253--hypothetical protein
+3	6	2	IMAGE:206632	APOB--apolipoprotein B (including Ag(x
+3	6	3	IMAGE:323577	"SLC4A2--solute carrier family 4, anion"
+3	6	4	IMAGE:429323	ADH4--alcohol dehydrogenase 4 (class I
+3	6	5	IMAGE:67031	ESTs
+3	6	6	IMAGE:289638	ESTs
+3	6	7	IMAGE:281901	"Homo sapiens cDNA FLJ13596 fis, clone"
+3	6	8	IMAGE:809858	COPS7A--COP9 complex subunit 7a
+3	6	9	IMAGE:795877	SNK--serum-inducible kinase
+3	6	10	IMAGE:488155	PRO1942--hypothetical protein PRO1942
+3	6	11	IMAGE:429764	Human DNA sequence from clone RP11-234
+3	6	12	IMAGE:321574	KIAA1547--KIAA1547 protein
+3	6	13	IMAGE:324437	GRO1--GRO1=GRO alpha=melanoma growth s
+3	6	14	IMAGE:810264	F8A--coagulation factor VIII-associate
+3	6	15	IMAGE:343695	ESTs
+3	6	16	IMAGE:356711	DKFZp762L171--hypothetical protein DKF
+3	6	17	IMAGE:501778	FLJ22557--hypothetical protein FLJ2255
+3	6	18	IMAGE:505183	"Homo sapiens cDNA FLJ20350 fis, clone"
+3	6	19	IMAGE:505538	TNFRSF8--CD30=Ki-1 antigen=TNFR family
+3	6	20	IMAGE:811100	Homo sapiens mRNA for FLJ00007 protein
+3	6	21	IMAGE:810320	ESTs
+3	6	22	IMAGE:795843	DJ102H19.4--hypothetical protein dJ102
+3	7	1	IMAGE:782428	KIAA0250--KIAA0250 gene product
+3	7	2	IMAGE:132072	ILF3--interleukin enhancer binding fac
+3	7	3	IMAGE:795397	ESTs
+3	7	4	IMAGE:770518	KIAA0618--KIAA0618 gene product
+3	7	5	IMAGE:782362	Homo sapiens mRNA; cDNA DKFZp434D1428
+3	7	6	IMAGE:194638	"ESTs, Weakly similar to alternatively"
+3	7	7	IMAGE:136024	ESTs
+3	7	8	IMAGE:136676	VAMP2--vesicle-associated membrane pro
+3	7	9	IMAGE:782742	FLJ20010--hypothetical protein
+3	7	10	IMAGE:309826	"LAMA4--laminin, alpha 4"
+3	7	11	IMAGE:377728	ESTs
+3	7	12	IMAGE:268778	PRKAR1A--PKA-R1 alpha=cAMP-dependent p
+3	7	13	IMAGE:375716	KIAA1237--KIAA1237 protein
+3	7	14	IMAGE:272262	ESTs
+3	7	15	IMAGE:246228	C7ORF2--chromosome 7 open reading fram
+3	7	16	IMAGE:133518	MAPRE2--microtubule-associated protein
+3	7	17	IMAGE:137984	ESTs
+3	7	18	IMAGE:810041	"SSXT--synovial sarcoma, translocated t"
+3	7	19	IMAGE:259819	"Homo sapiens MSTP028 mRNA, complete cd"
+3	7	20	IMAGE:811612	Homo sapiens mRNA; cDNA DKFZp434I1820
+3	7	21	IMAGE:310832	"ESTs, Weakly similar to ALU1_HUMAN ALU"
+3	7	22	IMAGE:324679	KIAA1081--KIAA1081 protein
+3	8	1	IMAGE:192198	Unknown
+3	8	2	IMAGE:341036	ESTs
+3	8	3	IMAGE:292223	FLJ22059--hypothetical protein FLJ2205
+3	8	4	IMAGE:144808	FLJ10659--hypothetical protein FLJ1065
+3	8	5	IMAGE:342712	KIAA0494--KIAA0494 gene product
+3	8	6	IMAGE:212347	ESTs
+3	8	7	IMAGE:416676	PELI1--pellino (Drosophila) homolog 1
+3	8	8	IMAGE:198093	EIF2S2--eukaryotic translation initiat
+3	8	9	IMAGE:503064	ESTs
+3	8	10	IMAGE:200232	ESTs
+3	8	11	IMAGE:127070	ESTs
+3	8	12	IMAGE:292736	H41--hypothetical protein
+3	8	13	IMAGE:771050	ESTs
+3	8	14	IMAGE:201090	"Homo sapiens cDNA FLJ12206 fis, clone"
+3	8	15	IMAGE:269374	KIAA0301--KIAA0301 protein
+3	8	16	IMAGE:34204	KIAA0282--KIAA0282 protein
+3	8	17	IMAGE:222457	ARC--activity-regulated cytoskeleton-a
+3	8	18	IMAGE:743880	KIAA0263--KIAA0263 gene product
+3	8	19	IMAGE:858181	KIAA0256--KIAA0256 gene product
+3	8	20	IMAGE:489810	GBF1--golgi-specific brefeldin A resis
+3	8	21	IMAGE:530310	KIAA0143--KIAA0143 protein
+3	8	22	IMAGE:624443	KIAA0103--KIAA0103 gene product
+3	9	1	IMAGE:342720	KIAA0096--KIAA0096=Similar to SNF1-rel
+3	9	2	IMAGE:489662	KIAA0092--KIAA0092 gene product
+3	9	3	IMAGE:970613	RAD21--RAD21 (S. pombe) homolog
+3	9	4	IMAGE:362680	KIAA0073--KIAA0073 protein
+3	9	5	IMAGE:811046	CRIP2--cysteine-rich protein 2
+3	9	6	IMAGE:436029	S100A12--S100 calcium-binding protein
+3	9	7	IMAGE:50888	PRDX3--peroxiredoxin 3
+3	9	8	IMAGE:882506	LOXL2--lysyl oxidase-like 2
+3	9	9	IMAGE:472186	"RAB32--RAB32, member RAS oncogene fami"
+3	9	10	IMAGE:261580	KIAA0421--KIAA0421 protein
+3	9	11	IMAGE:588598	VPS41--vacuolar protein sorting 41 (ye
+3	9	12	IMAGE:362279	"OR2A22P--olfactory receptor, family 2,"
+3	9	13	IMAGE:743229	NEF3--neurofilament 3 (150kD medium)
+3	9	14	IMAGE:866694	HSPC121--butyrate-induced transcript 1
+3	9	15	IMAGE:50930	FGF12B--fibroblast growth factor 12B
+3	9	16	IMAGE:855438	"ATP6S14--ATPase, vacuolar, 14 kD"
+3	9	17	IMAGE:297895	LY117--lymphocyte antigen 117
+3	9	18	IMAGE:447786	KIAA0442--KIAA0442 protein
+3	9	19	IMAGE:742949	FLJ12627--hypothetical protein FLJ1262
+3	9	20	IMAGE:281881	ZNF262--zinc finger protein 262
+3	9	21	IMAGE:590591	ADCY6--adenylate cyclase 6
+3	9	22	IMAGE:745339	KIAA0419--KIAA0419 gene product
+3	10	1	IMAGE:856427	TRIP13--thyroid hormone receptor inter
+3	10	2	IMAGE:131268	GRB14--growth factor receptor-bound pr
+3	10	3	IMAGE:502565	STIM1--stromal interaction molecule 1
+3	10	4	IMAGE:175536	Unknown
+3	10	5	IMAGE:624429	"USP9Y--ubiquitin specific protease 9,"
+3	10	6	IMAGE:743701	DGS-A--DiGeorge syndrome gene A
+3	10	7	IMAGE:343700	Homo Sapiens (clone B3B3E13) chromosom
+3	10	8	IMAGE:745116	HMOX2--heme oxygenase (decycling) 2
+3	10	9	IMAGE:361698	"LIPE--lipase, hormone-sensitive"
+3	10	10	IMAGE:1031076	HOXB6--homeo box B6
+3	10	11	IMAGE:248463	"HBZ--hemoglobin, zeta"
+3	10	12	IMAGE:253009	HDAC3--histone deacetylase 3
+3	10	13	IMAGE:295857	RAGB--GTP-binding protein ragB
+3	10	14	IMAGE:293964	"BTN3A1--butyrophilin, subfamily 3, mem"
+3	10	15	IMAGE:854899	DUSP6--dual specificity phosphatase 6
+3	10	16	IMAGE:26249	SH3GL2--SH3-domain GRB2-like 2
+3	10	17	IMAGE:295986	EBP--emopamil-binding protein (sterol
+3	10	18	IMAGE:741958	APMCF1--APMCF1 protein
+3	10	19	IMAGE:783698	LPIN1--lipin 1
+3	10	20	IMAGE:897997	SMC1L1--SMC1 (structural maintenance o
+3	10	21	IMAGE:173309	KIAA0164--KIAA0164 gene product
+3	10	22	IMAGE:826137	KIAA0160--KIAA0160 protein
+3	11	1	IMAGE:245015	KIAA0144--KIAA0144 gene product
+3	11	2	IMAGE:289143	KIAA0136--KIAA0136 protein
+3	11	3	IMAGE:784504	MBTPS1--membrane-bound transcription f
+3	11	4	IMAGE:840333	KIAA0089--KIAA0089 protein
+3	11	5	IMAGE:359764	KIAA0086--Homolog of yeast DNA-crossli
+3	11	6	IMAGE:825293	KIAA0082--KIAA0082 protein
+3	11	7	IMAGE:84955	SEC24C--SEC24 (S. cerevisiae) related
+3	11	8	IMAGE:740122	KIAA0076--KIAA0076 gene product
+3	11	9	IMAGE:825271	KIAA0029--KIAA0029 protein
+3	11	10	IMAGE:711826	RNTRE--related to the N terminus of tr
+3	11	11	IMAGE:713862	KIAA0010--KIAA0010 gene product
+3	11	12	IMAGE:686172	KIAA0008--KIAA0008 gene product
+3	11	13	IMAGE:773188	"NR1D2--nuclear receptor subfamily 1, g"
+3	11	14	IMAGE:796680	SLC35A1--solute carrier family 35 (CMP
+3	11	15	IMAGE:826204	FLII--flightless I (Drosophila) homolo
+3	11	16	IMAGE:789091	"H2AFL--H2A histone family, member L"
+3	11	17	IMAGE:810703	LOC51125--HSPC041 protein
+3	11	18	IMAGE:786084	CBX1--chromobox homolog 1 (Drosophila
+3	11	19	IMAGE:809838	Unknown
+3	11	20	IMAGE:825677	ASNA1--arsA (bacterial) arsenite trans
+3	11	21	IMAGE:840486	VWF--Von Willebrand factor
+3	11	22	IMAGE:343646	LOC51264--ski AND Similar to 50S ribos
+3	12	1	IMAGE:322617	RALB--v-ral simian leukemia viral onco
+3	12	2	IMAGE:207618	ARAF1--v-raf murine sarcoma 3611 viral
+3	12	3	IMAGE:785845	TCF6L1--transcription factor 6-like 1
+3	12	4	IMAGE:712641	PRG4--Overlap with megakaryocyte stimu
+3	12	5	IMAGE:773305	HNT--neurotrimin
+3	12	6	IMAGE:297392	MT1L--metallothionein 1L
+3	12	7	IMAGE:789069	LOX--lysyl oxidase
+3	12	8	IMAGE:782513	"G1P3--interferon, alpha-inducible prot"
+3	12	9	IMAGE:758222	HSD17B3--hydroxysteroid (17-beta) dehy
+3	12	10	IMAGE:156386	FLOT2--flotillin 2
+3	12	11	IMAGE:155575	EPB41L1--erythrocyte membrane protein
+3	12	12	IMAGE:772111	KIAA0300--KIAA0300 protein
+3	12	13	IMAGE:785963	KIAA0191--KIAA0191 protein
+3	12	14	IMAGE:233581	HIP2--huntingtin interacting protein 2
+3	12	15	IMAGE:239877	HDAC3--HD3=histone deacetylase 3
+3	12	16	IMAGE:544639	ESTs
+3	12	17	IMAGE:740914	CTBP1--C-terminal binding protein 1
+3	12	18	IMAGE:789049	CBF2--CCAAT-box-binding transcription
+3	12	19	IMAGE:207358	SLC2A1--glucose transporter (HepG2)
+3	12	20	IMAGE:62277	Unknown
+3	12	21	IMAGE:294487	PDCD4--programmed cell death 4
+3	12	22	IMAGE:52629	CAMK1--cam kinase I
+3	13	1	IMAGE:49222	FBXL2--f-box and leucine-rich repeat p
+3	13	2	IMAGE:51644	KIAA1391--KIAA1391 protein
+3	13	3	IMAGE:50918	ESTs
+3	13	4	IMAGE:51631	DKFZP586B162--DKFZP586B1621 protein
+3	13	5	IMAGE:80292	Homo sapiens clone FLB3344 PRO0845 mRN
+3	13	6	IMAGE:41495	FLJ10895--hypothetical protein FLJ1089
+3	13	7	IMAGE:50582	"ANK3--ankyrin 3, node of Ranvier (anky"
+3	13	8	IMAGE:33621	PCNA--proliferating cell nuclear antig
+3	13	9	IMAGE:51029	ESTs
+3	13	10	IMAGE:77651	HDAC6--histone deacetylase 6
+3	13	11	IMAGE:34114	ESTs
+3	13	12	IMAGE:50472	"PPEF1--protein phosphatase, EF hand ca"
+3	13	13	IMAGE:45704	ESTs
+3	13	14	IMAGE:51993	"ESTs, Weakly similar to Unknown [H.sap"
+3	13	15	IMAGE:52802	ESTs
+3	13	16	IMAGE:50250	ESTs
+3	13	17	IMAGE:50132	ESTs
+3	13	18	IMAGE:52996	HNK-1ST--HNK-1 sulfotransferase
+3	13	19	IMAGE:78144	AKAP11--A kinase (PRKA) anchor protein
+3	13	20	IMAGE:41004	KIAA1106--KIAA1106 protein
+3	13	21	IMAGE:41077	ESTs
+3	13	22	IMAGE:50843	RNMT--RNA (guanine-7-) methyltransfera
+3	14	1	IMAGE:85582	Homo sapiens mRNA; cDNA DKFZp586E1521
+3	14	2	IMAGE:60540	ESTs
+3	14	3	IMAGE:42114	ESTs
+3	14	4	IMAGE:296724	ESTs
+3	14	5	IMAGE:510166	"ESTs, Highly similar to RS10_HUMAN 40S"
+3	14	6	IMAGE:567320	"Homo sapiens cDNA FLJ12328 fis, clone"
+3	14	7	IMAGE:755800	"Homo sapiens cDNA FLJ13567 fis, clone"
+3	14	8	IMAGE:800257	"ESTs, Moderately similar to ALU4_HUMAN"
+3	14	9	IMAGE:990881	Rpl12--ribosomal protein L12
+3	14	10	IMAGE:990937	Unknown
+3	14	11	IMAGE:990996	Unknown
+3	14	12	IMAGE:1374548	Unknown
+3	14	13	IMAGE:1374565	Unknown
+3	14	14	IMAGE:1374579	ESTs
+3	14	15	IMAGE:1454519	EST
+3	14	16	IMAGE:1454531	EST
+3	14	17	IMAGE:1454821	EST
+3	14	18	IMAGE:1455075	KIAA0675--KIAA0675 gene product
+3	14	19	IMAGE:1861161	Unknown
+3	14	20	IMAGE:1861170	Unknown
+3	14	21	IMAGE:1861834	EST
+3	14	22	IMAGE:1861907	Unknown
+3	15	1	IMAGE:1862044	LSR68--lipopolysaccharide specific res
+3	15	2	IMAGE:1862092	ESTs
+3	15	3	IMAGE:1862124	Unknown
+3	15	4	IMAGE:1862230	ESTs
+3	15	5	IMAGE:2216492	"EST, Weakly similar to S13580 collagen"
+3	15	6	IMAGE:2216592	Unknown
+3	15	7	IMAGE:2216682	EST
+3	15	8	IMAGE:2216732	EST
+3	15	9	IMAGE:2216762	Unknown
+3	15	10	IMAGE:2216795	EST
+3	15	11	IMAGE:2217246	Unknown
+3	15	12	IMAGE:2217315	Unknown
+3	15	13	IMAGE:2217404	EST
+3	15	14	IMAGE:2217452	Unknown
+3	15	15	IMAGE:2217473	"EST, Weakly similar to PRPM_HUMAN SALI"
+3	15	16	IMAGE:2217607	Unknown
+3	15	17	IMAGE:2217901	Unknown
+3	15	18	IMAGE:2217916	"Homo sapiens chromosome 19, BAC 37295"
+3	15	19	IMAGE:2218013	EST
+3	15	20	IMAGE:2218089	Unknown
+3	15	21	IMAGE:2218121	EST
+3	15	22	IMAGE:2218138	EST
+3	16	1	IMAGE:2218747	ESTs
+3	16	2	IMAGE:2218733	ESTs
+3	16	3	IMAGE:2218792	Unknown
+3	16	4	IMAGE:2218838	EST
+3	16	5	IMAGE:2218865	EST
+3	16	6	IMAGE:2218972	EST
+3	16	7	EmptyWell	EmptyWell
+3	16	8	IMAGE:267600	STAT6--STAT6 Yes
+3	16	9	IMAGE:269124	@MLANA--MART-1=melanoma antigen recogni
+3	16	10	IMAGE:269242	CDK2--cdk2=Cyclin-dependent kinase 2
+3	16	11	IMAGE:270469	UBE2V1--PAX-3=Paired box homeotic gene
+3	16	12	IMAGE:271413	SHMT1--serine hydroxymethyltransferase
+3	16	13	IMAGE:284416	ZNF22--HKR-T1=Lymphoid-restricted krup
+3	16	14	IMAGE:491155	@RPL27--Ribosomal protein L27
+3	16	15	IMAGE:290354	PTPN14--tyrosine phosphatase
+3	16	16	IMAGE:290659	CDKN1A--p21=cyclin kinase inhibitor=WA
+3	16	17	IMAGE:291332	DUSP3--dual specificity phosphatase ty
+3	16	18	IMAGE:292004	CD1E
+3	16	19	PC:2175	@Unknown
+3	16	20	IMAGE:842180	@CTSB--cathepsin B
+3	16	21	IMAGE:297589	AIM1--AIM1=non-lens beta gamma-crystal
+3	16	22	IMAGE:297804	"PLA2G2A--Phospholipase A2, group IIA ("
+3	17	1	IMAGE:297954	VDUP1--brain-expressed HHCPA78 homolog
+3	17	2	IMAGE:298149	FABP3--fatty acid binding protein FABP
+3	17	3	IMAGE:302490	CCNB1--Cyclin B1
+3	17	4	IMAGE:302714	FABP3--fatty acid binding protein FABP
+3	17	5	IMAGE:303183	PDCD2--PDCD2=programmed cell death-2/R
+3	17	6	IMAGE:306465	CLK1--CLK-1=CDC-like kinase 1=PITSLRE
+3	17	7	IMAGE:306789	ROS1--Transmembrane tyrosine-specific
+3	17	8	IMAGE:814701	@MAD2L1--mitotic feedback control prote
+3	17	9	IMAGE:380377	KIAA0671--KIAA0671=Similar to mouse SO
+3	17	10	IMAGE:1233942	@TIA1--Nucleolysin TIA-1 polyadenylate
+3	17	11	IMAGE:382714	THY1--Thy-1
+3	17	12	IMAGE:383098	PIG6--PRODH=proline dehydrogenase/prol
+3	17	13	IMAGE:415065	DYRK1A--MNB=homologue of Drosophila mi
+3	17	14	IMAGE:416186	@GNAI3--Gi3 alpha=guanine nucleotide-bi
+3	17	15	IMAGE:428590	GSTT2--Glutathione S-transferase theta
+3	17	16	IMAGE:429042	THBS1--Thrombospondin 1
+3	17	17	IMAGE:429496	BMPR2--Bone morphogenetic protein rece
+3	17	18	IMAGE:429861	AFP--AFP=alpha-fetoprotein
+3	17	19	IMAGE:430521	PKA-RI beta=cAMP-dependent protein kin
+3	17	20	IMAGE:434287	"SPTB--Spectrin, beta, erythrocytic (in"
+3	17	21	IMAGE:470149	CDKN1A--p21=cyclin kinase inhibitor=WA
+3	17	22	IMAGE:470602	ESRRA--hERRa1=estrogen receptor-relate
+3	18	1	IMAGE:470799	TNFRSF10C--TRAIL receptor 3=decoy rece
+3	18	2	IMAGE:471164	GARS--Glycyl tRNA synthetase
+3	18	3	PC:2190	@Unknown
+3	18	4	IMAGE:471514	IRS2--IRS-2=insulin receptor substrate
+3	18	5	IMAGE:486161	LCK--lck=lymphoid-restricted tyrosine
+3	18	6	IMAGE:486480	RBPJK=CBF1=KBF2=Su(H) homolog in notch
+3	18	7	IMAGE:486696	TYMSTR--STRL33.1=Putative chemokine re
+3	18	8	IMAGE:487418	FLNA--filamin=ABP-280=actin-binding pr
+3	18	9	IMAGE:488143	IGHG3--Immunoglobulin gamma 3 heavy ch
+3	18	10	IMAGE:488286	MIG2--mitogen inducible gene mig-2=che
+3	18	11	IMAGE:668127	NR3C1--Glucocorticoid receptor
+3	18	12	IMAGE:668368	"PRKCM--PKC mu=Protein kinase C, mu Yes"
+3	18	13	IMAGE:668829	MAF--c-maf
+3	18	14	IMAGE:669424	ANGPT2--Angiopoietin-2
+3	18	15	IMAGE:682013	PRNP--PrP=prion protein
+3	18	16	IMAGE:682529	NFKB2--NFkB2 = NF-kappaB p100=p49=p50B
+3	18	17	IMAGE:683885	@EP300--p300
+3	18	18	IMAGE:549264	@PIK3C3--Phosphatidylinositol 3-kinase
+3	18	19	IMAGE:685783	BIK--NBK=BIK=BCL-2 interacting killer=
+3	18	20	IMAGE:686306	LRMP--JAW1=lymphoid-restricted membran
+3	18	21	IMAGE:687009	SPAK--DCHT=Similar to rat pancreatic s
+3	18	22	IMAGE:687796	TLK2--PKU-alpha kinase
+3	19	1	IMAGE:701473	TNFRSF17--BCMA=TNF receptor superfamil
+3	19	2	IMAGE:703493	SLC1A1--Excitatory amino acid transpor
+3	19	3	IMAGE:703799	DUT--dUTP pyrophosphatase=deoxyuridine
+3	19	4	IMAGE:704338	EBF--Similar to early B-cell factor
+3	19	5	IMAGE:704631	KIAA0979--BRCA2 region EST-2
+3	19	6	IMAGE:705056	BTN1A1--butyrophilin=membrane glycopro
+3	19	7	IMAGE:724397	CTSW--lymphopain=C1 peptidase expresse
+3	19	8	IMAGE:724506	IFI30--gamma-interferon inducible gene
+3	19	9	IMAGE:724951	ANK1--ANK1=ankyrin 1 Yes
+3	19	10	IMAGE:725263	IGKC--immunoglobulin kappa light chain
+3	19	11	IMAGE:725751	CD74--invariant chain=Ia-associated in
+3	19	12	IMAGE:726735	IL13RA1--IL-13 receptor alpha-1 chain
+3	19	13	IMAGE:1335055	TCIRG1--TIRC7=T cell membrane protein=
+3	19	14	IMAGE:1335756	ESTs
+3	19	15	IMAGE:1337232	ITGB7--CD103 beta=Integrin beta 7 Yes
+3	19	16	IMAGE:1339593	ATR--ATR=FRP1=Ser/Thr kinase=DNA damag
+3	19	17	IMAGE:1341469	Immunoglobulin D heavy chain constant
+3	19	18	IMAGE:1351027	OGG1--OGG1=8-oxoguanine DNA glycosylas
+3	19	19	IMAGE:141688	@PPP2CA--Protein phosphatase 2 (formerl
+3	19	20	1375561	EPHB6--Eph-family protein
+3	19	21	1376727	CDK6--Cdk6=Cyclin-dependent kinase 6 Y
+3	19	22	EmptyWell	EmptyWell
+3	20	1	IMAGE:1392657	BRAF--B-raf Ser/Thr protein kinase
+3	20	2	IMAGE:1393967	PPP1R2--Protein phosphatase inhibitor
+3	20	3	IMAGE:1455700	TRADD--TRADD=TNF receptor-1 associated
+3	20	4	IMAGE:1469444	CD3D--CD3 delta=T cell surface glycopr
+3	20	5	IMAGE:1472994	FCGR3B--CD16=Fcgamma receptor IIIa
+3	20	6	IMAGE:1516955	RET--Ret=Receptor tyrosine kinase onco
+3	20	7	IMAGE:1520558	SHMT1--serine hydroxymethyltransferase
+3	20	8	IMAGE:1535285	SEC10L1--hSec10p=brain secretory prote
+3	20	9	EmptyWell	EmptyWell
+3	20	10	EmptyWell	EmptyWell
+3	20	11	EmptyWell	EmptyWell
+3	20	12	EmptyWell	EmptyWell
+3	20	13	EmptyWell	EmptyWell
+3	20	14	EmptyWell	EmptyWell
+3	20	15	IMAGE:51916	PLCB4=phospholipase C beta 4
+3	20	16	IMAGE:151662	P11--placental protein 11 (PP11)=serin
+3	20	17	IMAGE:770027	PPP2R1A--protein phosphatase 2A regula
+3	20	18	IMAGE:340734	NFKBIA--IkB alpha Yes
+3	20	19	IMAGE:811900	LTBR--Lymphotoxin-Beta receptor precur
+3	20	20	IMAGE:340644	ITGB8--Integrin beta 8
+3	20	21	IMAGE:242037	FLJ20746--putative cyclin G1 interacti
+3	20	22	IMAGE:810242	C3AR1--AZ3B=C3a anaphylatoxin G protei
+3	21	1	IMAGE:42739	PTP4A1--protein tyrosine phosphatase P
+3	21	2	IMAGE:246786	RDC1--RDC1=orphan G protein-coupled re
+3	21	3	IMAGE:190468	NR4A3--MINOR=mitogen induced nuclear o
+3	21	4	IMAGE:1317265	"@DECR1--Mitochondrial 2,4-dienoyl-CoA r"
+3	21	5	IMAGE:345586	TNFRSF12--DR3=Apo3=WSL-1=TRAMP=LARD=de
+3	21	6	IMAGE:753069	c-mer=cellular proto-oncogene
+3	21	7	IMAGE:810506	STK3--Ste20-like kinase (MST2) Yes
+3	21	8	IMAGE:23173	MAPK10--JNK3=Stress-activated protein
+3	21	9	IMAGE:201890	BIRC3--c-IAP2=MIHC=IAP homolog C=TNFR2
+3	21	10	IMAGE:31093	CDH13--H-cadherin
+3	21	11	IMAGE:809494	CD151--CD151=platelet-endothelial tetr
+3	21	12	IMAGE:243358	ING1--p33ING1=growth inhibitor and can
+3	21	13	IMAGE:246524	CHEK1--CHK1=Ser/Thr kinase=DNA damage
+3	21	14	IMAGE:262996	CHD1--CHD1=nuclear protein with chromo
+3	21	15	IMAGE:767183	HCLS1--HS1= hematopoietic lineage cell
+3	21	16	IMAGE:212078	"ITGA1--integrin, alpha subunit"
+3	21	17	IMAGE:309893	NR4A1--Nak1=TR3 orphan receptor=homolo
+3	21	18	IMAGE:51064	PPEF1--protein phosphatase with EF-han
+3	21	19	IMAGE:781047	BUB1--BUB1=putative mitotic checkpoint
+3	21	20	IMAGE:418138	NR0B2--shp=dominant negative orphan nu
+3	21	21	IMAGE:344432	MGST2--microsomal glutathione S-transf
+3	21	22	IMAGE:504791	GSTA4--glutathione transferase (GSTA4)
+3	22	1	IMAGE:200018	TCL1A--TCL-1A=Translocated in T-CLL Ye
+3	22	2	IMAGE:41648	IL13RA2--IL-13 receptor alpha2
+3	22	3	IMAGE:418129	NUMA1--NuMA=coiled-coil nuclear protei
+3	22	4	IMAGE:256907	GSTA3--Glutathione S-transferase A3
+3	22	5	IMAGE:323238	GRO1--GRO2=GRO beta=MIP2 alpha=macroph
+3	22	6	IMAGE:255333	GPRK2L--GRK4=G protein-coupled recepto
+3	22	7	IMAGE:345538	CTSL--cathepsin L
+3	22	8	IMAGE:123264	CD38--CD38 Yes
+3	22	9	IMAGE:724888	CYP4B1--Cytochrome P450 IVB1
+3	22	10	IMAGE:193736	BRCA2--BRCA2=Mutated in breast and ova
+3	22	11	IMAGE:298268	BTG1--BTG1=B-cell translocation gene 1
+3	22	12	IMAGE:360778	ATM--ATM alternate 3?end Yes
+3	22	13	IMAGE:148469	TYROBP--DAP12=DNAX activation protein
+3	22	14	IMAGE:266037	MAFG--MafG=basic-leucine zipper transc
+3	22	15	IMAGE:266732	TFDP2--DP-2=E2F interacting transcript
+3	22	16	IMAGE:125187	ERCC2--ERCC2=XPD=Nucleotide excision r
+3	22	17	IMAGE:147050	PTGS2--PTGS2=prostaglandin endoperoxid
+3	22	18	IMAGE:49284	FGF11--FGF-11=Fibroblast growth factor
+3	22	19	empty	"Empty, Spot Not Printed"
+3	22	20	empty	"Empty, Spot Not Printed"
+3	22	21	empty	"Empty, Spot Not Printed"
+3	22	22	empty	"Empty, Spot Not Printed"
+4	1	1	IMAGE:251135	DDOST--dolichyl-diphosphooligosacchari
+4	1	2	IMAGE:768324	Homo sapiens mRNA for HMG-box transcri
+4	1	3	IMAGE:753313	LAPTM5--Lysosomal-associated multispan
+4	1	4	IMAGE:244767	KIAA0074--KIAA0074 protein
+4	1	5	IMAGE:51532	ARL6IP--ADP-ribosylation factor-like 6
+4	1	6	IMAGE:753692	ABLIM--actin binding LIM protein 1
+4	1	7	IMAGE:40887	LFNG--lunatic fringe (Drosophila) homo
+4	1	8	IMAGE:361565	GLUD1--glutamate dehydrogenase 1
+4	1	9	IMAGE:361943	MEIS1--Meis1 (mouse) homolog
+4	1	10	IMAGE:345348	HUMHOXY1--zinc-finger DNA-binding prot
+4	1	11	IMAGE:119530	KCNJ15--potassium inwardly-rectifying
+4	1	12	IMAGE:811920	IL11RA--IL-11 receptor alpha chain Yes
+4	1	13	IMAGE:134270	Human hbc647 mRNA sequence
+4	1	14	IMAGE:248531	GMPS--guanine monphosphate synthetase
+4	1	15	IMAGE:234191	SOS1--son of sevenless (Drosophila) ho
+4	1	16	IMAGE:143846	LRP2--low density lipoprotein-related
+4	1	17	IMAGE:769676	GSTZ1--GSTZ1=Glutathione transferase Z
+4	1	18	IMAGE:809588	GGH--gamma-glutamyl hydrolase (conjuga
+4	1	19	IMAGE:249705	DSS1--Deleted in split-hand/split-foot
+4	1	20	IMAGE:24032	CRADD--CASP2 and RIPK1 domain containi
+4	1	21	IMAGE:229579	GLG1--Golgi apparatus protein 1
+4	1	22	IMAGE:769921	UBCH10--ubiquitin carrier protein E2-C
+4	2	1	IMAGE:28098	LOC57862--clones 23667 and 23775 zinc
+4	2	2	IMAGE:130156	AKAP10--A kinase (PRKA) anchor protein
+4	2	3	IMAGE:160656	LU--Lutheran blood group (Auberger b a
+4	2	4	IMAGE:755037	"IL13RA1--interleukin 13 receptor, alph"
+4	2	5	IMAGE:33690	CPSF6--cleavage and polyadenylation sp
+4	2	6	IMAGE:509760	RNF--ring finger protein
+4	2	7	IMAGE:768299	ESTs
+4	2	8	IMAGE:300237	RPS18--ribosomal protein S18
+4	2	9	IMAGE:245920	GYS2--glycogen synthase 2 (liver)
+4	2	10	IMAGE:248261	GLDC--glycine dehydrogenase (decarboxy
+4	2	11	IMAGE:811792	GSS--Glutathione synthetase
+4	2	12	IMAGE:713922	GSTM1--Glutathione S-transferase M1 or
+4	2	13	IMAGE:361639	"ESTs, Weakly similar to ALU1_HUMAN ALU"
+4	2	14	IMAGE:276449	"GUSB--glucuronidase, beta"
+4	2	15	IMAGE:756480	NMT1--N-myristoyltransferase 1
+4	2	16	IMAGE:768443	"MGST1--Glutathione S-transferase, micr"
+4	2	17	IMAGE:52228	"GRIA1--glutamate receptor, ionotropic,"
+4	2	18	IMAGE:173228	"GMFB--glia maturation factor, beta"
+4	2	19	IMAGE:230218	GCN5L1--GCN5 (general control of amino
+4	2	20	IMAGE:214068	GATA3--GATA-binding protein 3
+4	2	21	IMAGE:139009	FN1--Fibronectin 1
+4	2	22	IMAGE:752631	FGFR3--FGFR3=Fibroblast growth factor
+4	3	1	IMAGE:360478	FGF1--fibroblast growth factor 1 (acid
+4	3	2	IMAGE:767851	FBN1--fibrillin 1 (Marfan syndrome)
+4	3	3	IMAGE:236355	"FANCC--Fanconi anemia, complementation"
+4	3	4	IMAGE:306901	P311--P311 HUM (3.1)
+4	3	5	IMAGE:123666	HM74--putative chemokine receptor; GTP
+4	3	6	IMAGE:950092	"SFRS3--splicing factor, arginine/serin"
+4	3	7	IMAGE:811108	TRIP6--thyroid hormone receptor intera
+4	3	8	IMAGE:192694	POU2F1--Oct-1=Octamer binding transcri
+4	3	9	IMAGE:82991	ENPP1--PC-1 = alkaline nucleotide pyro
+4	3	10	IMAGE:725677	PCTK3--PCTAIRE protein kinase 3
+4	3	11	IMAGE:784959	NEO1--neogenin (chicken) homolog 1
+4	3	12	IMAGE:28422	"NEFL--neurofilament, light polypeptide"
+4	3	13	IMAGE:810859	NK4--NK4=Natural killer cells protein-
+4	3	14	IMAGE:701481	MX2--MxB=interferon-induced cellular r
+4	3	15	IMAGE:840865	MACS--myristoylated alanine-rich prote
+4	3	16	IMAGE:628336	"Homo sapiens, clone MGC:12401, mRNA, c"
+4	3	17	IMAGE:705265	ZNF258--Similar to KIAA0425=contains C
+4	3	18	IMAGE:842989	"MYL6--myosin, light polypeptide 6, alk"
+4	3	19	IMAGE:704760	MEF2B--MEF2B=XMEF2=MADS/MEF2-family tr
+4	3	20	IMAGE:485989	SCYA7--MCP-3=monocyte chemotactic prot
+4	3	21	IMAGE:80109	HLA-DQA1--major histocompatibility com
+4	3	22	IMAGE:786067	CDC25B--cdc25B=M-phase inducer phospha
+4	4	1	IMAGE:825295	LDLR--low density lipoprotein receptor
+4	4	2	IMAGE:898237	D6S52E--HLA-B associated transcript-3
+4	4	3	IMAGE:897781	KRT8--keratin 8
+4	4	4	IMAGE:810131	KRT19--keratin 19
+4	4	5	IMAGE:772878	KRT10--keratin 10 (epidermolytic hyper
+4	4	6	IMAGE:488413	KIF5B--kinesin family member 5B
+4	4	7	IMAGE:306412	ESTs
+4	4	8	IMAGE:241392	FLJ14297--hypothetical protein FLJ1429
+4	4	9	IMAGE:126412	RNF14--ring finger protein 14
+4	4	10	IMAGE:186918	C21ORF11--chromosome 21 open reading f
+4	4	11	IMAGE:66753	Unknown
+4	4	12	IMAGE:122161	ESTs
+4	4	13	IMAGE:241824	"ESTs, Weakly similar to ALUB_HUMAN !!!"
+4	4	14	IMAGE:297155	"ESTs, Weakly similar to ALU1_HUMAN ALU"
+4	4	15	IMAGE:213527	"ESTs, Weakly similar to ALU1_HUMAN ALU"
+4	4	16	IMAGE:292207	EST
+4	4	17	IMAGE:195947	Unknown
+4	4	18	IMAGE:344757	"ESTs, Weakly similar to ALU1_HUMAN ALU"
+4	4	19	IMAGE:246073	VTN--vitronectin (serum spreading fact
+4	4	20	IMAGE:470216	MYO6--myosin VI
+4	4	21	IMAGE:786048	"E2F4--E2F transcription factor 4, p107"
+4	4	22	IMAGE:35191	SDF2--SDF2=stromal cell-derived factor
+4	5	1	IMAGE:208993	FLJ23591--hypothetical protein FLJ2359
+4	5	2	IMAGE:197933	ESTs
+4	5	3	IMAGE:47043	CHI3L2--chitinase 3-like 2
+4	5	4	IMAGE:469685	RYBP--RING1 and YY1 binding protein
+4	5	5	IMAGE:240589	MAP3K7--mitogen-activated protein kina
+4	5	6	IMAGE:230267	"ESTs, Weakly similar to I38428 T-compl"
+4	5	7	IMAGE:194468	Homo sapiens mRNA for alanine-glyoxyla
+4	5	8	IMAGE:361656	ESTs
+4	5	9	IMAGE:809374	KIAA0746--KIAA0746 protein
+4	5	10	IMAGE:501540	"ESTs, Highly similar to S27963 modulat"
+4	5	11	IMAGE:490994	ESTs
+4	5	12	IMAGE:505047	KIAA1717--KIAA1717 protein
+4	5	13	IMAGE:504545	ESTs
+4	5	14	IMAGE:491435	PAPPA--pregnancy-associated plasma pro
+4	5	15	IMAGE:261851	KIAA1232--KIAA1232 protein
+4	5	16	IMAGE:346947	ZNF211--zinc finger protein 211
+4	5	17	IMAGE:810343	LOC51605--CGI-09 protein
+4	5	18	IMAGE:428223	MAPRE1--microtubule-associated protein
+4	5	19	IMAGE:122456	ARTS-1--type 1 tumor necrosis factor r
+4	5	20	IMAGE:782684	FLJ11101--hypothetical protein FLJ1110
+4	5	21	IMAGE:323185	"PRKR--protein kinase, interferon-induc"
+4	5	22	IMAGE:771165	ESTs
+4	6	1	IMAGE:416408	ESTs
+4	6	2	IMAGE:304858	FLJ20585--hypothetical protein FLJ2058
+4	6	3	IMAGE:415089	NEK2--NIMA (never in mitosis gene a)-r
+4	6	4	IMAGE:809512	FLJ10767--hypothetical protein FLJ1076
+4	6	5	IMAGE:301735	TGM3--transglutaminase 3 (E polypeptid
+4	6	6	IMAGE:257287	Homo sapiens mRNA; cDNA DKFZp434D2111
+4	6	7	IMAGE:272690	HTR2B--5-hydroxytryptamine (serotonin)
+4	6	8	IMAGE:324494	HSPB2--heat shock 27kD protein 2
+4	6	9	IMAGE:279496	"Homo sapiens cDNA: FLJ21702 fis, clone"
+4	6	10	IMAGE:281003	TRG@--T cell receptor gamma locus
+4	6	11	IMAGE:795500	"ESTs, Highly similar to T00337 hypothe"
+4	6	12	IMAGE:782793	ESTs
+4	6	13	IMAGE:809789	Homo sapiens mRNA; cDNA DKFZp547J047 (
+4	6	14	IMAGE:810904	Homo sapiens mRNA; cDNA DKFZp564K0322
+4	6	15	IMAGE:810980	"Homo sapiens cDNA FLJ13383 fis, clone"
+4	6	16	IMAGE:771241	KIAA0701--KIAA0701 protein
+4	6	17	IMAGE:771294	ESTs
+4	6	18	IMAGE:795219	ESTs
+4	6	19	IMAGE:795755	ESTs
+4	6	20	IMAGE:795437	FLJ21069--hypothetical protein FLJ2106
+4	6	21	IMAGE:782601	R30953_1--hypothetical protein R30953_
+4	6	22	IMAGE:770898	FLJ20485--hypothetical protein
+4	7	1	IMAGE:795876	ROK1--ATP-dependent RNA helicase
+4	7	2	IMAGE:809619	ARAF1--v-raf murine sarcoma 3611 viral
+4	7	3	IMAGE:795538	FLJ13044--hypothetical protein FLJ1304
+4	7	4	IMAGE:795614	ESTs
+4	7	5	IMAGE:795744	FLJ23189--hypothetical protein FLJ2318
+4	7	6	IMAGE:810205	ESTs
+4	7	7	IMAGE:811033	LENG4--malignant cell expression-enhan
+4	7	8	IMAGE:284160	"CACNA2D2--calcium channel, voltage-dep"
+4	7	9	IMAGE:108345	ESTs
+4	7	10	IMAGE:110787	Homo sapiens mRNA; cDNA DKFZp564G222 (
+4	7	11	IMAGE:112658	ESTs
+4	7	12	IMAGE:320571	Homo sapiens chromosome 9 open reading
+4	7	13	IMAGE:858204	CD63--CD63 antigen (melanoma 1 antigen
+4	7	14	IMAGE:502832	RBBP1--retinoblastoma-binding protein
+4	7	15	IMAGE:590727	RENT1--regulator of nonsense transcrip
+4	7	16	IMAGE:745343	REG1A--regenerating islet-derived 1 al
+4	7	17	IMAGE:856489	RRM1--ribonucleotide reductase M1 poly
+4	7	18	IMAGE:162199	PTPRM--R-PTP-mu=receptor protein tyros
+4	7	19	IMAGE:325641	PSG5--pregnancy specific beta-1-glycop
+4	7	20	IMAGE:897233	PTB--polypyrimidine tract binding prot
+4	7	21	IMAGE:435470	PDGFA--platelet-derived growth factor
+4	7	22	IMAGE:361122	PLS1--plastin 1 (I isoform)
+4	8	1	IMAGE:725284	"PHKG2--phosphorylase kinase, gamma 2 ("
+4	8	2	IMAGE:272529	PMM2--phosphomannomutase 2
+4	8	3	IMAGE:755301	"PRKCD--protein kinase C, delta"
+4	8	4	IMAGE:280970	NOL1--nucleolar protein 1 (120kD)
+4	8	5	IMAGE:289447	"POU6F1--POU domain, class 6, transcrip"
+4	8	6	IMAGE:257523	GNL1--guanine nucleotide binding prote
+4	8	7	IMAGE:291448	SILV--silver (mouse homolog) like
+4	8	8	IMAGE:155768	"Homo sapiens mRNA for caldesmon, 3' UT"
+4	8	9	IMAGE:769716	NF2--neurofibromin 2 (bilateral acoust
+4	8	10	IMAGE:83444	SLC10A1--solute carrier family 10 (sod
+4	8	11	IMAGE:433567	GNLY--granulysin
+4	8	12	IMAGE:154720	"ARD1--N-acetyltransferase, homolog of"
+4	8	13	IMAGE:756502	NUDT1--MutT (E. coli) homolog (8-oxo-7
+4	8	14	IMAGE:147075	MDM2--MDM2=p53-binding protein
+4	8	15	IMAGE:450661	PPIL2--peptidylprolyl isomerase (cyclo
+4	8	16	IMAGE:470279	CNTNAP1--contactin associated protein
+4	8	17	IMAGE:731118	"PTPNS1--protein tyrosine phosphatase,"
+4	8	18	IMAGE:366042	HPIP--hematopoietic PBX-interacting pr
+4	8	19	IMAGE:276469	HSU79275--hypothetical protein
+4	8	20	IMAGE:360240	Human clone 23801 mRNA sequence
+4	8	21	IMAGE:263118	CART1--cartilage paired-class homeopro
+4	8	22	IMAGE:969854	CALM3--calmodulin 3 (phosphorylase kin
+4	9	1	IMAGE:49963	"BTN2A2--butyrophilin, subfamily 2, mem"
+4	9	2	IMAGE:487338	ITGB3BP--integrin beta 3 binding prote
+4	9	3	IMAGE:345525	GTF2H2--general transcription factor I
+4	9	4	IMAGE:769603	POR1--partner of RAC1 (arfaptin 2)
+4	9	5	IMAGE:471799	HBACH--cytosolic acyl coenzyme A thioe
+4	9	6	IMAGE:109863	EMP2--epithelial membrane protein 2
+4	9	7	IMAGE:277229	TLR5--TIL3=Toll/interleukin-1 receptor
+4	9	8	IMAGE:868630	TSC22--transforming growth factor beta
+4	9	9	IMAGE:287745	TARBP1--TAR (HIV) RNA-binding protein
+4	9	10	IMAGE:241736	"SMARCD1--SWI/SNF related, matrix assoc"
+4	9	11	IMAGE:758206	PMS2L8--PMS4=DNA mismatch repair prote
+4	9	12	IMAGE:769796	Human PAC clone RP3-515N1 from 22q11.2
+4	9	13	IMAGE:455115	SIGLEC5--sialic acid binding Ig-like l
+4	9	14	IMAGE:487820	CEBPD--CCAAT/enhancer binding protein
+4	9	15	IMAGE:251936	NSF--N-ethylmaleimide-sensitive factor
+4	9	16	IMAGE:343871	MAP2K5--MEK5=MAP kinase kinase 5
+4	9	17	IMAGE:251591	FOSL1--FOS-like antigen-1
+4	9	18	IMAGE:39722	ERCC2--ERCC2=XPD=Nucleotide excision r
+4	9	19	IMAGE:884894	EIF2S1--eukaryotic translation initiat
+4	9	20	IMAGE:47359	EDN1--EDN-1=ETN=endothelin-1=secreted
+4	9	21	IMAGE:781017	EGR2--EGR-2=early growth response gene
+4	9	22	IMAGE:26568	EGR3--EGR-3=PILOT=T cell transcription
+4	10	1	IMAGE:759200	DHPS--deoxyhypusine synthase
+4	10	2	IMAGE:769579	MAP2K2--mitogen-activated protein kina
+4	10	3	IMAGE:469369	POLR2E--polymerase (RNA) II (DNA direc
+4	10	4	IMAGE:128493	MLH1--mutL (E. coli) homolog 1 (colon
+4	10	5	IMAGE:345063	"CACNB1--calcium channel, voltage-depen"
+4	10	6	IMAGE:757144	FBRNP--heterogeneous nuclear protein s
+4	10	7	IMAGE:868652	C4A--complement component 4A
+4	10	8	IMAGE:756556	SERPING1--serine (or cysteine) protein
+4	10	9	IMAGE:878280	CRMP1--collapsin response mediator pro
+4	10	10	IMAGE:491692	"COL4A1--collagen, type IV, alpha 1"
+4	10	11	IMAGE:432651	"CSTF3--cleavage stimulation factor, 3'"
+4	10	12	IMAGE:264640	"CLTB--clathrin, light polypeptide (Lcb"
+4	10	13	IMAGE:858292	"CDC10--CDC10 (cell division cycle 10,"
+4	10	14	IMAGE:345538	CTSL--cathepsin L
+4	10	15	IMAGE:897164	CTNNA1--catenin (cadherin-associated p
+4	10	16	IMAGE:854138	"CSNK1E--casein kinase 1, epsilon"
+4	10	17	IMAGE:744417	CRAT--carnitine acetyltransferase
+4	10	18	IMAGE:26295	CNR1--cannabinoid receptor 1 (brain)
+4	10	19	IMAGE:840517	"PSME3--proteasome (prosome, macropain)"
+4	10	20	IMAGE:48631	KCNAB2--potassium voltage-gated channe
+4	10	21	IMAGE:781018	"SMARCB1--SWI/SNF related, matrix assoc"
+4	10	22	IMAGE:564803	FOXM1--MPP2=putative M phase phosphopr
+4	11	1	IMAGE:898317	CUL4A--cullin 4A
+4	11	2	IMAGE:704532	NMI--Nmi=IL-2 and IFN-gamma inducible
+4	11	3	IMAGE:685912	EYA3--eyes absent (Drosophila) homolog
+4	11	4	IMAGE:754538	DRAP1--DR1-associated protein 1 (negat
+4	11	5	IMAGE:814465	PMS2L8--postmeiotic segregation increa
+4	11	6	IMAGE:712848	MADD--MADD=DENN=MAP kinase-activating
+4	11	7	IMAGE:740914	CTBP1--C-terminal binding protein 1
+4	11	8	IMAGE:788247	CUL2--CUL-2=VHL tumor suppressor bindi
+4	11	9	IMAGE:416833	FKBP5--FK506-binding protein 5
+4	11	10	IMAGE:46154	BAP1--BAP1=BRCA1 associated protein 1
+4	11	11	IMAGE:196433	Unknown
+4	11	12	IMAGE:897594	"RNPS1--RNA-binding protein S1, serine-"
+4	11	13	IMAGE:767345	"CDH12--cadherin 12, type 2 (N-cadherin"
+4	11	14	IMAGE:897690	TRA1--tumor rejection antigen (gp96) 1
+4	11	15	IMAGE:824068	COX5A--cytochrome c oxidase subunit Va
+4	11	16	IMAGE:897910	OSF-2--OSF-2os=osteoblast-specific fac
+4	11	17	IMAGE:724378	ESTs
+4	11	18	IMAGE:815534	ICAP-1A--integrin cytoplasmic domain-a
+4	11	19	IMAGE:814731	AIP--aryl hydrocarbon receptor-interac
+4	11	20	IMAGE:796181	GAS6--growth arrest-specific 6
+4	11	21	IMAGE:83083	"ITIH3--pre-alpha (globulin) inhibitor,"
+4	11	22	IMAGE:196387	"ABCC2--ATP-binding cassette, sub-famil"
+4	12	1	IMAGE:127925	DDX18--DEAD/H (Asp-Glu-Ala-Asp/His) bo
+4	12	2	IMAGE:38763	RAB4--SPHAR=Cyclin related protein
+4	12	3	IMAGE:66534	GCKR--glucokinase (hexokinase 4) regul
+4	12	4	IMAGE:280882	FLI1--FLI-1=ERGB=ets family transcript
+4	12	5	IMAGE:201168	Homo sapiens mRNA; cDNA DKFZp586J1119
+4	12	6	IMAGE:140100	LOC55862--uncharacterized hypothalamus
+4	12	7	IMAGE:246035	BLVRB--biliverdin reductase B (flavin
+4	12	8	IMAGE:241874	"Homo sapiens cDNA FLJ12592 fis, clone"
+4	12	9	IMAGE:140354	"ESTs, Weakly similar to ALU7_HUMAN ALU"
+4	12	10	IMAGE:126792	ESTs
+4	12	11	IMAGE:133114	FZD4--frizzled (Drosophila) homolog 4
+4	12	12	IMAGE:122822	NCOR1--nuclear receptor co-repressor 1
+4	12	13	IMAGE:824044	KIAA0217--KIAA0217 protein
+4	12	14	IMAGE:293539	"ESTs, Weakly similar to I38588 reverse"
+4	12	15	IMAGE:137638	ZNF22--zinc finger protein 22 (KOX 15)
+4	12	16	IMAGE:165921	CEP2--centrosomal protein 2
+4	12	17	IMAGE:344672	Homo sapiens mRNA; cDNA DKFZp761J139 (
+4	12	18	IMAGE:230562	KIAA0670--KIAA0670 protein/acinus
+4	12	19	IMAGE:293403	"CDC14A--CDC14 (cell division cycle 14,"
+4	12	20	IMAGE:202213	Homo sapiens mRNA; cDNA DKFZp586I0523
+4	12	21	IMAGE:248649	FLJ13910--hypothetical protein FLJ1391
+4	12	22	IMAGE:292920	"ESTs, Highly similar to T42691 hypothe"
+4	13	1	IMAGE:486544	SNAPC3--small nuclear RNA activating c
+4	13	2	IMAGE:768561	SCYA2--MCP-1=MCAF=small inducible cyto
+4	13	3	IMAGE:754998	SRP19--signal recognition particle 19k
+4	13	4	IMAGE:149910	SELL--CD62L=L-selectin=LAM-1=leukocyte
+4	13	5	IMAGE:666829	"SGCD--sarcoglycan, delta (35kD dystrop"
+4	13	6	IMAGE:753184	SOX9--SRY (sex determining region Y)-b
+4	13	7	IMAGE:51981	RPL7A--ribosomal protein L7a
+4	13	8	IMAGE:365945	RPL3--ribosomal protein L3
+4	13	9	IMAGE:549101	EST
+4	13	10	IMAGE:249856	RBL1--retinoblastoma-like 1 (p107)
+4	13	11	IMAGE:810802	RSN--restin (Reed-Steinberg cell-expre
+4	13	12	IMAGE:204299	RPA3--replication protein A3 (14kD)
+4	13	13	IMAGE:150221	"RAB1--RAB1, member RAS oncogene family"
+4	13	14	IMAGE:245296	RAD52--RAD52 (S. cerevisiae) homolog
+4	13	15	IMAGE:340630	MAP3K8--mitogen-activated protein kina
+4	13	16	IMAGE:813742	KIAA0370--Protein-tyrosine kinase 7 an
+4	13	17	IMAGE:229365	"PTPRC--protein tyrosine phosphatase, r"
+4	13	18	IMAGE:770901	"PTPN9--protein tyrosine phosphatase, n"
+4	13	19	IMAGE:529861	"PSMB6--proteasome (prosome, macropain)"
+4	13	20	IMAGE:123561	SERPINA1--protease inhibitor 1 (anti-e
+4	13	21	IMAGE:31072	PCSK1--proprotein convertase subtilisi
+4	13	22	IMAGE:812048	PRNP--prion protein (p27-30) (Creutzfe
+4	14	1	IMAGE:143287	PSG11--pregnancy specific beta-1-glyco
+4	14	2	IMAGE:40643	PDGFRB--platelet-derived growth factor
+4	14	3	IMAGE:1983029	Unknown
+4	14	4	IMAGE:1983067	ESTs
+4	14	5	IMAGE:1983153	Unknown
+4	14	6	IMAGE:1983179	EST
+4	14	7	IMAGE:1983177	Unknown
+4	14	8	IMAGE:1983297	EST
+4	14	9	IMAGE:1983865	Unknown
+4	14	10	IMAGE:1983983	EST
+4	14	11	IMAGE:1984398	Unknown
+4	14	12	IMAGE:1984407	Unknown
+4	14	13	IMAGE:1984431	Unknown
+4	14	14	IMAGE:1984442	Unknown
+4	14	15	IMAGE:1984587	Unknown
+4	14	16	IMAGE:1984617	Unknown
+4	14	17	IMAGE:1984662	EST
+4	14	18	IMAGE:1984689	Unknown
+4	14	19	IMAGE:1984737	Unknown
+4	14	20	IMAGE:1984765	Unknown
+4	14	21	IMAGE:1985026	EST
+4	14	22	IMAGE:1985061	Unknown
+4	15	1	IMAGE:1985073	EST
+4	15	2	IMAGE:1985098	EST
+4	15	3	IMAGE:1985095	Unknown
+4	15	4	IMAGE:1985124	Unknown
+4	15	5	IMAGE:2219255	"ESTs, Weakly similar to ALUE_HUMAN !!!"
+4	15	6	IMAGE:2219283	EST
+4	15	7	IMAGE:2219334	EST
+4	15	8	IMAGE:2219434	Unknown
+4	15	9	IMAGE:2219490	EST
+4	15	10	IMAGE:2219566	ESTs
+4	15	11	IMAGE:2219980	PPAN--peter pan (Drosophila) homolog
+4	15	12	IMAGE:2220027	EST
+4	15	13	IMAGE:2220071	Unknown
+4	15	14	IMAGE:2220107	EST
+4	15	15	IMAGE:2220175	Unknown
+4	15	16	IMAGE:2220201	KIAA0912--KIAA0912 protein
+4	15	17	IMAGE:2220455	Unknown
+4	15	18	IMAGE:2220532	Unknown
+4	15	19	IMAGE:2220596	Unknown
+4	15	20	IMAGE:2221643	Unknown
+4	15	21	IMAGE:2221700	EST
+4	15	22	IMAGE:2260494	EST
+4	16	1	IMAGE:2260698	"EST, Weakly similar to CGHU1V collagen"
+4	16	2	IMAGE:2260725	EST
+4	16	3	IMAGE:2260728	ESTs
+4	16	4	IMAGE:2260776	Unknown
+4	16	5	IMAGE:2260807	ESTs
+4	16	6	IMAGE:2260860	EST
+4	16	7	IMAGE:42526	FGF1--FGF-1=Fibroblast growth factor 1
+4	16	8	IMAGE:130741	"CSNK2B--Casein kinase 2, beta polypept"
+4	16	9	IMAGE:131047	PTB--PTB-4=polypirimidine tract bindin
+4	16	10	EmptyWell	EmptyWell
+4	16	11	IMAGE:133909	@DUSP1--MKP-1=CL100=MAP kinase phosphat
+4	16	12	IMAGE:134296	RAF1--A-raf=c-raf-1 kinase
+4	16	13	IMAGE:145105	TRG@--T cell receptor gamma chain
+4	16	14	IMAGE:150556	@PPP2R2A--Protein phosphatase 2 (former
+4	16	15	IMAGE:146858	WEE1--WEE1-like protein kinase
+4	16	16	IMAGE:147056	PPAT--Phosphoribosyl pyrophosphate ami
+4	16	17	EmptyWell	EmptyWell
+4	16	18	EmptyWell	EmptyWell
+4	16	19	IMAGE:1131287	@TRIP10--CIP4=Cdc42-interacting protein
+4	16	20	IMAGE:158183	ATF6--ATF-6=ATF family transcription f
+4	16	21	IMAGE:158434	EIF2B1--Eukaryotic translation initiat
+4	16	22	IMAGE:159142	IGKC--immunoglobulin kappa light chain
+4	17	1	IMAGE:162165	TEK--TEK=tyrosine kinase
+4	17	2	IMAGE:163189	CD24--CD24 Yes
+4	17	3	IMAGE:49768	UBL1--ubiquitin-homology domain protei
+4	17	4	IMAGE:50503	ITGB2--CD18=Integrin  beta 2=leukocyte
+4	17	5	IMAGE:51058	E2F4--E2F-4=pRB-binding transcription
+4	17	6	IMAGE:51973	SET--SET=fused to can in acute undiffe
+4	17	7	IMAGE:52162	TCEB2--Elongin B=RNA polymerase II tra
+4	17	8	IMAGE:52344	"DGKG--Diacylglycerol kinase, gamma (90"
+4	17	9	IMAGE:489681	DCTD--Deoxycytidylate deaminase Yes
+4	17	10	IMAGE:491155	RPL27--Ribosomal protein L27
+4	17	11	IMAGE:491213	PTGES--Pig12=p53-inducible gene
+4	17	12	PC:2192	@Unknown
+4	17	13	IMAGE:504248	@VCL--vinculin Yes
+4	17	14	IMAGE:502085	GBP1--Guanylate binding protein 1 inte
+4	17	15	IMAGE:700619	@BNIP3--BNIP3=NIP3=E1B 19K/Bcl-2-intera
+4	17	16	IMAGE:487396	@Homo sapiens mRNA; cDNA DKFZp564F053 (
+4	17	17	IMAGE:510324	SIAH2--SIAH-2=Seven in absentia homolo
+4	17	18	IMAGE:510405	CEACAM5--CEA=carcinoembryonic antigen
+4	17	19	IMAGE:504527	@DUSP1--MKP-1=CL100=MAP kinase phosphat
+4	17	20	IMAGE:505569	@TRB@--T cell receptor beta chain
+4	17	21	IMAGE:525742	RPS5--ribosomal protein S5 AND KIAA023
+4	17	22	IMAGE:526281	KIAA0303--KIAA0303
+4	18	1	IMAGE:526335	@MMP9--MMP-9=Matrix metalloproteinase 9
+4	18	2	IMAGE:530309	GPRK5--GRK5=G protein-coupled receptor
+4	18	3	EmptyWell	EmptyWell
+4	18	4	IMAGE:531487	DXS1283E--GS2 protein (DXS1283E)=Anony
+4	18	5	IMAGE:564019	@ADSS--Adenylosuccinate synthase Yes
+4	18	6	IMAGE:549124	GCL--grancalcin=EF-hand calcium-bindin
+4	18	7	IMAGE:564682	@MLL--MLL=HRX=ALL-1
+4	18	8	IMAGE:549383	PLAB--TGF-beta superfamily protein
+4	18	9	IMAGE:566123	@ETV5--ERM=ets family transcription fac
+4	18	10	IMAGE:563130	CCNB1--Cyclin B1
+4	18	11	IMAGE:731228	CCNA1--cyclin A1
+4	18	12	IMAGE:739382	KRAS2--K-ras
+4	18	13	IMAGE:740117	IRF7--IRF-7=interferon regulatory fact
+4	18	14	IMAGE:741876	LY6E--retinoic acid induced RIG-E prec
+4	18	15	IMAGE:743251	CREB1--CREB=cyclic AMP response elemen
+4	18	16	IMAGE:744216	Leukocyte platelet-activating factor r
+4	18	17	IMAGE:758261	PRKCL1--PKN kinase=lipid-activated pro
+4	18	18	IMAGE:758926	UMPS--Uridine monophosphate synthetase
+4	18	19	IMAGE:759172	CDK7--CAK=cdk7=NRTALRE=sdk=CDK activat
+4	18	20	IMAGE:760141	TOP2B--Topoisomerase II beta (180kD)
+4	18	21	IMAGE:767831	ITGA5--CD49E=Integrin alpha 5
+4	18	22	IMAGE:768291	MLL--MLL=HRX=ALL-1
+4	19	1	IMAGE:774619	MADH4--Smad4=DPC4=Homologue of Mothers
+4	19	2	IMAGE:774710	GSTP1--Glutathione-S-transferase pi-1
+4	19	3	IMAGE:783700	SFRP1--secreted frizzled-related prote
+4	19	4	EmptyWell	EmptyWell
+4	19	5	IMAGE:785796	FGF13--FGF-13=Fibroblast growth factor
+4	19	6	IMAGE:785951	"CYP11A--Cytochrome P450, subfamily XIA"
+4	19	7	IMAGE:796724	FGF5--FGF-5=Fibroblast growth factor-5
+4	19	8	IMAGE:809515	PLK--pLK=homologue of Drosophila polo
+4	19	9	IMAGE:827370	@Unknown
+4	19	10	IMAGE:813296	CYP3A7--Cytochrome P450 IIIA7 (P450-HF
+4	19	11	IMAGE:814049	MAD4--Mad4=MAX-binding protein=antagon
+4	19	12	IMAGE:814184	BLK--blk=B lymphocyte tyrosine kinase
+4	19	13	IMAGE:290151	@PIK3CG--Phosphatidylinositol 3-kinase
+4	19	14	IMAGE:248613	MYB--myb proto-oncogene=c-myb
+4	19	15	IMAGE:53251	@RLF--RLF=Zn-15 related zinc finger pro
+4	19	16	IMAGE:128031	@DDX18--RNA helicase (Myc-regulated dea
+4	19	17	IMAGE:234357	@ITGAX--CD11C=leukocyte adhesion protei
+4	19	18	IMAGE:324039	@LIF--LIF
+4	19	19	IMAGE:308536	@TIE--Tyrosine kinase receptor TIE-1
+4	19	20	IMAGE:267078	@FEZ1--FEZ1-T=homologue of C. elegans u
+4	19	21	IMAGE:39144	@FAF1--Similar to FAF1=FAS-associated f
+4	19	22	IMAGE:42402	@FANCA--FA-A=DNA crosslinking repair pr
+4	20	1	IMAGE:130202	@ATRX--ATRX=RAD54L=Recombination and DN
+4	20	2	IMAGE:133496	@TAX1BP1--TXBP151=tax1-binding protein
+4	20	3	IMAGE:148231	@HLA-DMB--MHC Class II=DM beta
+4	20	4	IMAGE:154763	@PML--PML=promyelocytic leukemia protei
+4	20	5	IMAGE:156111	@PRDM2--RIZ=zinc finger protein
+4	20	6	IMAGE:157828	@RUNX1--core binding factor alpha1b sub
+4	20	7	IMAGE:1350451	@DNMT1--DNA (cytosine-5-)-methyltransfe
+4	20	8	IMAGE:52408	@ABR--ABR=guanine nucleotide regulatory
+4	20	9	IMAGE:223122	@protein phosphatase with EF-hands-2 lo
+4	20	10	IMAGE:235911	@NCOR2--SMRT=silencing mediator of reti
+4	20	11	IMAGE:239799	@MCM2--MCM2=DNA replication licensing f
+4	20	12	IMAGE:248778	@LIG4--DNA ligase IV=double strand DNA
+4	20	13	IMAGE:257003	@D12S2489E--NKG2-D=type II integral mem
+4	20	14	IMAGE:259029	@SLC2A3--GLUT3=glucose transporter prot
+4	20	15	IMAGE:75415	HINT--HINT=Histidine triad nucleotide-
+4	20	16	IMAGE:796268	PPP1R1A--protein phosphatase-1 inhibit
+4	20	17	IMAGE:898062	CDC20--p55CDC
+4	20	18	IMAGE:841308	MYLK--myosin light chain kinase
+4	20	19	IMAGE:727229	MAP3K4--MEKK4=MTK1=KIAA0213=MAP kinase
+4	20	20	IMAGE:824602	IFI16--IFI16=interferon-gamma-inducibl
+4	20	21	IMAGE:712848	MADD--MADD=DENN=MAP kinase-activating
+4	20	22	IMAGE:814101	TFDP2--DP-2=E2F interacting transcript
+4	21	1	IMAGE:814478	BCL2A1--A1=Bfl-1=GRs=Bcl-2 related pro
+4	21	2	IMAGE:700792	CDKN3--CIP2=Cdi1=KAP1 phosphatase=G1/S
+4	21	3	EmptyWell	EmptyWell
+4	21	4	IMAGE:504544	HCK--HCK=hemopoietic cell protein-tyro
+4	21	5	IMAGE:840990	GSTM4--GST=glutathione transferase
+4	21	6	IMAGE:814260	FVT1--fvt1=Follicular lymphoma variant
+4	21	7	IMAGE:784224	FGFR4--FGFR4=Fibroblast growth factor
+4	21	8	IMAGE:815555	DGKA--Diacylglycerol kinase alpha (80k
+4	21	9	EmptyWell	EmptyWell
+4	21	10	IMAGE:666425	TOP1--Topoisomerase I
+4	21	11	IMAGE:504226	CD53--CD53
+4	21	12	IMAGE:713145	CD44--CD44=Pgp-1=extracellular matrix
+4	21	13	EmptyWell	EmptyWell
+4	21	14	IMAGE:840486	VWF--Von Willebrand factor
+4	21	15	IMAGE:239877	HDAC3--HD3=histone deacetylase 3
+4	21	16	IMAGE:235155	FCER1G--FCERI=Fc epsilon receptor gamm
+4	21	17	IMAGE:510856	ENC1--Pig10=p53-inducible gene=Similar
+4	21	18	IMAGE:743739	PRKAR2A--cAMP dependent protein kinase
+4	21	19	IMAGE:345032	RNASE6PL--ribonuclease 6 precursor
+4	21	20	IMAGE:133136	DEK--dek=translocated in t(6;9) acute
+4	21	21	IMAGE:753794	SCYB13--BLC=BCA-1=B lymphocyte chemoat
+4	21	22	IMAGE:133440	RANBP2--NUP358=cytoplasmically exposed
+4	22	1	IMAGE:187614	MADH1--Smad1=JV4-1=Homologue of Mother
+4	22	2	IMAGE:810806	CDC37--CDC37 homolog=subunit of Hsp90
+4	22	3	IMAGE:687054	RELB--relB = I-Rel Yes
+4	22	4	IMAGE:713263	PNOC--pre-pro-orphanin FQ=prepronocice
+4	22	5	IMAGE:684879	GLA--alpha-galactosidase A
+4	22	6	IMAGE:713129	GZMA--Granzyme A=HuHF=Hanukah factor s
+4	22	7	IMAGE:149809	@GATA2--GATA-binding protein 2
+4	22	8	IMAGE:251047	MMP17--MMP-17=Matrix metalloproteinase
+4	22	9	IMAGE:809707	JUNB--jun-B Yes
+4	22	10	IMAGE:128088	TANK--TANK=I-TRAF=TRAF family member-a
+4	22	11	IMAGE:201976	ELF1--ELF-1=ets family transcription f
+4	22	12	IMAGE:204634	YES1--c-yes-1 kinase
+4	22	13	IMAGE:727904	PPP2R5E--protein phosphatase 2A epsilo
+4	22	14	IMAGE:324698	@CDK9--CDC2-related kinase (PITALRE)=cl
+4	22	15	IMAGE:340702	@KIAA1051--Akt2 kinase=RAC-PK-beta=RAC-
+4	22	16	IMAGE:727988	CDW52--CD52=CAMPATH-1
+4	22	17	IMAGE:712505	CDC2--CDC2=Cell division control prote
+4	22	18	IMAGE:433490	"@CSNK1A1--Casein kinase 1, alpha 1"
+4	22	19	empty	"Empty, Spot Not Printed"
+4	22	20	empty	"Empty, Spot Not Printed"
+4	22	21	empty	"Empty, Spot Not Printed"
+4	22	22	empty	"Empty, Spot Not Printed"

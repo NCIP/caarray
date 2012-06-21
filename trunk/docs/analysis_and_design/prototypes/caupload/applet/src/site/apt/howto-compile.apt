@@ -1,0 +1,507 @@
+           --------------------
+           JUpload - File Upload Applet - HowTo-compile the applet ?
+           --------------------
+           --------------------
+           --------------------
+
+
+HowTo-compile the applet ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+%{toc}
+  
+
+
+
+* {General consideration}
+~~~~~~~~~~~~~~~~~~~~~~~
+  The JUpload package is available from several sources:
+  
+  * Compiled applet, ready to use: from the central Maven Repository. You can just download the compiled and signed applet
+  from this URL: {{http://repo1.maven.org/maven2/net/sf/jupload/}}. Just browser to the version you're looking for (or 
+  the last one, if you don't know), and download it. This applet is signed with the JUpload demo certificate. You should
+  sign it with your own certificate, before use. Check the {{{./howto-sign.html}HowTo sign the applet}} page, for 
+  details on this point.
+  
+  * From JUpload release. Each release contains the <<sources>> and the <<compiled and signed applet>> jar file for the 
+  JUpload project. You can create a project in your favorite IDE. See below for details on Eclipse and Netbeans.
+  
+  * From sourceforge Subversion, by using a SVN checkout. This should be done by JUpload developper or people understanding
+    that work is being run on SVN, especially that there is a risk of unstable versions.
+    
+  In both mode, we recommand to install {{{http://maven.apache.org/}maven}}, to get the most up-to-date compilation way. You'll
+  find all details, in the {{{D}How to install Maven?}}, below. You can also use ant build, with the given build.xml 
+  file. See details in the {{{E}Compile with the given Ant build file}} page, below.
+
+
+* {Eclipse, Netbeans or another IDE?}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  You can work with the IDE you want. JUpload was tested with both <Eclipse> and <Netbeans>. <Eclipse> makes it simpler,
+  because applet debugging is embedded. With Netbeans, you'll need to attach the debugger to the running applet (see 
+  below).
+  
+  But to compile within Eclipse, you'll need some specific tasks (installing the maven plugin  or run the build.xml file), 
+  where Netbeans compilation of JUpload is native, starting from the 6.7 version of Netbeans. For previous version, you'll 
+  need to install the relevant plugin (see {{{http://NetBeans.org}Netbeans documentation}}, for all details).
+  
+  So, we <<recommand Eclipse>> as an IDE for JUpload, if you currently have no IDE installed. Otherwise ... keep the one
+  you have.
+  
+  <<Note:>> If you're using another IDE, or have any comment on this documentation, please post a little 'howto' for JUpload 
+  compiling for your IDE. Please do this in the {{{http://sourceforge.net/forum/forum.php?forum_id=199106}open discussion}}
+  sourceforge forum.    
+
+
+* {Ant or Maven build?}
+~~~~~~~~~~~~~~~~~~~~~
+
+  You can build JUpload with both <<ant>> or <<maven>> tools. <ant> looks easier, as it is often installed with Java 
+  IDE, like Eclipse.  But <maven> allows automatization of a lot of tasks, and is better on the long run. With both Eclipse
+  (once the maven plugin is installed) and Netbeans, using maven is natural, and is recommanded.
+  
+  Here are the main points to take into account, <<if you don't want to use maven>>:
+  
+  * <<With eclipse, you must run the <ant> build.xml script at least once>>. This will load the project dependencies, and
+  configure the source and build path. Then, eclipse will allow you to debug the applet within the IDE.
+  
+  * The <ant> build.xml script compiles and signs the applet, and deploy to the ./site (only available in release package)
+  and in the ./target/site ... if it exists. But it doesn't build the JUpload site itself. In particular, ant build
+  will not be available to construct the various reporting that are included in the maven build, and visible on the
+  JUpload site.
+  
+  *  The <ant> build.xml script needs a real keystore, where maven generates a key if you doesn't provide it at compile
+  time. See the {{{./howto-sign.html}HowTo sign the applet}} page, for details on this point.
+  
+  * You'll have to provide the <jupload.keystore.alias>, <jupload.keystore.filename> and
+  <jupload.keystore.storepass> properties to ant, either by defining them on the command line, with the -D option, or
+  within the IDE configuration page.
+  
+  * To run the JUnit tests, you'll jave to configure the JUnit 4.5 path to ant.
+  
+  []
+  
+
+
+* {Maven HowTo}
+~~~~~~~~~~~~~
+
+  Four parts here:
+
+%{toc|section=4|fromDepth=2}
+
+
+** {How to install Maven?}
+
+  Since 5.0.0rc4, JUpload is built with Maven. The maven version used is 2.2.x. Previous JUpload versions are built with 
+  native Eclipse compilation or with the provided <build.xml> ant file.
+  
+  Maven has a lot of advantages, and some drawbacks.
+  
+  The main advantages are:
+  
+  * Standardization of the project structure: sources, resources, test...
+  
+  * Total separation of sources and generated stuff (in the ./target/ folder). Release management.
+  
+  * Easier compilation process
+  
+  * Automatic execution of JUnit tests
+  
+  * Easy add of build or reporting plugins. Here, for instance, are added several source quality tools, like cobertura,
+  surefire, pmd...
+  
+  * Automatic build and publishing of the JUpload site.
+  
+  []
+  
+  The main drawbacks are:
+  
+  * Need specific installations (Eclipse plugin, command-line maven). The generated <build.xml> file should help, here.
+  
+  * Slower than native build. Compilation can take some time, especially when creating a release. But it's due to what 
+  maven actually does: if maven wasn't there,  we would less. For instance, JUnit test are run when building a release,
+  building the web site...
+  
+  [] 
+        
+  <<Maven command-line>> can be downloaded from {{http://maven.apache.org/}}. This tools is necessary to execute all
+  commands starting with 'mvn'.
+  
+  <<Maven Eclipse plugin>> installation is detailed, in the Eclipse paragraphe, below.
+  
+** {How to configure Maven for JUpload?}
+
+  JUpload needs some specific information, especially for signing. To do this, you'll have to create a JUpload profile in
+  your maven <<settings.xml>> file. For all details about this file, especially where it is, and how to 
+  protect passwords, please go to this page: {{http://maven.apache.org/settings.html}}
+  
+  The full profile, needed for JUpload, is:
+
+------------------------------------------------------------------------
+<settings>
+...
+	  <profiles>
+	  	...
+	  	<profile>
+	  	 <id>jupload</id>
+				<activation>
+					<activeByDefault>false</activeByDefault>
+				</activation>
+	  	 <properties>
+
+            <!-- The next parameters are mandatory, for applet signing.
+              Default behavior, in the pom, is to generate these parameters, if you didn't define them in your settings.xml.
+              So, they are optional in your settings. If you don't define them, JUpload will use a generated keystore, with
+              a certificate generated at compile time.
+              BUT: if you want to PUBLISH the applet to real life users, you SHOULD define them.
+              See the howto-compile on the JUpload site, for details -->
+            <jupload.keystore.alias>Alias for your key in your keystore</jupload.keystore.alias>
+            <jupload.keystore.filename>Full path for your keystore file</jupload.keystore.filename>
+            <jupload.keystore.storepass>Password for your keystore</jupload.keystore.storepass>
+            
+			<!--
+				The next parameters are mandatory only for publishing Maven artefact
+				to your repositories, that is: when you use the "deploy" maven goal.
+				Useless when you 'just' compile, that is: when you use the 'install'
+				maven goal. There is currently no 'Central' jupload repository
+			-->
+			<jupload.distributionManagement.repository.id>Id_for_your_main_repository</jupload.distributionManagement.repository.id>
+			<jupload.distributionManagement.repository.name>Name_for_your_main_repository</jupload.distributionManagement.repository.name>
+			<jupload.distributionManagement.repository.url>URL_for_your_main_repository</jupload.distributionManagement.repository.url>
+			<jupload.distributionManagement.snapshotRepository.id>Id_for_your_main_snapshotRepository</jupload.distributionManagement.snapshotRepository.id>
+			<jupload.distributionManagement.snapshotRepository.name>Name_for_your_main_snapshotRepository</jupload.distributionManagement.snapshotRepository.name>
+			<jupload.distributionManagement.snapshotRepository.url>URL_for_your_main_snapshotRepository</jupload.distributionManagement.snapshotRepository.url>
+
+            <!-- The next parameters are mandatory only for PGP signing. PGP signing is used only when performing
+                a release, that is: when executing the goal release:perform
+                Not used (so: optional) otherwise.
+                PGP signing is only used for developpers who would like to publish a new JUpload version 
+                to the Maven Central Repository. For all other users, you can let skip to true. --> 
+            <jupload.pgp.keyname>Name of your PGP key</jupload.pgp.keyname>
+            <!-- The passphrase is optional: if not provided, it will be asked to the user -->
+            <jupload.pgp.passphrase>Passphrase for your PGP key</jupload.pgp.passphrase>
+            
+            <!-- The next parameters are mandatory only for use of the maven release plugin.
+                Optionnal otherwise.
+                So for standard use of JUpload (without creating releases), you can let this parameter unchanged -->
+            <jupload.scm.username>Login for the Sourceforge Source Configuration Manager</jupload.scm.username>
+            <jupload.scm.password>Password for the Sourceforge Source Configuration Manager</jupload.scm.password>
+
+	  	 </properties>
+	  	</profile>
+	  	...
+	</profiles>
+...
+</settings>
+------------------------------------------------------------------------
+
+
+** {How to compile with Maven?}
+
+	Compiling with Maven can be done by using your favorite IDE. You can also use any terminal or command window, and
+	type this command
+	
+--------------------
+	mvn install
+--------------------
+
+
+** {How to build the JUpload web site with Maven?}
+
+	The constructing of the whole site is included in the given pom.xml file, like any standard maven project. The standard
+	command to build your web site is:
+	
+--------------------
+	mvn site
+--------------------
+
+	This aboce command will construct the whole site <<but not the applet>>. You can then execute a <mvn install>, to add
+	the built and signed applet to the existing site, or construct both the the site and the applet in one step:
+	
+--------------------
+	mvn site install
+--------------------
+
+	The generation of the whole site is long, because of the reporting plugins which are added to the JUpload pom. To 
+	speed it, you can prevent the reporting to be executed. You can also prevent the JUnit test to be executed:
+	
+------------------------------------------------------------
+	mvn site install -Dskip.reporting -Dmaven.test.skip
+------------------------------------------------------------
+
+** {How to generate the ant build file?}
+
+	The ant build files can be generated from the maven pom.xml file, by the <I>maven-ant-plugin</I>. This plugin will generate
+	the maven-build.xml and maven-build.properties files. 
+	<<Take care that your password will get copied in the maven-build.properties file!>>. You'll have to 'clean' this file, 
+	before commiting this file to SVN.
+	
+	To generate these files, just execute this maven command:
+
+------------------------------------------------------------
+	mvn ant:ant
+------------------------------------------------------------
+
+	TODO: Use a specific profile, which will override your JUpload passwords.
+
+* {Compile with the given Ant build file}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   An ant build file is given with JUpload, to generate two main targets:
+
+   * The default one, <eclipse_package>, create the compiled jar file, sign it, and copy it to the ./site and ./target/site 
+   folders, if they exist. Its main advantage, is that it creates or updates the /conf/svn.properties file, that contains the applet version (see wjhk.jupload2.JUploadApplet#VERSION 
+     attribute) and last SVN commit number.
+
+   * The 'dist' creates a jar containing a jupload release, including: sources and site directory, with javadoc.
+  
+  [] 
+  
+  <<Prerequisites:>>
+  
+  * You need to create a keystore, to sign the applet. Please read the {{{./howto-sign.html}HowTo sign the applet}} page, for 
+  details on this point.
+  
+  * You need to provide the <jupload.keystore.alias>, <jupload.keystore.filename> and
+  <jupload.keystore.storepass> properties to ant, either by defining them on the command line, with the -D option, or
+  within the IDE configuration page :
+  
+--------------------------------------------------------
+ant -Djupload.keystore.alias=jupload -Djupload.keystore.filename=youKeystoreFile -Djupload.keystore.storepass=yourKeystorePass
+--------------------------------------------------------
+  
+  * <<For eclipse>>, you <<MUST>> run the build.xml at least once, to define the source and build path.
+  
+    * The ant build file (<build.xml>) is easily launched with Eclipse: just right on it, and choose <Run as / ant build>.
+    
+    * You can define the properties jupload.keystore.alias, jupload.keystore.filename and jupload.keystore.storepass
+    properties, by going in the menu Window / Preferences / Ant / Runtime / Properties 
+  
+  * <<For other IDE>>, please give feedback about their behavior. For netbeans, maven support is native, so ... please use
+  maven !  ;-)
+  
+  []
+
+
+
+* {How to install Eclipse and work with JUpload sources?}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+** Installation of Eclipse
+
+  Eclipse is the easiest way to develop the java stuff, like the applet. Go to {{http://Eclipse.org}} to download it. You can
+  take the Java Developper edition, for instance.
+  
+  You can then create your JUpload project from a JUpload release, or from the trunk.
+  
+  
+**   Install the Maven Eclipse plugin
+
+  Two Maven plugins for eclipse exist. Here is the doc to the m2eclipse plugin. It is available at 
+  {{http://m2Eclipse.sonatype.org/}}. You can install the core plugin from this Eclipse upload site: 
+  {{http://m2Eclipse.sonatype.org/sites/m2e}}. You should also, at least, install the SVN support from this Eclipse 
+  upload site: {{http://m2Eclipse.sonatype.org/sites/m2e-extras}}.
+  
+  <<Caution:>> To run the m2Eclipse plugin, you'll need that Eclipse uses a JDK instead of JRE, like in standard Eclipse
+  installation. To do this, edit the Eclipse.ini (in the root Eclipse folder), and add these two lines:
+
+-------------------------------------------
+-vm
+yourJDKPath/jdk1.6.0_14/bin      
+-------------------------------------------
+
+** Install the SVN plugin for Eclipse
+
+  This step is necessary only if you plan to use SVN, for instance to check out the most up-to-date version of JUpload, 
+  from the sourceforge Subversion (conf management).
+  
+  There are two Eclipse plugins for SVN: subversion (on polarion.org) and subclipse (on tigris.org). Both are good. I 
+  use the second one. An easy way to install it is to use the Eclipse software management function.
+
+  * Click on 'Help / Install New Software'  
+
+    * <<For subclipse installation>>. If there is no 'Subclipse update site', add a new remote site, with this URL: 
+	http://subclipse.tigris.org/update_1.2.x
+
+    * <<For subversive installation>>. If there is no 'Subversive update site' in the list of update site you'll see there (that is: if you never installed 
+    a subversive for your Eclipse), add a new Eclipse update site, with this URL (for Eclipse 3.2 and 3.3): 
+    http://community.polarion.com/projects/subversive/download/Eclipse/2.0/galileo-site/
+    For details, you can go to {{{http://www.polarion.org/index.php?page=overview&project=subversive}subclipse Eclipse plugin}}
+
+  * Click on the <Next> button to see the available packages on the choosen Eclipse update site.
+
+  * Click on 'Finish'. Eclipse will install the selected packages.
+
+
+** Create a JUpload project for Eclipse, from a JUpload release
+
+	To do this, you'll need to download a release file, from Sourceforge. The release files are zip files. The content of
+	this zip files is described in the {{./index.html}} page. Two folders exist, on the root of this zip file:
+	
+	* /src contains the whole sources for the application, including the translation stuff.
+	
+	* /site contains a generated web site, with a compiled applet. You can use this site to check that everything is Ok,
+	and reuse the applet for you site. you <<should sign the applet>> with your own certificate. See the
+	{{./howto-sign.html}} page for details.
+	
+	[]
+	
+	To create a new project for eclipse, you should:
+	
+	* Create a new Java empty project for eclipse. You can name it <jupload>, for instance.
+	
+	* Right-click on the project, and select 'Import...'
+	
+	* Then, choose 'General / Archive file', select the JUpload zip release file.
+	
+	* You _must_ select the 'src' folder.
+	
+	* You _can_ select the 'site' folder, if you need a ready to use applet and demo web site. You should remove this
+	'site' folder, once you successfully built a site with maven: this /site folder will remain unchanged, when
+	you compiled an updated version of the applet.
+	
+	* If you installed the maven plugin for eclipse, you should activate maven: Right-click on the project, then select 
+	Maven / Enable dependency management 
+	
+	  ** After that, it seems that refreshing the project is necessary for eclipse to clear any 'compilation error' tags.
+	  I had to do it twice. For this, you'll have to righ-click on the project, then choose the refresh menu item.	
+	
+	[]
+
+** Create a JUpload project for Eclipse, from the Subversion repository  
+
+  The release files contains the necessary stuff to compile or hack the JUpload code. If you do this, please do not 
+  hesitate to post a message on the {{{http://sourceforge.net/forum/forum.php?forum_id=199106}open discussion}} sourceforge 
+  forum. You can then explain the enhancement(s) you did, and post a patch. The Patches tracker is nice enough for that.  
+
+  You must have Eclipse, with the subversion plugin installed, see details just above. Then, you have to do these steps:
+  
+  * Open the <SVN perspective> (menu: window / open perspective / Other, then select <SVN Repository exploring>).
+
+  * On the left panel (should be <SVN Repositories>), right click
+
+  * Select 'New / Repository Location'
+
+  * The URL is: https://jupload.svn.sourceforge.net/svnroot/jupload
+
+  * Click on 'Finish'
+
+  []
+  
+  You now have a SVN repository configured for the JUpload project. You'll now have to checkout the JUpload maven 
+  project. To do this:
+  
+  * Click on the '+' symbol, in front of the JUpload SVN repository.
+  
+  * Right-click on the 'trunk' folder.
+  
+  * Select <Check out as Maven project>
+  
+  * Let default option, and just click on <Finish>.
+   
+    * If you wish, you can also go to the <Advanced> part, and change the <Name template>, to choose the project name that
+    will be used in the Eclipse workspace.
+  
+  * For the first checkout, Eclipse will do a lot of stuff, like downloaded dependecies, and configuring the
+  Eclipse workspace for the JUpload project.
+
+  * Go back to the <Java perspective> (menu: window / open perspective / java), or Ctrl+F8
+  
+  * The <jupload> project is now created, and ready for use. You can then:
+  
+    * Use the Eclipse IDE to edit the code (in /src/main/java)
+    
+    * Use the Eclipse IDE to debug it, with standard options.
+  
+  
+
+** Basic compilation, with Eclipse, using ant, from a JUpload release
+
+  This is the simplest way to compile and run the applet. Use the sources of the JUpload releases, without connection to the 
+  sourceforge.net subversion.
+  
+  Create a new project:
+
+  * menu : 'File / New / Project'
+
+  * In the dialog box: select 'Java / Java Project'. Click on 'Next'
+
+  * Enter a project name, and all other default values. Check that 'separate folders for sources and class files' is selected.
+
+  * Click on 'Finish',
+
+  * Right click on the newly created project
+
+  * Select 'Import...'
+
+  * In the dialog box: select 'General / Archive File' . Click on 'Next'
+
+  * Browse to the archive file. Click on 'Finish'
+
+  * Answer 'Yes' to all the 'overwrite' Eclipse validation.
+  
+  [] 
+
+  In order to sign the applet, for use on a web site, you need to define your keystore and its password. To do this, when
+  using the and <biuld.xml> file, you must define the <<jupload.keystore.filename>> and <<jupload.keystore.filename>> ant properties:
+
+  * Click on <Window> / <Preferences>,
+
+  * Then, <Ant> / <Runtime> / <Properties>,
+  
+  * Then create or edit the <jupload.keystore.filename> and <jupload.keystore.filename>, and put your own values there. See the
+  {{./howto-sign.html}} page for details.
+  
+  [] 
+
+  Then, to compile and sign the applet, you'll have to do this:
+
+  * In Eclipse, right-click on the <build.xml> file, available in the root folder of your project,
+
+  * Select 'Run as', then 'Ant Build'
+  
+  [] 
+
+  To launch the applet:
+
+  * Right-click on your project,
+
+  * Select 'Run as' or 'Debug as', then 'Java applet'
+
+  * Select the 'JUploadApplet'. This will let you to several errors in the console... but initialized the application in 
+    Eclipse... You now only have to set the applet parameters.
+  
+  [] 
+
+  To set applet parameters:
+
+  * Open the menu 'Run / Open Debug Dialog...'  (or 'Run / Open Run Dialog...')
+
+  * The JUploadApplet should be selected, in the 'Java applet' section. If not, select it.
+
+  * On the right panel, select the 'Parameter' entry
+
+  * Just add the necessary applet parameter. At least one: the postURL.
+
+  * Click on 'Debug'
+  
+  [] 
+
+  To launch the applet a second time:
+
+  * Just click on the button looking like a 'bug', on the tool bar, or hit F11. It will launch the last launched application, in debug mode.
+  
+  [] 
+
+  
+  
+* {How to install Netbeans and work with JUpload sources?}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  A general documentation, about using Maven with Netbeans, is available on this page: 
+  {{maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html}}.
+  
+  Basically, maven support is native, starting from netbeans 6.8. But there is no debug support for the applet. So you 
+  have to connect yourself your debugger to the applet. 

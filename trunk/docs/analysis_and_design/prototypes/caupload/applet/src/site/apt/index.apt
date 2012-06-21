@@ -1,0 +1,377 @@
+           --------------------
+           JUpload - File Upload Applet - General presentation
+           --------------------
+           --------------------
+           --------------------
+
+General Description
+~~~~~~~~~~~~~~~~~~~
+
+  
+%{toc}
+           
+           
+* {Presentation}
+~~~~~~~~~~~~~~~~~~~~~~~
+	WEB SITE: {{http://jupload.sourceforge.net/}}
+	
+	This applet is 'given' with the GPL licence.
+	  	
+	JUpload takes care of the limitation posed by traditional HTML upload forms by allowing you to upload a whole directory 
+	and the files within it with a single click.
+	
+	Its more usual use is as an <<applet>>. But it's also available as <<stand alone application>>. Please read information
+	about the daemon mode for details.
+	
+	JUpload manages the client part. That is: in HTTP upload, you'll have to write the server script which will manage the
+	uploaded file. The standard HTTP POST command is used. In FTP mode, JUpload directly write the file on the target server.
+	There is no need to write additional code. 
+
+	JUPload manages a lot of configuration parameters, to allow an easy adaptation to your specific needs. This include:
+	
+	* Lots of parameter, to easily adapt JUpload to your needs. 
+	
+	* Easy personalization: lots of hook points are defined, so that you can transform the JUpload behavior according 
+	to your needs.
+	
+	* Multilingual: more than 20 languages ! Adding a new translation is easy, just submit the new (or updated) one.
+	
+	* Retry capabilities, to resume upload upon network errors.
+	
+	* FTP and HTTP (POST) capabilities
+	
+	* Session management. The cookies are sent within the upload.
+	
+	* Chunk upload allows to take care of the maximum upload size of your server (the uploaded file is splitted into
+	 several pieces of the defined size),
+	
+	* Picture management (resizing, rotation, format change),
+	
+	* Control of allowed file extension  
+	
+	* Md5 checksum calculation,
+	
+	* Upload of directory structure
+	
+	* ...
+  
+  
+* {Description}
+~~~~~~~~~~~~~~~~~~~~~~~
+	
+	Traditional HTML upload forms allow you to select and upload one file at a time. This restriction is unacceptable 
+	when it comes to uploading thousands of files within a single folder. 
+	
+	Java Multiple File Upload Applet (JUpload) takes care of this limited by allowing users to select and upload a whole 
+	directory and the files within it with a single click.
+	
+	Main evolutions since V2, the original version, quite old now:
+	
+	* Add of UploadPolicy. This allows developpers to easily configure the way files are uploaded (see below for details)
+	
+	* Add of picture management functions. This can easily be done by using the PictureUploadPolicy, or one of its 
+	inherited classes, like CoppermineUploadPolicy (which is dedicated to the coppermine online picture gallery.
+	
+	* Cookies session are kept: Upload are now done within the current navigator session. Thus, the upload is done within 
+	the same user session, if any.
+	
+	* Works with SSL, but not with client certificates.
+	
+	* Works with FTP (since 2.9.0).
+	
+	* Upload is done in the current HTTP Session (the applet reads the cookies from the navigator).
+	
+	* Add of a daemon mode. JUpload is then run as a standard Java application.
+	
+	[]
+	
+	UploadPolicies makes it easy to configure these parameters:
+	
+	* Target upload URL
+	
+	* Number of files that should be uploaded. For instance: all at once (default), one by one (see FileByFileUploadPolicy), 
+	or by packet of limited number of files (see CustomizedNbFilesPerRequestUploadPolicy)
+	
+	* Top part of the applet can be modified by writing a new UploadPolicy, using the UploadPolicy.createTopPanel method. 
+	The PictureUploadPolicy uses it to add a preview panel and two rotation buttons.
+	
+	* And much more ...  Please see the javadoc and the "HowTo customize it" page.
+	
+	[]
+
+	Picture management is added by the PictureUploadPolicy. (see the Demo of the picture applet). This includes the 
+	following parameters:
+	
+	* Ability to set a maximum width and/or height for pictures,
+	* Ability to rotate pictures, by quarters of turn,
+	* Ability to preview pictures. A click on the small picture displays a full screen picture.
+	
+	[]
+
+  <<Translations>>
+
+	The JUpload package contains the following languages:  Arabic, Brazilian Portuguese, Bulgarian, Chinese (Simplified), 
+	Croatian, Czech, Danish, Dutch, English, Esperanto, French, German, Hebrew, Hungarian, Italian, Japanese, Norwegian, 
+	Polish, Portuguese, Romanian, Russian, Slovak, Slovene, Spanish, Swedish, Turkish
+
+
+* {Applet vs Daemon}
+~~~~~~~~~~~~~~~~~~~~~~~
+	
+	The standard, and original, way to use JUpload is the applet mode. This mode consist as embedding JUpload into a web
+	page, to add upload capabilites to your web site. 
+	
+	An important work has been done to embed the code into a Java standard application. This could be use in any standard
+	Java application. The original intend was to link this daemon to a simple applet, which would simply add the files to 
+	upload into the daemon. Then, the daemon would be able to send the files asynchronously to the server, even if the
+	user closes his window. If this is a need for someone ... this job can be finished.
+	
+	More details on the use of this mode on the {{./howto-customize.html}} page. 
+	
+	<<Note:>> in both case, for HTTP upload, you'll have to write the server side script, to manage the uploaded file, 
+	according to your application needs. 
+
+
+* {How to use it ?}
+~~~~~~~~~~~~~~~~~
+
+** {Basic mode}
+
+	The applet can be used, by using a standard tag. Here the simplest one, which you can 'see' by viewing the 
+	{{{./applet-basic.html}Basic demo}} page:
+
+---------------------------------------------------------------------------------------------------------
+        <APPLET
+	            CODE="wjhk.jupload2.JUploadApplet"
+	            NAME="JUpload"
+	            ARCHIVE="wjhk.jupload.jar"
+	            WIDTH="640"
+	            HEIGHT="300"
+	            MAYSCRIPT="true"
+	            ALT="The java pugin must be installed.">
+            <param name="postURL" value="yourServerScriptURL.html" />
+            <!-- Optionnal, see code comments -->
+            <param name="showLogWindow" value="false" />
+
+            Java 1.5 or higher plugin required. 
+
+        </APPLET>
+---------------------------------------------------------------------------------------------------------
+
+	Lots of parameters can be used, to adapt the applet behavior to your needs. You'll find the full list of 
+	applet parameters available in JUpload is defined in the 
+	{{{./apidocs/wjhk/jupload2/policies/UploadPolicy.html}UploadPolicy javadoc page}}.
+
+	You can <<test the full list of applet parameters>> by using the {{{./advanced_js_demo.html}Advanced demo}} page. 
+	
+	
+** {Picture mode}
+
+	One of the 'biggest' mode you can use, is the picture mode. You can check it by going to the 
+	{{{./applet-basic-picture.html}Picture mode demo}}.
+	
+	In addition to standard JUpload behavior, the picture mode adds these capabilitites:
+	
+	* To browse files with picture preview, in the file chooser.
+	
+	* To rotate pictures, quarter by quarter.
+	
+	* To resize picture, according to a maximum allowed height and/or width
+	
+	* To change the file format (for instance gif --> png)
+	
+	* To send (or not) the picture metadata
+	
+	* To preview pictures, from the 'file to upload' list.
+	
+	[] 
+	
+	Here is the relevant applet tag:
+	
+---------------------------------------------------------------------------------------------------------
+        <APPLET
+        	CODE="wjhk.jupload2.JUploadApplet"
+            ARCHIVE="wjhk.jupload.jar" 
+            WIDTH="640" 
+            HEIGHT="400" alt=""
+            MAYSCRIPT="true">
+            <param name="postURL" value="yourServerScriptURL.html" />
+            <param name="maxChunkSize" value="500000" />
+            <param name="uploadPolicy" value="PictureUploadPolicy" />
+            <!-- Optionnal, see code comments -->
+            <param name="maxPicHeight" value="900" />
+            <!-- Optionnal, see code comments -->
+            <param name="maxPicWidth" value="700" />
+            <!-- Optionnal, see code comments -->
+            <param name="debugLevel" value="0" />
+            <!-- Optionnal, see code comments -->
+            <param name="showLogWindow" value="false" />
+            
+            Java 1.5 or higher plugin required.
+        </APPLET>
+---------------------------------------------------------------------------------------------------------
+
+** {Automatic installation of Java on the client computer}	
+	 
+	 The below code should be put before the APPLET tag, to make the navigator automtically install Java on
+	 the client computer, when opening the page. If Java is already installed on the client computer, this code makes 
+	 nothing. If not, the user is asked to install it, and the installation process is automatic. 
+
+---------------------------------------------------------------------------------------------------------
+<!--"CONVERTED_APPLET"-->
+<!-- HTML CONVERTER -->
+<script language="JavaScript" type="text/javascript"><!--
+    var _info = navigator.userAgent;
+    var _ns = false;
+    var _ns6 = false;
+    var _ie = (_info.indexOf("MSIE") > 0 && _info.indexOf("Win") > 0 && _info.indexOf("Windows 3.1") < 0);
+//--></script>
+    <comment>
+        <script language="JavaScript" type="text/javascript"><!--
+        var _ns = (navigator.appName.indexOf("Netscape") >= 0 && ((_info.indexOf("Win") > 0 && _info.indexOf("Win16") < 0 && java.lang.System.getProperty("os.version").indexOf("3.5") < 0) || (_info.indexOf("Sun") > 0) || (_info.indexOf("Linux") > 0) || (_info.indexOf("AIX") > 0) || (_info.indexOf("OS/2") > 0) || (_info.indexOf("IRIX") > 0)));
+        var _ns6 = ((_ns == true) && (_info.indexOf("Mozilla/5") >= 0));
+//--></script>
+    </comment>
+
+<script language="JavaScript" type="text/javascript"><!--
+    if (_ie == true) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "0" HEIGHT = "0" NAME = "JUploadApplet"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3"><noembed><xmp>');
+    else if (_ns == true && _ns6 == false) document.writeln('<embed ' +
+	    'type="application/x-java-applet;version=1.5" \
+            CODE = "wjhk.jupload2.EmptyApplet" \
+            ARCHIVE = "wjhk.jupload.jar" \
+            NAME = "JUploadApplet" \
+            WIDTH = "0" \
+            HEIGHT = "0" \
+            type ="application/x-java-applet;version=1.6" \
+            scriptable ="false" ' +
+	    'scriptable=false ' +
+	    'pluginspage="http://java.sun.com/products/plugin/index.html#download"><noembed><xmp>');
+//--></script>
+<applet  CODE = "wjhk.jupload2.EmptyApplet" ARCHIVE = "wjhk.jupload.jar" WIDTH = "0" HEIGHT = "0" NAME = "JUploadApplet"></xmp>
+    <PARAM NAME = CODE VALUE = "wjhk.jupload2.EmptyApplet" >
+    <PARAM NAME = ARCHIVE VALUE = "wjhk.jupload.jar" >
+    <PARAM NAME = NAME VALUE = "JUploadApplet" >
+    <param name="type" value="application/x-java-applet;version=1.5">
+    <param name="scriptable" value="false">
+    <PARAM NAME = "type" VALUE="application/x-java-applet;version=1.6">
+    <PARAM NAME = "scriptable" VALUE="false">
+
+</xmp>
+    
+Java 1.5 or higher plugin required.
+</applet>
+</noembed>
+</embed>
+</object>
+
+<!--
+<APPLET CODE = "wjhk.jupload2.EmptyApplet" ARCHIVE = "wjhk.jupload.jar" WIDTH = "0" HEIGHT = "0" NAME = "JUploadApplet">
+	<PARAM NAME = "type" VALUE="application/x-java-applet;version=1.6">
+	<PARAM NAME = "scriptable" VALUE="false">
+	</xmp>
+Java 1.5 or higher plugin required.
+</APPLET>
+-->
+<!-- "END_CONVERTED_APPLET" -->
+---------------------------------------------------------------------------------------------------------
+
+
+* {Package content}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+** {Overview of the package content}
+
+	The jupload-src-A.B.C.zip file contains the full distribution. Until 2.6.0, it contains also the compiled code (class
+	files), but not the source (java files). This is corrected in since 2.7.0: the class files are no more there, and
+	java files are given in the distribution jar file.
+	
+	The main entry points are:
+	
+	* Compiled applet after compilation: /site/wjhk.jupload.jar
+	
+	* Full sources :  /src
+	(see the {./howto-compile.html} for details)
+	
+	* All translation material: /xxxxxx  <<TODO: update this path>>
+	
+	* Demo web site (only available after a maven site build, see {./howto-compile.html} for details:  site/index.html
+      It contains links to all docs for the JUpload project.
+      
+      * The sources for the demo site contains a <<PHP sample>>, and a <<Java sample>> for the server side script, that will receive 
+        the file uploaded by JUpload. See sources at /src/site/ressources/samples.java and /src/site/ressources/samples.php. On
+        the compiled site, see /target/site/samples.java and /target/site/samples.php.
+      
+      * After compilation, the compiled jar file is available at /target/site/wjhk.jupload.jar
+
+** {Details of the package content}
+
+  You'll find below the detail of the package content, and the main compilation results. Starting from 5.0.0, this 
+  structure is actually the standard Maven structure.
+  
+  * /site Is only available in the JUpload release files, not on the Sourceforge Subversion. It contains a 'compiled'
+  web site of JUpload, for the relevant JUpload release version. 
+  
+  	* /site/wjhk.jupload.jar Is the compiled JUpload applet, signed with the JUpload project certificate. You use directly 
+  	on your web site. You should sign it with your own certificate. See the  {{./howto-sign.html}} page for details.  
+
+    * /site/apidocs/ Contains the JUpload javadoc.
+	
+	* /site/samples.java/ Contains samples for a J2EE server, like tomcat. The parseRequest.jsp show an example of 
+	managing uploaded file in Java. To use it, you can <<configure tomcat>> to use your site folder as a deployer webapp.
+	To do this, go in the <server.xml> file of your Tomcat installation, find the Host node for your server, and add the
+	node below. By using the /src/site/resources folder, you don't need to build the site with Maven, when using the 
+	samples.java folder. I use this, for debugging within eclipse, as I need a server to upload to. Of course, if you 
+	point to YourProjectPath/target/site/, you'll be able to see the whole JUpload site in JUpload... But you need to 
+	build the site if you change something. 
+
+---------------------------------------------------------------------------------------------------------
+<Context path="/jupload" docBase="YourProjectPath/src/site/resources" reloadable="true"/>
+---------------------------------------------------------------------------------------------------------
+	
+	* /site/samples.PHP/ Contains a PHP class, ready to use, to hide the actual call to the applet. You can use it to
+	easily used JUpload in PHP application.
+
+  * /src  The full sources for the JUpload applet.
+  
+    * /src/main.assembly Contains the assembly descriptor, to generate specific JUpload packaging.
+
+    * /src/main/java The actual code of the applet.
+    
+    * /src/main/resources The resources going with the applet: configuration files, images...
+    
+    * /src/main/translation The translation files for JUpload.
+    
+  * /target/site/ Is the JUpload web site, including the packaged applet. This site contains also some useful reports, 
+  like the javadoc, the JUnit status...
+  
+  []
+    
+
+
+  The main pages/files, on this web site, are:
+  
+  * {{./applet-basic.html}}: basic applet demo.
+  
+  * {{./applet-basic-picture.html}}: a sample of the applet in picture mode (uses the PictureUploadPolicy upload policy)
+  
+  * {{./advanced_js_demo.html}}: allows you to test the applet with various parameters.
+  
+  * {{./howto-customize.html}}: documentation how you can make the applet match to your needs.
+  
+  * {{./howto-debug.html}}: how to analyse what's happening.
+  
+  * {{./howto-support.html}}: how and where to get support.
+  
+  * {{./howto-translate.html}}:  we accept all translations !!!   ;-)
+  
+  * ./jakarta-commons-oro.jar: the jakarata library, signed by our demo certificate. Used in FTP mode only.
+  
+  * {{./RELEASE-NOTES.txt}}: what's new in this relese (and full history)
+  
+  * {{./site/wjhk.jupload.jar}}: <<The applet, ready to use>>
+
+  
+  Once the site is built with maven command <mvn site>, you can use /target/site as the root for a J2EE application server,
+  like Tomcat.
+
+

@@ -1,0 +1,71 @@
+    <!-- start caarray custom configuration -->
+
+    <!-- JBoss uses interceptors incorrectly, then outputs ugly logs.  Suppress.
+         https://issues.jboss.org/browse/EJBTHREE-1246 
+    -->
+    <category name="org.jboss.ejb3.interceptors">
+      <priority value="ERROR" />
+    </category>
+    
+    <category name="org.hibernate">
+      <priority value="WARN"/>
+    </category>
+    
+    <category name="net.sf.ehcache">
+      <priority value="ERROR"/>
+    </category>
+
+    <!-- Suppress success logging from InteractiveAuthenticationSuccessEvent -->
+    <category name="org.acegisecurity">
+      <priority value="ERROR"/>
+    </category>
+    
+    <category name="org.apache">
+      <priority value="WARN"/>
+    </category>
+
+    <category name="org.apache.struts2.util.TextProviderHelper">
+      <priority value="WARN"/>
+    </category>
+
+    <category name="org.springframework">
+      <priority value="WARN"/>
+    </category>
+
+    <category name="gov.nih">
+      <priority value="INFO"/>
+    </category>
+
+    <category name="gov.nih.nci.caarray">
+      <priority value="DEBUG"/>
+    </category>
+
+    <category name="gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilderImpl">
+      <priority value="WARN"/>
+    </category>
+    
+    <category name="net.sf.dozer">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="org.displaytag">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="com.opensymphony">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="com.opensymphony.xwork2.ObjectFactory">
+        <priority value="fatal"/>
+    </category>
+    
+    <category name="freemarker">
+        <priority value="ERROR"/>
+    </category>
+    
+    <category name="com.atlassian.plugin" >
+	    <level value="WARN"/>
+	</category>
+    
+    <!-- end caarray custom configuration -->

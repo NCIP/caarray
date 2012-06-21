@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+                         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+
+<hibernate-mapping package="gov.nih.nci.logging.api.domain">
+
+	<class name="ObjectAttribute" table="OBJECT_ATTRIBUTE">
+		<id name="id" column="OBJECT_ATTRIBUTE_ID" type="long">
+			<generator class="native" />
+		</id>
+		<property name="attributeName" column="ATTRIBUTE" />			
+		<property name="previousValue" column="PREVIOUS_VALUE" />	
+		<property name="currentValue" column="CURRENT_VALUE" />	
+	</class>
+
+</hibernate-mapping>

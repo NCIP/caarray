@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE project SYSTEM "GEMLPattern.dtd">
+<!-- Based off of 022522_D_F_20090107.short.xml, this file adds two probes that
+     will cause validation errors. -->
+
+<project by="Agilent Technologies" date="2009/01/07" name="Agilent-022522" company="Agilent Technologies">
+  <pattern name="Agilent-022522" owner="Agilent Technologies" description="170k BaBo UMCG plus Cancer Census" species_database="H. sapiens">
+    <reporter name="HsCGHBrightCorner" systematic_name="HsCGHBrightCorner" control_type="pos">
+      <feature number="1">
+        <position x="0.0" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="HsCGHBrightCorner" primary_name="HsCGHBrightCorner"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="341">
+        <position x="0.0366617420935412" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="681">
+        <position x="0.0733234841870824" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="1021">
+        <position x="0.1099852262806236" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="1361">
+        <position x="0.1466469683741648" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="1701">
+        <position x="0.183308710467706" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="2041">
+        <position x="0.2199704525612472" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="2381">
+        <position x="0.25663219465478837" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="2721">
+        <position x="0.2932939367483296" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="3061">
+        <position x="0.3299556788418708" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="A_16_P37904891" systematic_name="chr7:2275926-2275985" active_sequence="TTTGACATTAGTATTCTGCAATCTCTTGACTCTCCCTTAGATGTTTTTCTCACCAAACAG" start_coord="0">
+      <feature number="28">
+        <position x="0.0" y="1.7142300000000001" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr7_test_ARRAY-1872:2275926-2275985" primary_name="SNX8" description="ref|Homo sapiens sorting nexin 8 (SNX8), mRNA.">
+        <accession database="ref" id="NM_013321"></accession>
+        <other name="accessions" value="ref|NM_013321"></other>
+        <other name="probe_mappings" value="chr7_test_ARRAY-1872:2275926-2275985"></other>
+        <other name="tm" value="79.9"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+    <reporter name="A_16_P37638626" systematic_name="chr6:62964904-62964963" active_sequence="TCATGCAGTATAAAAATCACACTGACAAAAGAAGTTTCACAGTAAGTAGAGCAACAATTT" start_coord="0">
+      <feature number="23">
+        <position x="0.0" y="1.3967800000000001" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr6:62964904-62964963" primary_name="KHDRBS2" description="ref|Homo sapiens KH domain containing, RNA binding, signal transduction associated 2 (KHDRBS2), mRNA.">
+        <accession database="ref" id="NM_152688"></accession>
+        <other name="accessions" value="ref|NM_152688"></other>
+        <other name="probe_mappings" value="chr6:62964904-62964963"></other>
+        <other name="tm" value="77.61"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+      <reporter name="A_18_P10656728" systematic_name="chr10:19811167-19811226" active_sequence="AGGTCTAACTAGGGGTTAACTTTTGCTTGCAAATTAAAAACTTTTGAAACATGCCTACCA" start_coord="0">
+          <feature number="24">
+              <position x="0.0" y="1.4602700000000002" units="mm"></position>
+          </feature>
+          <gene systematic_name="chr10:19811167-19811226" primary_name="chr10:19811167-19811226" description="Unknown">
+              <other name="probe_mappings" value="chr10:19811167-19811226"></other>
+              <other name="tm" value="80.02"></other>
+              <other name="IsHomFiltered" value="0"></other>
+              <other name="NumPMHits" value="1"></other>
+          </gene>
+      </reporter>
+      <reporter name="A_16_P37638626" systematic_name="chr6:62964904-62964963" active_sequence="TCATGCAGTATAAAAATCACACTGACAAAAGAAGTTTCACAGTAAGTAGAGCAACAATTT" start_coord="0">
+          <feature number="23">
+              <position x="0.0" y="1.3967800000000001" units="mm"></position>
+          </feature>
+          <gene systematic_name="chr6:62964904-62964963" primary_name="KHDRBS2" description="ref|Homo sapiens KH domain containing, RNA binding, signal transduction associated 2 (KHDRBS2), mRNA.">
+              <accession database="ref" id="NM_152688"></accession>
+              <other name="accessions" value="ref|NM_152688"></other>
+              <other name="probe_mappings" value="chr6:62964904-62964963"></other>
+              <other name="tm" value="77.61"></other>
+              <other name="IsHomFiltered" value="0"></other>
+              <other name="NumPMHits" value="1"></other>
+          </gene>
+      </reporter>
+    <other name="AG_TAG_VERSION" value="2"></other>
+    <other name="AG_ROW_SPACING_MICRONS" value="36.6617420935412"></other>
+    <other name="AG_COL_SPACING_MICRONS" value="63.49"></other>
+    <other name="AG_X_OFFSET_MICRONS" value="18.3308710467706"></other>
+    <other name="AG_Y_OFFSET_MICRONS" value="31.745"></other>
+    <other name="AG_ROW_SPOTSIZE_MICRONS" value="30.0"></other>
+    <other name="AG_COL_SPOTSIZE_MICRONS" value="30.0"></other>
+    <other name="NumArrays" value="4"></other>
+    <other name="ArraySpacingCol" value="15.74552"></other>
+    <other name="ArraySpacingRow" value="0.01"></other>
+    <other name="NumArrayRows" value="1"></other>
+    <other name="NumArrayCols" value="4"></other>
+    <other name="ArrayPadding" value="2.0"></other>
+    <other name="Array1LocRow" value="2.972100000000001"></other>
+    <other name="Array1LocCol" value="13.0"></other>
+    <other name="Fiducial1LocRow" value="0.0"></other>
+    <other name="Fiducial1LocCol" value="0.0"></other><!--Total Number of Reporters: 180880.0-->
+    <other name="AMADID" value="022522"></other>
+    <other name="array_design_type" value="CGH"></other>
+    <other name="control_grid_id" value="IS-180880-4-V2_4by180K_CGH_Hs_20081117"></other>
+    <other name="genomic_build" value="hg18:NCBI36:Mar2006"></other>
+    <other name="created_by" value="earray"></other>
+  </pattern>
+</project>
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE project SYSTEM "GEML.dtd">
+<?biosequence reload="true"?>
+<project name="Agilent-021827" date="2009/05/19" by="Agilent Technologies" organization="Agilent Technologies">
+  <pattern name="Agilent-021827" owner="Agilent Technologies" species_database="H. sapiens" description="Human miRNA Microarray 3.0" type="Agilent/Ratio">
+    <grid_layout feature_count_x="82" feature_count_y="192"></grid_layout>
+    <reporter control_type="pos" name="miRNABrightCorner30" start_coord="0">
+      <biosequence_ref identifier="miRNABrightCorner30" species="H. sapiens"></biosequence_ref>
+      <feature number="1">
+        <position x="0.0" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="pos" name="DarkCorner" start_coord="0">
+      <biosequence_ref identifier="DarkCorner" database="agc" species="H. sapiens"></biosequence_ref>
+      <feature number="2">
+        <position x="0.127" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    
+    <reporter name="A_54_P2696" active_sequence="TGGAGGCCCCAG" start_coord="0">
+      <biosequence_ref identifier="A_54_P2696" database="agp" species="H. sapiens"></biosequence_ref>
+      <feature number="3">
+        <position x="0.254" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="neg" name="NegativeControl" start_coord="0">
+      <biosequence_ref identifier="NegativeControl" database="agc" species="H. sapiens"></biosequence_ref>
+      <feature number="118">
+        <position x="4.508500000000001" y="0.03666174209354125" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter name="A_54_P00004465" active_sequence="TGGAGGCCCCAG" start_coord="0">
+      <biosequence_ref identifier="A_54_P00004465" database="agp" species="H. sapiens"></biosequence_ref>
+      <feature number="3">
+        <position x="0.254" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    
+  </pattern>
+  
+</project>
+

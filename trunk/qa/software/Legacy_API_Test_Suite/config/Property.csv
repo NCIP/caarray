@@ -1,0 +1,8 @@
+Test Case,Class,Id,Property,Value
+700,gov.nih.nci.caarray.domain.array.Feature,149082824,coordinateUnits,321
+701,gov.nih.nci.caarray.domain.array.Feature,149082824,featureNumber,171
+702,gov.nih.nci.caarray.domain.array.Feature,149082824,x_Coordinate,0.0733234841870825
+703,gov.nih.nci.caarray.domain.array.Feature,149082824,y_Coordinate,0.0
+704,gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation,780370,chromosomeName,1
+705,gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation,780370,chromosomeStartPosition,41461023
+706,gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation,780370,chromosomeEndPosition,41461082

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+    <mbean code="org.jboss.mail.MailService" name="jboss:service=Mail">
+        <attribute name="JNDIName">java:/Mail</attribute>
+        <attribute name="User">@mail.user@</attribute>
+        <attribute name="Password">@mail.password@</attribute>
+        <attribute name="Configuration">
+            <configuration>
+                <!-- Set the protocol for your mail server -->
+                <property name="mail.transport.protocol" value="smtp"/>
+
+                <!-- Configure the SMTP gateway server -->
+                <property name="mail.smtp.host" value="@mail.smtp.host@"/>
+                <property name="mail.smtp.port" value="@mail.smtp.port@"/>
+                
+                <!-- Configure the SMTP Authentication -->
+		<property name="mail.smtp.auth" value="@mail.smtp.auth@"/>
+		<property name="mail.smtp.starttls.enable" value="@mail.smtp.starttls.enable@"/>
+
+                <property name="mail.debug" value="false"/>
+            </configuration>
+        </attribute>
+    </mbean>
+</server>

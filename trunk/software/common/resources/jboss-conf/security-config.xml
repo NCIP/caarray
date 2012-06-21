@@ -1,0 +1,48 @@
+<?xml version='1.0'?>
+<!DOCTYPE policy PUBLIC
+"-//JBoss//DTD JBOSS Security Config 3.0//EN"
+"http://www.jboss.org/j2ee/dtd/security_config.dtd">
+
+<policy>
+    <application-policy name="caarray">
+        <authentication>
+
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
+
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
+                <module-option name="ldapHost">placeholder do not remove</module-option>
+                <module-option name="ldapSearchableBase">placeholder do not remove</module-option>
+                <module-option name="ldapUserIdLabel">placeholder do not remove</module-option>
+            </login-module>
+
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="optional" >
+                <module-option name="driver">placeholder do not remove</module-option>
+                <module-option name="url">placeholder do not remove</module-option>
+                <module-option name="user">placeholder do not remove</module-option>
+                <module-option name="passwd">placeholder do not remove</module-option>
+                <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
+                <module-option name="encryption-enabled">YES</module-option>
+            </login-module>
+
+            <login-module code="gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule" flag="optional">
+                <module-option name="ticketValidatorClass">org.jasig.cas.client.validation.Cas20ServiceTicketValidator</module-option>
+                <module-option name="casServerUrlPrefix">https://@cas.server.hostname@:@cas.server.port@/cas</module-option>
+                <module-option name="serverName">@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@</module-option>
+                <module-option name="defaultRoles">UserRole</module-option>
+                <module-option name="roleAttributeNames">groupMembership</module-option>
+                <module-option name="principalGroupName">CallerPrincipal</module-option>
+                <module-option name="roleGroupName">Roles</module-option>
+                <module-option name="cacheAssertions">true</module-option>
+                <module-option name="tolerance">20000</module-option>
+                <module-option name="cacheTimeout">480</module-option>
+            </login-module>
+
+            <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+                <module-option name="password-stacking">useFirstPass</module-option>
+                <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
+                <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
+            </login-module>
+
+        </authentication>
+    </application-policy>
+</policy>

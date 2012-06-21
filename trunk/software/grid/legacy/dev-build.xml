@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<project name="Developer Modified Build File" basedir=".">
+  <!-- ============================================================== -->
+  <!-- This file is designed to allow the developer to extend the     -->
+  <!-- build process without having to edit the master build.xml      -->
+  <!-- file. DO NOT REMOVE ANY TARGETS                                -->
+  <!-- ============================================================== -->
+
+
+  <!-- ============================================================== -->
+  <!-- Place any other properties you will need here                  -->
+  <!-- ============================================================== -->
+  <property name="jboss.server.hostname" value="localhost"/>
+  <property name="jboss.server.jndi.port" value="31099"/>
+  <property name="project.lib" value="../../lib/caarray-project"/>
+  <property name="caarray-grid-svc.common.target.dir" value="../common/target"/>
+
+
+
+
+  <!-- ============================================================== -->
+  <!-- Create any extended Classpaths here                            -->
+  <!-- ============================================================== -->
+  <target name="defineExtendedClasspaths">
+    <path id="base.extended.classpath">
+      <pathelement location="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
+      <pathelement location="${build.lib.dir}/caarray-grid-common.jar"/>
+      <pathelement location="${project.lib}/cacore32-client-*.jar" id="extra.jars.fileset"/>
+        <fileset dir="${project.lib}" id="extra.jars.fileset">
+          <include name="commons-collections-*.jar"/>
+          <include name="commons-lang-*.jar"/>
+          <include name="commons-io-*.jar"/>
+          <include name="csmapi-*.jar"/>
+          <include name="ejb3-persistence-*.jar"/>
+          <include name="hibernate-annotations-*.jar"/>
+          <include name="hibernate-*.jar"/>
+          <include name="jboss-aop-client-*.jar"/>
+          <include name="jboss-aspect-client-*.jar"/>
+          <include name="jboss-ejb3x-*.jar"/>
+          <include name="jboss-ejb3-client-*.jar"/>
+          <include name="jbossall-client-*.jar"/>
+          <include name="log4j-*.jar"/>
+          <include name="nci-commons-core-*.jar"/>
+          <include name="cglib-*.jar"/>
+          <include name="javacsv-*.jar"/>
+          <include name="castor-*.jar"/>
+          <include name="guava-*.jar"/>
+        </fileset>
+    </path>
+    <path id="service.build.extended.classpath">
+    </path>
+    <path id="service.run.extended.classpath">
+      <pathelement location="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
+      <pathelement location="../common/target/caarray-grid-common.jar"/>
+    </path>
+    <path id="test.build.extended.classpath">
+      <pathelement location="${project.lib}/junit-*.jar"/>
+    </path>
+    <path id="test.run.extended.classpath">
+    </path>
+    <path id="run.extended.classpath">
+    </path>
+  </target>
+
+
+  <!-- ============================================================== -->
+  <!-- Pre Init Target                                                -->
+  <!-- ============================================================== -->
+  <target name="preInit">
+    <copy todir="${build.lib.dir}" flatten="true">
+      <fileset refid="extra.jars.fileset"/>
+    </copy>
+    <copy todir="${build.lib.dir}" file="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
+    <copy todir="${build.lib.dir}" file="${caarray-grid-svc.common.target.dir}/caarray-grid-common.jar"/>
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Init Build Target                                         -->
+  <!-- ============================================================== -->
+  <target name="postInit">
+
+  </target>
+
+
+  <!-- ============================================================== -->
+  <!-- Pre Stubs Target                                               -->
+  <!-- ============================================================== -->
+  <target name="preStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Stubs Build Target                                        -->
+  <!-- ============================================================== -->
+  <target name="postStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Stubs Build Target                                 -->
+  <!-- ============================================================== -->
+  <target name="preCompileStubs">
+    <!-- These stubs shouldn't be generated in the first place.  Figure out why, then delete this line -->
+    <delete dir="${stubs.src}/edu">
+    </delete>
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Stubs Build Target                                -->
+  <!-- ============================================================== -->
+  <target name="postCompileStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Stubs Build Target                                     -->
+  <!-- ============================================================== -->
+  <target name="preJarStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Stubs Build Target                                    -->
+  <!-- ============================================================== -->
+  <target name="postJarStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="preCompile">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="postCompile">
+    <replace file="${build.dest}/gov/nih/nci/cagrid/caarray/jndi.properties">
+      <replacefilter token="jboss.server.hostname" value="${jboss.server.hostname}"/>
+      <replacefilter token="jboss.server.jndi.port" value="${jboss.server.jndi.port}"/>
+    </replace>
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="preJar">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Build Target                                          -->
+  <!-- ============================================================== -->
+  <target name="postJar">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Tests Build Target                                 -->
+  <!-- ============================================================== -->
+  <target name="preCompileTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Tests Build Target                                -->
+  <!-- ============================================================== -->
+  <target name="postCompileTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Tests Build Target                                     -->
+  <!-- ============================================================== -->
+  <target name="preJarTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Tests Build Target                                    -->
+  <!-- ============================================================== -->
+  <target name="postJarTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Clean Target                                               -->
+  <!-- ============================================================== -->
+  <target name="preClean">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Clean Target                                              -->
+  <!-- ============================================================== -->
+  <target name="postClean">
+
+  </target>
+
+
+  <!-- ============================================================== -->
+  <!-- Call any tests.                                                -->
+  <!-- ============================================================== -->
+  <target name="test" depends="checkGlobus" description="Runs the service's tests.">
+    <echo message="Test results dir: ${junit.results.dir}" />
+    <mkdir dir="${junit.results.dir}" />
+    <junit dir="${basedir}" printsummary="yes" showoutput="true">
+      <classpath refid="test.run.classpath" />
+      <formatter type="xml" />
+      <batchtest fork="yes" todir="${junit.results.dir}">
+        <fileset dir="${test.src.dir}">
+          <include name="**/Test*.java" />
+          <include name="**/*TestCase.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="preDeployGlobus">
+  </target>
+
+</project>

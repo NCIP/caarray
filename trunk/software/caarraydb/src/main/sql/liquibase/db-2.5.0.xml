@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+
+    <!-- 2.5.0 changes -->
+    <changeSet id="29399" author="dharley">
+       <comment>GF-29399 - Write an upgrade script that will clean up organisms in the database to limit them to the NCBI taxonomy term source.</comment>
+       <customChange class="gov.nih.nci.caarray.upgrade.FixOrganismsMigrator"/>
+    </changeSet>
+    <!-- 2.4.0 changes -->
+    <changeSet id="file-storage" author="dkokotov">
+       <comment>GF ?? - file storage</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/file-storage.sql"/>
+    </changeSet>
+    <!-- 2.5.0 changes -->
+    <changeSet id="array-2187" author="kkanchinadam">
+       <comment>array-2187 - Add a parent column to the caarrayfile table.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/array-2187.sql"/>
+    </changeSet>
+    <changeSet id="auto-refresh-exp" author="pshrabstein">
+       <comment>ARRAY-2273 - Automatic Refresh. Implement API to return whether the given experiment was changed in the given time period.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/auto-refresh-exp.sql"/>
+    </changeSet>
+    <changeSet id="array-1932" author="aswift">
+       <comment>ARRAY-1932 - Automatic Refresh. Implement API to return whether the given sample was changed in the given time period.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/array-1932-auto-refresh-sample.sql"/>
+    </changeSet>
+    <changeSet id="partial-uploads" author="wcheng">
+       <comment>ARRAY-1627 - Implement chunked uploads.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/partial-uploads.sql"/>
+    </changeSet>
+    <changeSet id="upt423-disable-group" author="pshrabstein">
+       <comment>ARRAY-2259 - Update installer to configure UPT to disallow user group creation for caArray within UPT.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/upt423-disable-group.sql"/>
+    </changeSet>
+    <changeSet id="audit-security" author="wcheng">
+       <comment>ARRAY-1933 - Implement security for audit logs.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.sql"/>
+    </changeSet>
+    <changeSet id="array-1930-cas-csm-users" author="swiftaj">
+       <comment>ARRAY-1930 - Add Users found in the CAS repository to the CSM tables.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/ARRAY-1930-cas-csm-user-setup.sql"/>
+    </changeSet>
+    <changeSet id="array-1342" author="wcheng">
+       <comment>ARRAY-1342 - Allow collaborators to see uploaded files.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/array-1342.sql"/>
+    </changeSet>
+    <changeSet id="audit-security.1" author="wcheng">
+       <comment>ARRAY-2517 - Removed audit security filter from db.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.1.sql"/>
+    </changeSet>
+    <changeSet id="upt423-general-schema-upgrade" author="pshrabstein">
+       <comment>ARRAY-2518 - Upgrade caArray schema to UPT 4.2.3</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/upt423-general-schema-upgrade.sql"/>
+    </changeSet>
+    <changeSet id="upt423-disable-group.1" author="pshrabstein">
+       <comment>ARRAY-2259 - Insert to to the protection group/protection element link table order changed. </comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/upt423-disable-group.1.sql"/>
+    </changeSet>
+    <changeSet id="array-2477" author="pshrabstein">
+       <comment>ARRAY-2477 - Error when uploading over 2GB zip file. </comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/array-2477.sql"/>
+    </changeSet>
+</databaseChangeLog>

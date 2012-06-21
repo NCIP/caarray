@@ -1,0 +1,2 @@
+Hybridization Name	Array Data File
+My hynb	test.CEL	

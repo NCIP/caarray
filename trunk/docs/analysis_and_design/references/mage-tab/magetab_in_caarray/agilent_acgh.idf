@@ -1,0 +1,52 @@
+#####################################################
+#[IDF]
+#
+# MAGE-TAB Submission
+#
+#
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html for tips on filling in the sections below.
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+# for ontology terms you may need in order to fill in the sections below.
+# All lines beginning with the '#' character are treated as comments and ignored.
+
+
+# This section contains the top-level information for your experiment.
+Investigation Title	My Analysis of Copy Number for GBM Using Agilent Human Genome CGH Microarray Kit 244K
+Experiment Description	My Analysis of Copy Number for GBM Using Agilent Human Genome CGH Microarray Kit 244K
+Experimental Design	comparative_genome_hybridization_design
+Experimental Design Term Source REF	MGED Ontology
+
+# Please create as many Experimental Factors as you need, to describe the variables investigated by your experiment.
+Experimental Factor Name	tumor type
+Experimental Factor Type	disease_state_design
+Experimental Factor Type Term Source REF	MGED Ontology
+
+"# Please list contact details in columns, below:"
+Person Last Name	MyLastName
+Person Mid Initials	F
+Person First Name	MyFirstName
+Person Email	MyUserName@MyInstitution.gov
+Person Phone	xxx-xxx-xxxx
+Person Address	"MyStreet, PO Box nnnn, MD nnnnn"
+Person Affiliation	MyInstitution
+Person Roles	PI
+Person Roles	submitter
+Person Roles Term Source REF	MGED Ontology
+
+Date of Experiment	4/20/2007									
+Public Release Date	3/8/2008									
+
+"# Please list all publications associated with this submission, in columns:"
+
+# The next section describes the protocols used in your experiment.
+# Please select your own Protocol Names (e.g. 'GROWTH') for use within this spreadsheet.
+Protocol Name	mskcc.org:split:HG-CGH-244A:01	mskcc.org:split:HG-CGH-244A:02	mskcc.org:labeling:HG-CGH-244A:01	mskcc.org:hybridization:HG-CGH-244A:01	mskcc.org:feature_extraction:HG-CGH-244A:01	mskcc.org:bioassay_data_transformation:HG-CGH-244A:01	mskcc.org:segmentation_data_computation:CBS	mdanderson.org:biopsy:clin:01	intgen.org:03.002v2-DNA_RNA_Extraction_with_Allprep_Kit:01	mged.sourceforge.net/ontologies/MGEDontology.php#harvest
+Protocol Type	split	split	labeling	hybridization	feature_extraction	bioassay_data_transformation	bioassay_data_transformation	biopsy	http://mged.sourceforge.net/ontologies/MGEDontology.php#nucleic_acid_extraction	cell harvest
+Protocol Description	Promega reference genomic DNA was aliquoted at full concentrations into separate tubes	Promega reference genomic DNA was aliquoted to standard concentrations and volumes for Agilent protocol specifications	Standard Agilent labeling protocol http://www.agilent.com	Standard Agilent hybridization protocol http://www.agilent.com	Standard Agilent feature-extraction protocol  http://www.agilent.com	Standard Agilent + MSKCC.org GCNorm bioassay_data_transformation protocol  http://www.cbio.mskcc.org/CGCC	Circular Binary Segmenation Algorithm (ver 1.13.3) http://www.bioconductor.org/packages/2.2/bioc/html/DNAcopy.html	http://mdanderson.org/	"ftp://ftp1.nci.nih.gov/tcga/tumor/gbm/bcr/intgen.org/03.002v2-DNA_RNA_Extraction_with_Allprep_Kit.doc.zip.   After extraction, the analyte code in TCGA-XX-XXXX-XXX-XX[DRTW], D = DNA, R = RNA, T = Total RNA (contains small RNA and used mainly for miRNA ass"	http://mged.sourceforge.net/ontologies/MGEDontology.php#harvest
+Protocol Parameters		Amplification								
+
+SDRF Files	agilent_acgh.sdrf
+
+Term Source Name	MGED Ontology	caArray	BCR	ncbitax	EVS
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	http://caarraydb.nci.nih.gov/	http://www.tgen.org	http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/	http://ncicb.nci.nih.gov/NCICB/infrastructure/cacore_overview/vocabulary

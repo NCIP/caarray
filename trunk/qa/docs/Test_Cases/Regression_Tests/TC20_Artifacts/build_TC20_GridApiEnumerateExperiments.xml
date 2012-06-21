@@ -1,0 +1,111 @@
+<project name="TC20 GridApi Enumerate Experiments" default="test-clean">
+
+	<property file="local.properties"/>
+	
+    <property name="hostname" value="array.nci.nih.gov" />
+    <property name="jndi.port" value="8080" />
+    <property name="grid.port" value="80" />
+
+    <property name="src.dir" value="${basedir}/example/src" />
+    <property name="classes.dir" value="${basedir}/example/classes" />
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="grid.dir" value="${basedir}/grid" />
+    <property name="grid.lib.dir" value="${grid.dir}/lib" />
+    <property name="grid.conf.dir" value="${grid.dir}/etc" />
+
+    <path id="java.api.classpath">
+        <pathelement location="${classes.dir}" />
+        <pathelement location="${basedir}/caarray-client.jar" />
+        <fileset dir="${lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <path id="grid.api.base.classpath">
+        <pathelement location="${classes.dir}" />
+        <pathelement location="${basedir}/caarray-client.jar" />
+        <fileset dir="${lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+        <fileset dir="${grid.lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <path id="grid.api.legacy.classpath">
+    	<path refid="grid.api.base.classpath"/>
+        <pathelement location="${grid.etc.dir}/legacy" />
+    </path>
+
+    <path id="grid.api.v1_0.classpath">
+    	<path refid="grid.api.base.classpath"/>
+        <pathelement location="${grid.etc.dir}/v1_0" />
+    </path>
+
+    <target name="test-clean" depends="clean,test"
+        description="Invokes both the Java and caGrid APIs of a caArray server. By default, connects to array.nci.nih.gov on grid port 80 and JNDI port 8080. To configure this to run against different hosts/ports, invoke ant with the following properties: -Dhostname=&lt;hostname&gt; -Djndi.port=&lt;JNDI port&gt; -Dgrid.port=&lt;grid service port&gt;" />
+
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="grid.api.base.classpath" debug="true" />
+    </target>
+
+
+    <target name="test" depends="test:java-api,test:grid-api" />
+
+    <target name="test:java-api" depends="test:java-api-legacy,test:java-api-external"/>
+
+    <target name="test:java-api-legacy" depends="compile">
+        <java classname="gov.nih.nci.caarray.example.JavaApiExample" classpathref="java.api.classpath" failonerror="true" fork="true">
+             <arg value="${hostname}" />
+             <arg value="${jndi.port}" />
+         </java>
+    </target>
+
+    <target name="test:java-api-external" depends="test:java-api-external-v1_0"/>
+
+    <target name="test:java-api-external-v1_0" depends="compile">
+        <java classname="gov.nih.nci.caarray.example.external.v1_0.JavaApiExample" classpathref="java.api.classpath" failonerror="true" fork="true">
+             <arg value="${hostname}" />
+             <arg value="${jndi.port}" />
+         </java>
+    </target>
+
+    <target name="test:grid-api" depends="test:grid-api-legacy,test:grid-api-external"/>
+
+    <target name="test:grid-api-legacy" depends="compile">
+        <java classname="gov.nih.nci.caarray.example.GridApiExample" classpathref="grid.api.legacy.classpath" failonerror="true" fork="true">
+        	<jvmarg value="-Xmx256m"/>
+             <arg value="${hostname}" />
+             <arg value="${grid.port}" />
+         </java>
+    </target>
+
+    <target name="test:grid-api-external" depends="test:grid-api-external-v1_0"/>
+
+    <target name="test:grid-api-external-v1_0" depends="compile">
+        <java classname="gov.nih.nci.caarray.example.external.v1_0.GridApiExample" classpathref="grid.api.v1_0.classpath" failonerror="true" fork="true">
+             <arg value="${hostname}" />
+             <arg value="${grid.port}" />
+         </java>
+    </target>
+
+	<target name="test:grid-api-external-v1_0-enumerate-experiments" depends="compile">
+	        <java classname="gov.nih.nci.caarray.example.external.v1_0.GridApiEnumerateExperiments" classpathref="grid.api.v1_0.classpath" failonerror="true" fork="true">
+	             <arg value="${hostname}" />
+	             <arg value="${grid.port}" />
+	         </java>
+	    </target>
+
+	<target name="test:grid-api-external-v1_0-enumerate-organisms" depends="compile">
+    	    <java classname="gov.nih.nci.caarray.example.external.v1_0.GridApiEnumerateOrganisms" classpathref="grid.api.v1_0.classpath" failonerror="true" fork="true">
+        	     <arg value="${hostname}" />
+            	 <arg value="${grid.port}" />
+         	</java>
+    </target>
+
+</project>

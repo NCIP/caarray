@@ -1,0 +1,49 @@
+#####################################################
+#[IDF]
+#
+# MAGE-TAB Submission
+#
+#
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html for tips on filling in the sections below.
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+# for ontology terms you may need in order to fill in the sections below.
+# All lines beginning with the '#' character are treated as comments and ignored.
+
+
+# This section contains the top-level information for your experiment.
+Investigation Title	Transcriptomics for Cancer Cell Line Project
+Experiment Description	Multiple genome-wide microarray studies performed in triplicate to measure the transcriptomics profile of various cancer cell lines
+Experimental Design	disease_state_design
+Experimental Design Term Source REF	MO
+
+# Please create as many Experimental Factors as you need, to describe the variables investigated by your experiment.
+Experimental Factor Name	DISEASESTATE
+Experimental Factor Type	disease_state
+Experimental Factor Term Source REF	MO
+
+"# Quality Control Type examples: dye_swap_quality_control, biological_replicate, technical_replicate"
+Quality Control Type	biological_replicate
+Quality Control Term Source REF	MO
+
+"# Please list contact details in columns, below:"
+Person Last Name	MyLastName
+Person Mid Initials	F
+Person First Name	MyFirstName
+Person Email	MyUserName@MyInstitution.gov
+Person Phone	xxx-xxx-xxxx
+Person Address	"MyStreet, PO Box nnnn, MD nnnnn"
+Person Affiliation	MyInstitution
+Person Roles	PI
+
+"# Please list all publications associated with this submission, in columns:"
+
+# The next section describes the protocols used in your experiment.
+# Please select your own Protocol Names (e.g. 'GROWTH') for use within this spreadsheet.
+Protocol Name	Plated cell lines	RNeasy Mini Kit	Invitrogen SuperScript Double-Stranded cDNA Synthesis Kit	ENZO BioArray High-Yield RNA Transcript Labeling Kit	Affymetrix GeneChip HG-U133 Plus2 Hybridization Protocol	Affymetrix GeneChip HG-U133 Plus2 Scanning Protocol	mas5 Normalization
+Protocol Type	grow	nucleic_acid_extraction	reverse_transcription	labeling	 hybridization	image_acquisition	bioassay_data_transformation
+Protocol Description	Cell lines were plated in triplicate and lysted in Trizol. 	Lysates were captured with chloroform and purified using Qiagen Rneasy Mini Kit. http://www1.qiagen.com/Products/RnaStabilizationPurification/RNeasySystem/RNeasyMini.aspx	"cDNA was prepared from 5 ug total RNA using the Invitrogen SuperScript Double-Stranded cDNA Synthesis Kit (Invitrogen, Inc, Carlsbad, CA) http://www.invitrogen.com/content/sfs/manuals/superscript_doublestrand_man.pdf"	"cDNA was amplified and labeled using the ENZO BioArray High-Yield RNA Transcript Labeling Kit (Enzo Biochem, Inc. New York, NY) https://www.enzolifesciences.com/Uploaded/42655.pdf"	Hybridization was performed according to the manufacturer's protocol. http://www.affymetrix.com/support/technical/manual/expression_manual.affx	Scanning was performed according to the manufacturer's protocol. http://www.affymetrix.com/support/technical/manual/expression_manual.affx	mas5. http://www.affymetrix.com/support/technical/manual/expression_manual.affx
+Protocol Term Source REF	MO	MO	MO	MO	MO	MO	MO
+SDRF File	affy_disease_state.sdrf
+Term Source Name	MO	caArray	NCI Thesaurus	ncbitax
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	https://array.nci.nih.gov	http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do	http://www.ncbi.nlm.nih.gov/Taxonomy/

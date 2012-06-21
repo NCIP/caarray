@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:ServiceMetadata xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata">
+  <ns1:serviceDescription>
+    <ns2:Service xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service" description="caArray Service" name="CaArraySvc" version="1.2">
+      <ns2:pointOfContactCollection>
+        <ns3:PointOfContact xmlns:ns3="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common" affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Maintainer" />
+      </ns2:pointOfContactCollection>
+      <ns2:serviceContextCollection>
+        <ns2:ServiceContext description="" name="CaArraySvc">
+          <ns2:operationCollection>
+            <ns2:Operation description="" name="getServiceSecurityMetadata">
+              <ns2:inputParameterCollection />
+              <ns2:Output xmlns:ns4="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" qName="ns4:ServiceSecurityMetadata" dimensionality="1" isArray="false" />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="The standard caGrid Data Service query method." name="query">
+              <ns2:inputParameterCollection>
+                <ns2:InputParameter xmlns:ns5="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" qName="ns5:CQLQuery" dimensionality="1" index="0" isArray="false" isRequired="false" name="cqlQuery" />
+              </ns2:inputParameterCollection>
+              <ns2:Output xmlns:ns6="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" qName="ns6:CQLQueryResultCollection" dimensionality="1" isArray="false" />
+              <ns2:faultCollection>
+                <ns2:Fault description="Thrown when an error occurs in processing a CQL query" name="QueryProcessingException" />
+                <ns2:Fault description="Thrown when a query is found to be improperly formed" name="MalformedQueryException" />
+              </ns2:faultCollection>
+            </ns2:Operation>
+            <ns2:Operation description="" name="getDesignDetails">
+              <ns2:inputParameterCollection>
+                <ns2:InputParameter xmlns:ns7="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" qName="ns7:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" />
+              </ns2:inputParameterCollection>
+              <ns2:Output xmlns:ns8="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" qName="ns8:ArrayDesignDetails" dimensionality="1" isArray="false" />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="" name="readFile">
+              <ns2:inputParameterCollection>
+                <ns2:InputParameter xmlns:ns9="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" qName="ns9:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" />
+              </ns2:inputParameterCollection>
+              <ns2:Output xmlns:xsd="http://www.w3.org/2001/XMLSchema" qName="xsd:byte" dimensionality="1" isArray="true" />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="" name="getDataSet">
+              <ns2:inputParameterCollection>
+                <ns2:InputParameter xmlns:ns10="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" qName="ns10:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" />
+              </ns2:inputParameterCollection>
+              <ns2:Output xmlns:ns11="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" qName="ns11:DataSet" dimensionality="1" isArray="false" />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="Requests a Grid Transfer handle for the given file" name="createFileTransfer">
+              <ns2:inputParameterCollection>
+                <ns2:InputParameter xmlns:ns12="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" qName="ns12:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" />
+              </ns2:inputParameterCollection>
+              <ns2:Output xmlns:ns13="http://transfer.cagrid.org/TransferService/Context/types" qName="ns13:TransferServiceContextReference" dimensionality="1" isArray="false" />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="" name="GetMultipleResourceProperties">
+              <ns2:inputParameterCollection />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="" name="GetResourceProperty">
+              <ns2:inputParameterCollection />
+              <ns2:faultCollection />
+            </ns2:Operation>
+            <ns2:Operation description="" name="QueryResourceProperties">
+              <ns2:inputParameterCollection />
+              <ns2:faultCollection />
+            </ns2:Operation>
+          </ns2:operationCollection>
+          <ns2:contextPropertyCollection>
+            <ns2:ContextProperty description="" name="{gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata}ServiceMetadata" />
+            <ns2:ContextProperty description="" name="{gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice}DomainModel" />
+          </ns2:contextPropertyCollection>
+        </ns2:ServiceContext>
+      </ns2:serviceContextCollection>
+      <ns14:SemanticMetadata xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common" conceptCode="C63541" conceptDefinition="A service available on a system that coordinates resources that are not subject to central control, using open, general purpose protocols and interfaces to deliver nontrivial qualities of services." conceptName="Grid Service" order="0" />
+      <ns15:SemanticMetadata xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common" conceptCode="C63544" conceptDefinition="A web service which accepts as input a query targeted at a data resource addressable by the system and returns information to the client in the form of one or more data objects." conceptName="Data Grid Service" order="1" />
+    </ns2:Service>
+  </ns1:serviceDescription>
+  <ns1:hostingResearchCenter>
+    <ns16:ResearchCenter xmlns:ns16="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common" displayName="National Cancer Institute Center for Bioinformatics - NCICB" shortName="NCICB">
+      <ns16:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street" street2="" />
+      <ns16:ResearchCenterDescription description="" homepageURL="" imageURL="" rssNewsURL="" />
+      <ns16:pointOfContactCollection>
+        <ns16:PointOfContact affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Project Manager" />
+      </ns16:pointOfContactCollection>
+    </ns16:ResearchCenter>
+  </ns1:hostingResearchCenter>
+</ns1:ServiceMetadata>
+

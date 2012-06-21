@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.4/uma.ecore" xmlns:org.eclipse.epf.uma.resourcemanager="http:///org/eclipse/epf/uma/resourcemanager.ecore"
+    xmlns:epf="http://www.eclipse.org/epf" epf:version="1.2.0" xmlns:rmc="http://www.ibm.com/rmc"
+    rmc:version="7.2.0">
+  <org.eclipse.epf.uma.resourcemanager:ResourceManager xmi:id="_JOXV0QG6Ed28r8TwSmvtJw"
+      guid="_JOXV0QG6Ed28r8TwSmvtJw">
+    <resourceDescriptors xmi:id="_JOXV0gG6Ed28r8TwSmvtJw" id="-zdlaF_hAnTWk2g16eoPfBg"
+        uri="content.xmi"/>
+  </org.eclipse.epf.uma.resourcemanager:ResourceManager>
+  <org.eclipse.epf.uma:ProcessComponent xmi:id="_JMlNIAG6Ed28r8TwSmvtJw" name="analysis_and_design_discipline_workflow"
+      guid="_JMlNIAG6Ed28r8TwSmvtJw">
+    <process xsi:type="org.eclipse.epf.uma:CapabilityPattern" xmi:id="_JMlNIQG6Ed28r8TwSmvtJw"
+        name="analysis_and_design_discipline_workflow" guid="_JMlNIQG6Ed28r8TwSmvtJw"
+        presentationName="Analysis and Design">
+      <presentation xmi:id="-zdlaF_hAnTWk2g16eoPfBg" href="uma://-zdlaF_hAnTWk2g16eoPfBg#-zdlaF_hAnTWk2g16eoPfBg"/>
+      <defaultContext href="uma://_qxEtawG5Ed28r8TwSmvtJw#_CaDJYAG6Ed28r8TwSmvtJw"/>
+      <validContext href="uma://_qxEtawG5Ed28r8TwSmvtJw#_CaDJYAG6Ed28r8TwSmvtJw"/>
+    </process>
+  </org.eclipse.epf.uma:ProcessComponent>
+</xmi:XMI>

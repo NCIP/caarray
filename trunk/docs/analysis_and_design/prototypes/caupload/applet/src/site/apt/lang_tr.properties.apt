@@ -1,0 +1,255 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (Turkish)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in Turkish)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = true
+language = Turkish
+contributor = Tugcem Oral (SF account: tugcem ) 
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = turkish
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Gözat...
+buttonRemoveSelected = Seçileni Çıkar
+buttonRemoveAll = Hepsini Çıkar
+buttonRotateLeft = Sola Çevir
+buttonRotateRight = Sağa Çevir
+buttonUpload = Yükle
+buttonStop = DURDUR
+messageLogWindowCopiedToClipboard = Debug mesajları clipboard a kopyalandı.
+#JUploadPanel, The components of the status line
+speedunit_gb_per_second = GB/s
+speedunit_mb_per_second = MB/s
+speedunit_kb_per_second = KB/s
+speedunit_b_per_second = b/s
+timefmt_hms = %1$d sa, %2$d dak. and %3$d sn.
+timefmt_ms = %1$d dak. and %2$d sn.
+timefmt_s = %1$d saniye
+timefmt_unknown = bilinmeyen
+status_msg = Yükleme %1$d%% tamamlandı, Transfer hızı: %2$s, ETA: %3$s
+menuitem_paste = Yapıştır
+
+#JUploadExceptionTooBigFile
+errFileTooBig = '%1$s' dosyasının boyutu çok büyük.(%2$s)
+
+#FileUploadThread
+preparingFile = %1$d/%2$d Dosya Hazırlanıyor
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Dosyalar gönderiliyor %1$s
+infoUploaded = %1$s Dosya gönderildi. Sunucudan yanıt bekleniyor...
+infoAborted = Yükleme %1$d dosya sonra iptal edildi.
+nbUploadedFiles = %1$d dosya yüklendi.
+errDuringUpload = Gönderim hata verip sona erdi.
+errHttpResponse = Sunucu HTTP cevabı kriterlere uymadı. Gönderim başarısız.
+questionSendMailOnError = Gönderim sırasında hatayla karşılaşıldı. Bu durumla ilgili bilgileri site yöneticisine göndermek ister misiniz?
+
+#DialogUploadRetry
+dialogUploadRetryText = Sunucuya dosyaları yüklerken bir hata oluştu. Yeniden yüklemek ister misiniz? Yükleme işlemi %1$d saniye sonra otomatik olarak tekrar başlayacaktır.
+dialogUploadRetryTitle = Yüklemeyi tekrar denemek ister misiniz?
+buttonDetails = Detaylar
+buttonYes = Evet
+buttonNo = Hayır
+
+#FileUploadManagerThread
+errorDuringUpload = Yükleme sırasında hata oluştu:\n%1$s\n\nEtkin olan yüklemeye devam etmek istiyor musunuz?
+
+#FilePanelDataModel
+colName = Ad
+colSize = Boyut
+colDirectory = Dizin
+colModified = Değiştirilme Tarihi
+colReadable = Okunabilir mi?
+errForbiddenExtension = Yasak olan uzantı.
+
+#DefaultUploadPolicy
+errDuringLogManagement = İşlem kayıt yönetiminde bir sorun oluştu.
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Lütfen önce bir albüm seçiniz.
+coppermineUploadOk = Resimler sunucuda seçili albüme başarıyla gönderildi. \n\n Yapacağınız değişiklikleri kaydetmek için ‘Değişiklikleri Kaydet’e tıklamayı unutmayınız!
+
+#SuperSimpleUploadPolicy
+dragDirectoriesAndFilesToHere = Klasörleri ve/veya dosyaları buraya sürükleyin
+
+#PictureFileData
+tooBigPicture = '%1$s' adlı görüntü dosyası çok büyük. Herhangi bir değişiklik yapmadan (döndürme, boyut değiştirme vb.) gönderilecek.
+notAPicture = '%1$s' adlı dosya bir görüntü dosyası değildir. Bu dosya, gönderilecek dosyalar listesine eklenmedi.
+
+#PictureDialog
+buttonClose = Kapat
+
+#DateRenderer
+dateformat = yyyy-MM-dd hh:mm aaa
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = b
+unitGigabytes = GB
+unitMegabytes = MB
+unitKilobytes = KB
+
+#sendDebugInformation
+Confirm = Onayla
+
+#InteractiveTrustManager
+itm_title_pass = Şifreyi giriniz %1$s
+itm_prompt_pass = %1$s şifre:
+itm_cert_alert = SSL Sertifika Uyarısı
+itm_cert_details = Sertifika detayları:
+itm_cert_subject = Kişi:
+#MISSING  itm_cert_issuer = Issuer:
+#MISSING  itm_cert_nbefore = Not before:
+#MISSING  itm_cert_nafter = Not after:
+itm_cert_serial = Seri:
+itm_cert_fprint = %1$s Parmakizi:
+itm_cert_C = Ülke:
+itm_cert_CN = Genel adı:
+itm_cert_L = Bölge:
+itm_cert_ST = İl veya Eyalet:
+itm_cert_O = Organizasyon:
+itm_cert_OU = Organizasyon Birimi:
+itm_reasons = Sebep(ler):
+itm_reason_cnmatch = Sertifika genel adı host adı ile uyuşmuyor (%1$s).
+#MISSING  itm_reason_itrust = Certificate issuer is not trusted.
+itm_reason_expired = Sertifikanın süresi dolmuştur.
+itm_reason_notyet = Sertifika henüz geçerli değil.
+itm_fail_verify = Sunucu tarafından sunulan sertifika doğrulanamadı.
+itm_accept_prompt = Sertifikayı kabul etmek istiyor musunuz?
+itm_accept_always = Her zaman
+itm_accept_now = Sadece bu oturum için
+itm_accept_no = Hayır
+itm_new_tstore = Yeni TrustStore
+itm_tstore = TrustStore
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in Turkish)
+
+   Content of the <turkish.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+
+
+// ------------------------------------------------------------------------- //
+// File jupload.php
+// ------------------------------------------------------------------------- //
+
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+		  'perm_denied' => 'Bu işlemi yapmaya yetkili değilsiniz.<BR><BR>Eğer bağlı değilseniz lütfen önce <a href="login.php' . ( isset($_SERVER['PHP_SELF']) ? '?referer=' . $_SERVER['PHP_SELF'] : '') . '">giriş yapın</a>',
+		  'select_album' => 'Lütfen resimleri göndereceğiniz albümü seçiniz. ',
+		  'button_update_album' => 'Albümü güncelle',
+		  'button_create_album' => 'Albüm Yarat',
+		  'success' => 'İşlem Başarılı !',
+		  'error_select_album' => 'Lütfen önce albüm seçiniz',
+		  'error_album_name' => 'Lütfen Albüm adını girin.',
+		  'error_album_already_exists' => 'Bu isimde bir albüm zaten var<BR><BR>Albümünüze başka bir isim vermek için lütfen tarayıcınızdaki <I>Geri</I> düğmesine basınız.',
+		  'album_name' => 'Albüm adı',
+		  'album_presentation' => 'Burada bir albüm seçmelisiniz. Göndereceğiniz resimler sunucuda bu albüm içerisine kaydedilecektir. <BR>Eğer bir albümünüz yoksa albüm listesi boş gözükecektir. Önce \'Yarat\' düğmesine basıp ilk albümünüzü yaratabilirsiniz.',
+		  'album_description' => 'Albüm tanımı',
+		  'add_pictures' => 'Seçili albüme resim ekle',
+		  'max_upload_size' => 'Maksimum resim boyutu: $1 Ko',
+		  'upload_presentation' => 'Eğer aşağıdaki kare appleti göstermiyor ve tarayıcınız sayfada sürekli olarak hata mesajları veriyorsa, java runtime plugin\'i yüklemek gerekecektir..<BR>Sonrasında gönderim gerçekten basit olacaktır! <B>Gözat</B> a basıp dosyaları seçin ya da dosyaları bilgisaranızdan sürükleyip bırakın. Sonrasında <B> Gönder </B> e basıp resimleri sunucuya gönderin.'
+		  	. "<BR><U>Eski gönderim sayfası</U>nı kullanmak için, <a href='upload.php'>tıklayınız</a>.",
+		  'album' => 'Albüm',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Your navigator doesn\'t allow java. The upload applet need java. You can easily download it from the <a href="http:\\java.sun.com\jre\">java web site</a>',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Click on this link, and enter data in the fields below, if you want these to be applied to all pictures in the next upload.',
+		  'quota_used' => 'You are currently using $1 MB ($2%) of your $3 MB of storage.',
+		  'quota_about_full' => 'Remove some pictures, or ask the admin to make your quota bigger.',
+		  //Since 3.2.0
+		  'need_approval' => 'The gallery admin must approve these uploaded pictures, before you can see them on the gallery.'
+		)
+	);
+}
+
+
+--------------
+

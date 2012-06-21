@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs xmlns="http://maven.apache.org/FML/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+  title="Frequently Asked Questions"
+  toplink="false">
+
+  <part id="general">
+    <title>General questions</title>
+    <faq id="licence">
+      <question>
+        What kind of licence is used for JUpload?
+      </question>
+      <answer>
+         This applet is 'given' with the GPL licence.
+      </answer>
+    </faq>
+    
+    <faq id="q_javacode">
+      <question>
+        Any question on the java applet code?
+      </question>
+      <answer>
+         Please have a look to the java doc, available in this site (see the javadoc link).
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="does_not_work">
+    <title>The applet doesn't work</title>
+    <faq id="Error while loading the applet">
+      <question>
+        The applet would not load : it appears (usually) on the browser as an empty rectangle, with a red cross.
+      </question>
+      <answer>
+         Many possible reasons. Open the Java Console, and check the error. It often can be opened, by right clicking on the 
+         applet (actually .. the empty rectangle). If the error is not clear enough for a solution, post a message 
+         on the support forum to get help.
+         <BR/>
+         It may be due to :<BR/>
+         - Any specific error, on your local configuration, visible on the Java Console.<BR/>
+         - A personal (or global) firewall, which would filter the applet jar file<BR/>
+         - The applet are not allowed to run on the navigator. Check its options.<BR/>
+      </answer>
+    </faq>
+    <faq id="tooBigPicture">
+      <question>
+        The applet displays <I>Picture 'picture name' is too big. It will be uploaded unchanged (no rotation, resizing...)</I>.
+      </question>
+      <answer>
+      	This message is displayed when the applet runs out of memory.<BR/>
+
+      	A first step, if you control the applet configuration (i.e.: on your Intranet), then this link gives
+      	the solution: <A HREF="http://www.duckware.com/pmvr/howtoincreaseappletmemory.html">howtoincreaseappletmemory.html</A><BR/>
+
+		As complementary information : default configuration is to have pictureTransmitMetadata to false
+		(see <A HREF="/apidocs/wjhk/jupload2/policies/UploadPolicy.html">/apidocs/wjhk/jupload2/policies/UploadPolicy.html</A> for details)
+		This make necessary the creation of a new picture. Thus, making you come into the issue you encountered.
+		To avoid it, you may reduce the target picture size (maxPicHeight and/or maxPicWidth) or put 
+		pictureTransmitMetadata to true. In the latter case, you'll need to check that you're picture are displayed 
+		correctly (see pictureTransmitMetadata doc)
+      </answer>
+    </faq>
+  </part>
+  
+  <part id="eclipse">
+    <title>Question about the use of JUpload with eclise</title>
+    <faq id="eclipse_maven">
+      <question>
+        How to use maven with eclipse?
+      </question>
+      <answer>
+         Please read the 'HowTo-compile' page, on this site, for details.
+      </answer>
+    </faq>    
+    <faq id="eclipse_compilation_error">
+      <question>
+        Any error when compiling with eclipse?  (especially class not found error)
+      </question>
+      <answer>
+         <P>If you use a maven plugin for eclipse, take care that you checked JUpload out, with knowledge of JUpload being a
+         maven project. For the m2eclipse plugin, on the SVN repository perspective, right-click on the trunk folder,
+         then select 'Checkout as a Maven project'.</P>
+         <P>If you don't use maven, you need to run the /build.xml ant build file at least one. It will download
+         dependencies and build the eclipse classpath. To do this: check out JUpload as a project, or create a new
+         project from a JUpload release. Right-click on the build.xml file, and select 'Run as' / 'ant buld file'.</P>
+      </answer>
+    </faq>
+  </part>
+  
+  <part id="maven">
+    <title>Issues with maven compilation</title>
+    <faq id="ArtifactNotFoundException_skin__does_not_exist">
+      <question>
+        mvn site fails with : "SiteToolException: ArtifactNotFoundException: The skin does not exist: Unable to determine the release version"
+      </question>
+      <answer>
+         Go to the maven repository folder (should be in ~/.mvn/repository), find the org/apache/maven/skins/maven-default-skin
+         folder and remove it. This will force maven to download the up-to-date skin.
+      </answer>
+    </faq>    
+  </part>
+
+  <part id="Unit tests">
+    <title>Unit tests issues</title>
+    <faq id="partial_covering">
+      <question>
+        Why is the part of Unit testing so low?
+      </question>
+      <answer>
+        <p>Well, that's a starting point. One of the aim of the Maven migration (since 5.0) was to use
+        the Cobertura plugin, and see the real part of the code that is tested.</p>
+        <p>Another point is: the unit test will target the core code, that actually executes the upload.
+        The interface code will probably be much less tested, even in the future...</p>
+      </answer>
+    </faq>
+    <faq id="log_file">
+      <question>
+        Where are stored the log information, outputed by the JUnit tests?
+      </question>
+      <answer>
+        <p>In target/test.log</p>
+      </answer>
+    </faq>
+  </part>
+
+  <part id="php">
+    <title>Issues with the PHP sample</title>
+    <faq id="no_file_stored">
+      <question>
+        You can't find the stored file, on your server.
+      </question>
+      <answer>
+        <p>Perhaps you're still in demo mode...</p>
+        <p>Find the line with <I>'demo_mode' => true,</I> in the index.php file, and comment it out.</p>
+      </answer>
+    </faq>
+    <faq id="connection_reset">
+      <question>
+        You get "connection reset during upload of large file"
+      </question>
+      <answer>
+        <p>Try removing the md5sum check. </p>
+        <p>Find the line with <I>'sendMD5Sum' => 'true',</I> in the index.php file, and comment it out.</p>
+      </answer>
+    </faq>
+  </part>
+  
+  <part id="execution">
+    <title>Execution issues</title>
+    <faq id="refresh_applet">
+      <question>
+        You create a new jar on the web server, but your navigator only display the previous version.
+      </question>
+      <answer>
+        <p>The easiest way to force the navigator to reload the applet, is to close, then re-open it.</p>
+        <p>Another way is to open the java console, then type 'x' to clear the class loader cache. You can then type
+        'l' to check that the class loader cache is actually empty.</p>
+      </answer>
+    </faq>
+    <faq id="refresh_applet">
+      <question>
+        You create a new jar on the web server, but your navigator only display the previous version.
+      </question>
+      <answer>
+        <p>The easiest way to force the navigator to reload the applet, is to close, then re-open it.</p>
+        <p>Another way is to open the java console, then type 'x' to clear the class loader cache. You can then type
+        'l' to check that the class loader cache is actually empty.</p>
+      </answer>
+    </faq>
+    <faq id="HTTP 401 Error">
+      <question>
+      	I get the HTTP 401 Error, when trying to upload a file.
+      </question>
+      <answer>
+      	See <A HREF="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</A> for all
+      	details, on the HTTP return codes.<BR/>
+      	You should use the <I>specificHeaders</I> applet parameter.<BR/>
+      	Something like the line below should do the trick:
+      	<PRE>
+echo '&gt;param name="specificHeaders" value="Proxy-Authorization: Basic '.base64_encode("Aladdin:open sesame").'">';
+		</PRE>
+		You'll find another way to do this in PHP, in 
+		<A HREF="https://sourceforge.net/projects/jupload/forums/forum/199107/topic/3758946">this thread</A>
+      	<PRE>
+&gt;param name="specificHeaders" value="Authorization: Basic &gt;?=base64_encode("{$_SERVER["PHP_AUTH_USER"]}:{$_SERVER["PHP_AUTH_PW"]}")?>" /> 
+		</PRE>
+		The resulting line should look like this one:
+      	<PRE>
+Proxy-Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ== 
+		</PRE>
+      </answer>
+    </faq>
+  </part>
+
+  <part id="support">
+    <title>You need more information?</title>
+
+    <faq id="check_doc">
+      <question>
+        Any other problem?
+      </question>
+      <answer>
+        <p>Please take a look to the available documentation on http://jupload.sourceforge.net</p>
+      </answer>
+    </faq>
+
+    <faq id="get_support">
+      <question>
+        Really need support?
+      </question>
+      <answer>
+        <p>You can post messages/questions in these forums:</p>
+        <DIR>
+	        <LI>In the 'Help' forum: https://sourceforge.net/projects/jupload/forums/forum/199107</LI>
+	        <LI>In the 'Open discussion' forum: https://sourceforge.net/projects/jupload/forums/forum/199106</LI>
+        </DIR>
+      </answer>
+    </faq>
+
+  </part>
+
+</faqs>
+  

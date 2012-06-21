@@ -1,0 +1,6 @@
+
+<Context cookies="true" crossContext="true">
+   <Valve
+    className="org.apache.catalina.authenticator.FormAuthenticator"
+    disableProxyCaching="false"/>
+</Context>

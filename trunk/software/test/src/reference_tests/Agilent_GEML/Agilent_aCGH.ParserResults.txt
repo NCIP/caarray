@@ -1,0 +1,262 @@
+mysql> -- select * for ArrayDesign
+mysql> SELECT * FROM array_design where array_design.name = 'Agilent_aCGH_reference_array_design' ;
++----+-------+----------------+---------------------+-------------------------------------+--------------------+-------------------------------------+---------+-------------+----------------+-----------------+----------+--------------+-----------------+----------+--------------+----------------+----------+---------------+
+| id | bigid | lsid_authority | lsid_namespace      | lsid_object_id                      | number_of_features | name                                | version | description | design_details | technology_type | printing | polymer_type | annotation_file | organism | surface_type | substrate_type | provider | geo_accession |
++----+-------+----------------+---------------------+-------------------------------------+--------------------+-------------------------------------+---------+-------------+----------------+-----------------+----------+--------------+-----------------+----------+--------------+----------------+----------+---------------+
+|  1 | NULL  | Agilent.com    | PhysicalArrayDesign | Agilent_aCGH_reference_array_design |                 12 | Agilent_aCGH_reference_array_design | 1       | NULL        |              1 |             624 |     NULL |         NULL |            NULL |        5 |         NULL |           NULL |        4 | NULL          | 
++----+-------+----------------+---------------------+-------------------------------------+--------------------+-------------------------------------+---------+-------------+----------------+-----------------+----------+--------------+-----------------+----------+--------------+----------------+----------+---------------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> -- select * for ProbeGroup  
+mysql> SELECT * 
+    -> FROM   probe_group 
+    -> WHERE  array_design_details IN (SELECT design_details 
+    ->                                 FROM   array_design 
+    ->                                 WHERE  array_design.lsid_namespace = 
+    ->                                        'PhysicalArrayDesign' 
+    ->                                        AND array_design.lsid_object_id = 
+    ->                                            'Agilent_aCGH_reference_array_design' 
+    ->                                ); 
++----+-------+----------------+----------------+----------------+-------------------+----------------------+
+| id | bigid | lsid_authority | lsid_namespace | lsid_object_id | name              | array_design_details |
++----+-------+----------------+----------------+----------------+-------------------+----------------------+
+|  1 | NULL  | NULL           | NULL           | NULL           | positive controls |                    1 | 
+|  2 | NULL  | NULL           | NULL           | NULL           | negative controls |                    1 | 
+|  3 | NULL  | NULL           | NULL           | NULL           | ignore            |                    1 | 
++----+-------+----------------+----------------+----------------+-------------------+----------------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+mysql> -- select for Probe - Feature mapping
+mysql> SELECT p.name AS probe_name, 
+    ->        p.id   AS probe_id, 
+    ->        f.feature_number, 
+    ->        f.id   AS feature_id 
+    -> FROM   design_element p, 
+    ->        probefeature p2f, 
+    ->        design_element f 
+    -> WHERE  p.id = p2f.physical_probe_id 
+    ->        AND f.id = p2f.feature_id 
+    ->        AND f.feature_details_id IN (SELECT design_details 
+    ->                                     FROM   array_design 
+    ->                                     WHERE  array_design.lsid_namespace = 
+    ->                                            'PhysicalArrayDesign' 
+    ->                                            AND 
+    ->                array_design.lsid_object_id = 
+    ->                'Agilent_aCGH_reference_array_design'); 
++-------------------------+----------+----------------+------------+
+| probe_name              | probe_id | feature_number | feature_id |
++-------------------------+----------+----------------+------------+
+| HsCGHBrightCorner       |        1 |              1 |          2 | 
+| DarkCorner2             |        3 |            341 |          4 | 
+| DarkCorner2             |        3 |            681 |          5 | 
+| DarkCorner2             |        3 |           1021 |          6 | 
+| (-)3xSLv1               |        7 |          36551 |          8 | 
+| A_16_P00465041          |        9 |          12921 |         10 | 
+| A_18_P11892200          |       11 |          14961 |         12 | 
+| A_16_P35431180          |       13 |          18021 |         14 | 
+| NA                      |       15 |              2 |         16 | 
+|                         |       17 |              2 |         18 | 
+| artificial database ens |       19 |           1292 |         20 | 
+| artificial database thc |       21 |           1212 |         22 | 
++-------------------------+----------+----------------+------------+
+12 rows in set (0.00 sec)
+
+mysql> 
+mysql> 
+mysql> -- select * for Features  
+mysql> SELECT * 
+    -> FROM   design_element 
+    -> WHERE  discriminator = 'F' 
+    ->        AND feature_details_id IN (SELECT design_details 
+    ->                                   FROM   array_design 
+    ->                                   WHERE 
+    ->                array_design.lsid_namespace = 'PhysicalArrayDesign' 
+    ->                AND array_design.lsid_object_id = 
+    ->                    'Agilent_aCGH_reference_array_design'); 
++---------------+----+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+| discriminator | id | bigid | name | feature_row | block_column | block_row | feature_column | probe_group | physicalprobe_details_id | feature_details_id | control_type | annotation | logicalprobe_details_id | feature_number | feature_x_coordinate | feature_y_coordinate | feature_coordinate_units |
++---------------+----+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+| F             |  2 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              1 |                    0 |                    0 |                      321 | 
+| F             |  4 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |            341 |   0.0366617420935412 |                    0 |                      321 | 
+| F             |  5 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |            681 |   0.0733234841870824 |                    0 |                      321 | 
+| F             |  6 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1021 |    0.109985226280624 |                    0 |                      321 | 
+| F             |  8 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          36551 |     15.7645491002227 |                    0 |                      321 | 
+| F             | 10 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          12921 |     1.39314619955457 |                    0 |                      321 | 
+| F             | 12 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          14961 |     1.61311665211581 |                    0 |                      321 | 
+| F             | 14 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          18021 |     1.94307233095768 |                    0 |                      321 | 
+| F             | 16 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              2 |     11.4567944042316 |                    0 |                      321 | 
+| F             | 18 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              2 |     11.4567944042316 |                    0 |                      321 | 
+| F             | 20 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1292 |     7.39214624955466 |     7.39214624955466 |                      321 | 
+| F             | 22 | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1212 |     6.39214624955466 |     6.39214624955466 |                      321 | 
++---------------+----+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+12 rows in set (0.00 sec)
+
+mysql> 
+mysql> -- select * for Features left join Term (in order to get the feature_coordinate_units)   
+mysql> SELECT 
+    ->  F.discriminator, F.bigid, F.name, F.feature_row, F.block_column, F.block_row, F.feature_column, F.probe_group, F.physicalprobe_details_id, F.feature_details_id, F.control_type, F.annotation, F.logicalprobe_details_id, F.feature_number, F.feature_x_coordinate, F.feature_y_coordinate, F.feature_coordinate_units, T.value 
+    -> FROM   design_element F
+    ->        LEFT JOIN term T
+    ->          ON F.feature_coordinate_units = T.id 
+    -> WHERE  F.discriminator = 'F' 
+    ->        AND F.feature_details_id IN (SELECT design_details 
+    ->                                                  FROM   array_design 
+    ->                                                  WHERE 
+    ->                array_design.lsid_namespace = 'PhysicalArrayDesign' 
+    ->                AND array_design.lsid_object_id = 
+    ->                    'Agilent_aCGH_reference_array_design'); 
++---------------+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+-------+
+| discriminator | bigid | name | feature_row | block_column | block_row | feature_column | probe_group | physicalprobe_details_id | feature_details_id | control_type | annotation | logicalprobe_details_id | feature_number | feature_x_coordinate | feature_y_coordinate | feature_coordinate_units | value |
++---------------+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+-------+
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              1 |                    0 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |            341 |   0.0366617420935412 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |            681 |   0.0733234841870824 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1021 |    0.109985226280624 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          36551 |     15.7645491002227 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          12921 |     1.39314619955457 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          14961 |     1.61311665211581 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |          18021 |     1.94307233095768 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              2 |     11.4567944042316 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |              2 |     11.4567944042316 |                    0 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1292 |     7.39214624955466 |     7.39214624955466 |                      321 | mm    | 
+| F             | NULL  | NULL |           0 |            0 |         0 |              0 |        NULL |                     NULL |                  1 |         NULL |       NULL |                    NULL |           1212 |     6.39214624955466 |     6.39214624955466 |                      321 | mm    | 
++---------------+-------+------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+-------+
+12 rows in set (0.00 sec)
+
+mysql> 
+mysql> -- select * for PhysicalProbes  
+mysql> SELECT * 
+    -> FROM   design_element 
+    -> WHERE  discriminator = 'PP' 
+    ->        AND physicalprobe_details_id IN (SELECT design_details 
+    ->                                         FROM   array_design 
+    ->                                         WHERE 
+    ->                array_design.lsid_namespace = 'PhysicalArrayDesign' 
+    ->                AND array_design.lsid_object_id = 
+    ->                    'Agilent_aCGH_reference_array_design'); 
++---------------+----+-------+-------------------------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+| discriminator | id | bigid | name                    | feature_row | block_column | block_row | feature_column | probe_group | physicalprobe_details_id | feature_details_id | control_type | annotation | logicalprobe_details_id | feature_number | feature_x_coordinate | feature_y_coordinate | feature_coordinate_units |
++---------------+----+-------+-------------------------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+| PP            |  1 | NULL  | HsCGHBrightCorner       |        NULL |         NULL |      NULL |           NULL |           1 |                        1 |               NULL |         NULL |          1 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            |  3 | NULL  | DarkCorner2             |        NULL |         NULL |      NULL |           NULL |           1 |                        1 |               NULL |         NULL |          2 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            |  7 | NULL  | (-)3xSLv1               |        NULL |         NULL |      NULL |           NULL |           2 |                        1 |               NULL |         NULL |          3 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            |  9 | NULL  | A_16_P00465041          |        NULL |         NULL |      NULL |           NULL |        NULL |                        1 |               NULL |         NULL |          4 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 11 | NULL  | A_18_P11892200          |        NULL |         NULL |      NULL |           NULL |        NULL |                        1 |               NULL |         NULL |          5 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 13 | NULL  | A_16_P35431180          |        NULL |         NULL |      NULL |           NULL |        NULL |                        1 |               NULL |         NULL |          6 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 15 | NULL  | NA                      |        NULL |         NULL |      NULL |           NULL |           3 |                        1 |               NULL |         NULL |          7 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 17 | NULL  |                         |        NULL |         NULL |      NULL |           NULL |           3 |                        1 |               NULL |         NULL |          8 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 19 | NULL  | artificial database ens |        NULL |         NULL |      NULL |           NULL |        NULL |                        1 |               NULL |         NULL |          9 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
+| PP            | 21 | NULL  | artificial database thc |        NULL |         NULL |      NULL |           NULL |        NULL |                        1 |               NULL |         NULL |         10 |                    NULL |           NULL |                 NULL |                 NULL |                     NULL | 
++---------------+----+-------+-------------------------+-------------+--------------+-----------+----------------+-------------+--------------------------+--------------------+--------------+------------+-------------------------+----------------+----------------------+----------------------+--------------------------+
+10 rows in set (0.00 sec)
+
+mysql> 
+mysql> -- select * for ExpressionProbeAnnotation 
+mysql> SELECT * 
+    -> FROM   probeannotation 
+    -> WHERE  id IN (SELECT annotation 
+    ->               FROM   design_element 
+    ->               WHERE  design_element.discriminator = 'PP' 
+    ->                      AND design_element.physicalprobe_details_id IN (SELECT 
+    ->                          design_details 
+    ->                                                                      FROM 
+    ->                          array_design 
+    ->                                                                      WHERE 
+    ->                              array_design.lsid_namespace = 'PhysicalArrayDesign' 
+    ->                              AND array_design.lsid_object_id = 
+    ->                                  'Agilent_aCGH_reference_array_design')); 
++---------------+----+-------+----------------+----------------+----------------+------+--------+------------+-------+---------+---------+------------+---------+-------+-------------------+--------------+---------------------------+------+--------------------+---------------------+-----------------+---------------------------+-------------------------+
+| discriminator | id | bigid | lsid_authority | lsid_namespace | lsid_object_id | stop | strand | uniprot_id | start | allelea | alleleb | chromosome | dbsnpid | flank | physical_position | dbsnpversion | expression_array_reporter | gene | snp_array_reporter | exon_array_reporter | chromosome_name | chromosome_start_position | chromosome_end_position |
++---------------+----+-------+----------------+----------------+----------------+------+--------+------------+-------+---------+---------+------------+---------+-------+-------------------+--------------+---------------------------+------+--------------------+---------------------+-----------------+---------------------------+-------------------------+
+| EXPRESSION    |  1 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    1 |               NULL |                NULL | NULL            |                      NULL |                    NULL | 
+| EXPRESSION    |  2 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    2 |               NULL |                NULL | NULL            |                      NULL |                    NULL | 
+| EXPRESSION    |  3 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    3 |               NULL |                NULL | NULL            |                      NULL |                    NULL | 
+| EXPRESSION    |  4 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    4 |               NULL |                NULL | 2               |                 127680689 |               127680748 | 
+| EXPRESSION    |  5 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    5 |               NULL |                NULL | 13              |                 106421139 |               106421198 | 
+| EXPRESSION    |  6 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    6 |               NULL |                NULL | 1               |                 200802204 |               200802263 | 
+| EXPRESSION    |  7 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    7 |               NULL |                NULL | NULL            |                      NULL |                    NULL | 
+| EXPRESSION    |  8 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    8 |               NULL |                NULL | NULL            |                      NULL |                    NULL | 
+| EXPRESSION    |  9 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |    9 |               NULL |                NULL | 2               |                 127580689 |               127620738 | 
+| EXPRESSION    | 10 | NULL  | NULL           | NULL           | NULL           | NULL | NULL   | NULL       |  NULL | NULL    | NULL    |       NULL | NULL    | NULL  |              NULL |         NULL |                      NULL |   10 |               NULL |                NULL | 12              |                 127580589 |               127620738 | 
++---------------+----+-------+----------------+----------------+----------------+------+--------+------------+-------+---------+---------+------------+---------+-------+-------------------+--------------+---------------------------+------+--------------------+---------------------+-----------------+---------------------------+-------------------------+
+10 rows in set (0.00 sec)
+
+mysql>  
+mysql> 
+mysql> -- select * from gene  
+mysql> SELECT * 
+    -> FROM   gene 
+    -> WHERE  id IN (SELECT gene 
+    ->               FROM   probeannotation 
+    ->               WHERE  id IN (SELECT annotation 
+    ->                             FROM   design_element 
+    ->                             WHERE  discriminator = 'PP' 
+    ->                                    AND physicalprobe_details_id IN 
+    ->                                        (SELECT 
+    ->                                        design_details 
+    ->                                                                     FROM 
+    ->                                        array_design 
+    ->                                                                     WHERE 
+    ->                                        lsid_namespace = 'PhysicalArrayDesign' 
+    ->                                        AND 
+    ->                                            array_design.lsid_object_id = 
+    ->                                            'Agilent_aCGH_reference_array_design' 
+    ->                                        ) 
+    ->                            ));  
++----+-------+----------------+----------------+----------------+---------------------------+--------+-------------------------+--------------+-------------------+---------------------------+------------------+------------------+-------------------------+
+| id | bigid | lsid_authority | lsid_namespace | lsid_object_id | full_name                 | symbol | ensemblgeneid           | entrezgeneid | genbank_accession | genbank_accession_version | unigeneclusterid | refseq_accession | thc_accession           |
++----+-------+----------------+----------------+----------------+---------------------------+--------+-------------------------+--------------+-------------------+---------------------------+------------------+------------------+-------------------------+
+|  1 | NULL  | NULL           | NULL           | NULL           | HsCGHBrightCorner         | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  2 | NULL  | NULL           | NULL           | NULL           | DarkCorner2               | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  3 | NULL  | NULL           | NULL           | NULL           | NegativeControl           | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  4 | NULL  | NULL           | NULL           | NULL           | AK131190                  | NULL   | NULL                    | NULL         | AK131190          | NULL                      | NULL             | NULL             | NULL                    | 
+|  5 | NULL  | NULL           | NULL           | NULL           | chr13:106421139-106421198 | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  6 | NULL  | NULL           | NULL           | NULL           | PPP1R12B                  | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NM_002481        | NULL                    | 
+|  7 | NULL  | NULL           | NULL           | NULL           | artificial ignore         | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  8 | NULL  | NULL           | NULL           | NULL           | artificial ignore         | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+|  9 | NULL  | NULL           | NULL           | NULL           | artificial ens            | NULL   | artificial database ens | NULL         | NULL              | NULL                      | NULL             | NULL             | NULL                    | 
+| 10 | NULL  | NULL           | NULL           | NULL           | artificial thc            | NULL   | NULL                    | NULL         | NULL              | NULL                      | NULL             | NULL             | artificial database thc | 
++----+-------+----------------+----------------+----------------+---------------------------+--------+-------------------------+--------------+-------------------+---------------------------+------------------+------------------+-------------------------+
+10 rows in set (0.00 sec)
+
+mysql>                            
+mysql>                            
+mysql> -- select * for Gene Accession   
+mysql> SELECT g.full_name as gene_full_name, 
+    ->        a.gene_id, 
+    ->        a.database_name, 
+    ->        a.accession_number
+    -> FROM   accession a, 
+    ->        gene g 
+    -> WHERE  a.gene_id = g.id 
+    ->        AND g.id IN (SELECT gene 
+    ->                     FROM   probeannotation 
+    ->                     WHERE  id IN (SELECT annotation 
+    ->                                   FROM   design_element 
+    ->                                   WHERE  discriminator = 'PP' 
+    ->                                          AND physicalprobe_details_id IN (SELECT 
+    ->                                              design_details 
+    ->                                                                           FROM 
+    ->                                              array_design 
+    ->                                                                           WHERE 
+    ->                                              lsid_namespace = 
+    ->                                              'PhysicalArrayDesign' 
+    ->                                              AND 
+    ->                                                  array_design.lsid_object_id = 
+    ->                                  'Agilent_aCGH_reference_array_design') 
+    ->                                  )); 
++----------------+---------+---------------+---------------------------+
+| gene_full_name | gene_id | database_name | accession_number          |
++----------------+---------+---------------+---------------------------+
+| PPP1R12B       |       6 | RefSeq        | NM_032103                 | 
+| PPP1R12B       |       6 | RefSeq        | NM_032104                 | 
+| PPP1R12B       |       6 | RefSeq        | NM_032105                 | 
+| artificial ens |       9 | Ensemble      | artificial database ens 2 | 
+| artificial thc |      10 | THC           | artificial database thc 2 | 
++----------------+---------+---------------+---------------------------+
+5 rows in set (0.00 sec)
+
+mysql>                                  
+mysql> tee Agilent_gene_expression.ParserResults.txt

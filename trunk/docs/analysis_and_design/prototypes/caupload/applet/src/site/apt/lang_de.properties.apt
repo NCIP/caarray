@@ -1,0 +1,252 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (German)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in German)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = false
+language = German
+contributor = Fritz Elfert <felfert@users.sourceforge.net>
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = german
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Durchsuchen ...
+buttonRemoveSelected = Ausgewählte entfernen
+buttonRemoveAll = Alle entfernen
+buttonRotateLeft = Gegen den Uhrzeigersinn drehen
+buttonRotateRight = Im Uhrzeigersinn drehen
+buttonUpload = Hochladen
+buttonStop = STOP
+#MISSING  messageLogWindowCopiedToClipboard = Debugging messages have been copied to the clipboard.
+#JUploadPanel, The components of the status line
+speedunit_gb_per_second = Gb/s
+speedunit_mb_per_second = Mb/s
+speedunit_kb_per_second = Kb/s
+speedunit_b_per_second = b/s
+timefmt_hms = %1$d Std., %2$d Min. und %3$d Sec.
+timefmt_ms = %1$d Min. und %2$d Sek.
+timefmt_s = %1$d Sekunden
+timefmt_unknown = unbekannt
+status_msg = JUpload %1$d%% abgeschlossen, Transferrate: %2$s, Verbleibend: %3$s
+#MISSING  menuitem_paste = Paste
+
+#JUploadExceptionTooBigFile
+errFileTooBig = Die Datei '%1$s' ist zu groß (%2$s)
+
+#FileUploadThread
+preparingFile = Datei vorbereiten:  %1$d/%2$d
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Übertrage Datei: %1$s
+infoUploaded = %1$s Datei(en) hochgeladen. Warte auf Server Antwort ...
+infoAborted = Upload nach %1$d Dateien(en) abgebrochen.
+nbUploadedFiles = %1$d Datei(en) hochgeladen
+errDuringUpload = Upload-Vorgang wegen eines Fehlers gestoppt
+errHttpResponse = Die HTTP Antwort erfüllt nicht die Kriterien. Vorgang fehlgeschlagen.
+questionSendMailOnError = Es ist ein Fehler aufgetreten. Soll das\nFehlerprotokoll an den Webmaster gesendet werden?
+
+#DialogUploadRetry
+#MISSING  dialogUploadRetryText = An error occurs occured during the upload of the files to the server. Do you want to retry uploading these files?\n\nThe upload will automatically be re-executed in %1$d seconds.
+#MISSING  dialogUploadRetryTitle = Retry the upload?
+#MISSING  buttonDetails = Details
+#MISSING  buttonYes = Yes
+#MISSING  buttonNo = No
+
+#FileUploadManagerThread
+#MISSING  errorDuringUpload = The following error occured during upload:\n%1$s\n\nDo you want to go on with the current upload?
+
+#FilePanelDataModel
+colName = Name
+colSize = Größe
+colDirectory = Verzeichnis
+colModified = Geändert
+colReadable = Lesbar?
+errForbiddenExtension = Keine erlaubte Dateiendung.
+
+#DefaultUploadPolicy
+errDuringLogManagement = Während des Log Managements ist ein Fehler aufgetreten
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Bitte zuerst ein Album auswählen.
+coppermineUploadOk = Die Dateien wurden erfolgreich in das ausgewählte Album hochgeladen. \n\nBitte auf OK klicken um zu den Dateien Name und Beschreibung hinzuzufügen.\n\nNach der Eingabe auf 'Änderungen Übernehmen' klicken, um die Informationen zu speichern !
+
+#SuperSimpleUploadPolicy
+#MISSING  dragDirectoriesAndFilesToHere = Drag directories an files to here
+
+#PictureFileData
+tooBigPicture = Das Bild '%1$s' ist zu groß und wird ohne Änderungen hochgeladen (ohne Drehung, Größenänderung...).
+notAPicture = Die Datei '%1$s' ist kein Bild. Sie wird nicht der Liste der hochzuladenden Dateien hinzugefügt.
+
+#PictureDialog
+buttonClose = Schließen
+
+#DateRenderer
+dateformat = dd.MM.yyyy HH:mm
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = B
+unitGigabytes = GiB
+unitMegabytes = MiB
+unitKilobytes = KiB
+
+#sendDebugInformation
+Confirm = Bestätigen
+
+#InteractiveTrustManager
+itm_title_pass = %1$s Password eingeben
+itm_prompt_pass = %1$s Passwort:
+itm_cert_alert = SSL Zertificats-Warnung
+itm_cert_details = Zertifikats-Details:
+itm_cert_subject = Inhaber:
+itm_cert_issuer = Aussteller:
+itm_cert_nbefore = Gültig ab:
+itm_cert_nafter = Gültig bis:
+itm_cert_serial = Seriennr.:
+itm_cert_fprint = %1$s Fingerabdruck:
+itm_cert_C = Land:
+itm_cert_CN = Allgemeiner Name:
+itm_cert_L = Stadt:
+itm_cert_ST = Staat oder Provinz:
+itm_cert_O = Organisation:
+itm_cert_OU = Organisations-Abteilung:
+itm_reasons = Gründe:
+itm_reason_cnmatch = Der allgemaine Name passt nicht zum Hostnamen (%1$s).
+itm_reason_itrust = Dem Aussteller des Zertifikats wird nicht vertraut.
+itm_reason_expired = Das Zertifikat ist abgelaufen.
+itm_reason_notyet = Das Zertifikat ist noch nicht gültig.
+itm_fail_verify = Das Zertifikat des Servers konnte nicht überprüft werden.
+itm_accept_prompt = Wollen Sie dieses Zertifikat annehmen?
+itm_accept_always = Immer
+itm_accept_now = Nur für diese Sitzung
+itm_accept_no = Nein
+itm_new_tstore = New TrustStore
+itm_tstore = TrustStore
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in German)
+
+   Content of the <german.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+// ------------------------------------------------------------------------- //
+// File german.php
+// ------------------------------------------------------------------------- //
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+		  'perm_denied' => 'Du hast keine Berechtigung für diesen Vorgang.<BR><BR>Bitte <a href="$1">melde</a> Dich zuerst an.',
+		  'select_album' => 'Bitte wähle ein Album aus, in das Du Dateien hochladen möchtest',
+		  'button_update_album' => 'Album aktualisieren',
+		  'button_create_album' => 'Album erzeugen',
+		  'success' => 'Vorgang erfolgreich!',
+		  'error_select_album' => 'Bitte zuerst ein Album auswählen',
+		  'error_album_name' => 'Bitte gib dem Album einen Namen.',
+		  'error_album_already_exists' => 'Du hast bereits ein Album mit diesem Namen.<BR><BR>Bitte klicke auf den <I>Zurück</I> Button Deines Browsers um einen anderen Titel zu wählen.',
+		  'album_name' => 'Album Titel',
+		  'album_presentation' => 'Bitte wähle ein Album aus. Die Dateien, die Du hochladen möchtest, werden in diesem Album gespeichert. <BR>Wenn Du noch kein Album erstellt hast, dann benutze bitte die \'Album erzeugen\' Funktion um Dein erstes Album zu erstellen.',
+		  'album_description' => 'Album Beschreibung',
+		  'add_pictures' => 'Dateien dem Album hinzufügen',
+		  'max_upload_size' => 'Die maximal zulässige Größe einer Datei beträgt $1 KB',
+		  'upload_presentation' => 'Wenn die unteren Box leer bleibt und/oder der Browser einen Fehler auf der Seite anzeigt, dann prüfe bitte, ob Du die neueste Version des Java runtime plugins installiert hast.<BR>Um Dateien hochzuladen klicke auf <B>Durchsuchen</B> und wähle die Dateien aus oder füge sie per drag\'n\'drop aus Deinem Ordner ein. Anschließend auf <B>Hochladen</B> klicken um die Dateien an den Server zu übertragen.'
+		  	. "<BR>Um die <U>alte</U> Datei hochladen-Funktion zu nutzen, klicke bitte <a href='upload.php'>hier</a>.",
+		  'album' => 'Album',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Dein Browser erlaubt kein java. Das Jupload Applet braucht java. Du kannst es unter <a href="http:\\java.sun.com\jre\">java web site</a> kostenlos herunterladen',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Klicke auf diesen Link und gib die gewünschten Daten in die Felder ein wenn Du sie zu allen Bildern des nächsten Uploads hinzufügen möchtest.',
+		  'quota_used' => 'Du nutzt momentan $1 MB ($2%) von maximal $3 MB Speicher.',
+		  'quota_about_full' => 'Entferne einige Bilder oder bitte den Administrator Deinen Speicherplatz zu erhöhen.',
+		  //Since 3.2.0
+		  'need_approval' => 'Der Galerieadministrator muss die hochgeladenen Bilder genehmigen und freischalten, bevor sie gesehen werden können.'
+		)
+	);
+}
+
+
+--------------
+

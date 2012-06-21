@@ -1,0 +1,638 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Manage Users</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>
+		<script type="text/javascript" src="common/scripts/checklist.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Manufacturer</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->		
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>Account</h1>
+							
+							<div class="pagehelp">
+								<a href="#" class="help">Help</a>
+								<a href="#" class="print">Print</a>
+							</div>
+							
+							<div class="padme">								
+													
+							<!--Results-->
+								
+								<div id="tabboxwrapper_notabs">								
+									
+									<div class="boxpad2">
+								
+										<h3>Matt Rehfuss</h3>
+										
+									</div>
+									
+									<div class="boxpad">
+									
+										<form name="editform" id="idform" action="">
+										
+											<table class="form">
+												<tr>
+													<th colspan="2">Security Information</th>
+												</tr>
+									
+												
+												<tr>
+													<td class="label"><span class="required">Username:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="un" id="un" value="mrehfuss" style="width:30%;" class="disabled" disabled="disabled" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Password:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="password" name="pw" id="pw" value="password" style="width:30%;" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Re-type Password:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="password" name="pw2" id="pw2" value="password" style="width:30%;" /></td>
+												</tr>
+															
+												<tr>
+													<td class="label">Current Role(s):</td>
+													<td class="value"><span class="readonly">Principal Investigator</span></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Desired Role(s):<span class="asterisk">*</span></span></td>
+													<td class="value">
+														<ul class="checklist" style="width:50%;">
+															<!--here is a sample disabled item<li class="disabled"><a name="role_1"></a><label for="role_1"><input id="role_1" name="role_1" type="checkbox" disabled="disabled" /> System Administrator</label></li>-->
+															<li><a name="role_1"></a><label for="role_1"><input id="role_1" name="role_1" type="checkbox" /> System Administrator</label></li>
+															<li><a name="role_2"></a><label for="role_2"><input id="role_2" name="role_2" type="checkbox" checked="checked" /> Principal Investigator</label></li>
+															<li><a name="role_3"></a><label for="role_3"><input id="role_3" name="role_3" type="checkbox" /> Lab Administrator</label></li>
+															<li><a name="role_4"></a><label for="role_4"><input id="role_4" name="role_4" type="checkbox" /> Lab Scientist</label></li>
+															<li><a name="role_5"></a><label for="role_5"><input id="role_5" name="role_5" type="checkbox" /> Biostatistician</label></li>
+														</ul>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Account Status:</td>
+													<td class="value"><span class="readonly">Active</span></td>
+												</tr>
+												<tr>
+													<th colspan="2">Account Details</th>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">First Name:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="fn" id="fn" value="Matt" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label">Middle Initial:</td>
+													<td class="value"><input type="text" name="fn" id="fn" value="Y" style="width:5%;" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Last Name:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="ln" id="ln" value="Rehfuss" style="width:50%;" /></td>
+												</tr>												
+												<tr>
+													<td class="label"><span class="required">Email:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="email" id="email" value="matt@nonagonstudios.com" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Institution:<span class="asterisk">*</span></span></td>
+													<td class="value">
+													<select name="datafilter">
+															<option>--Please select an Institution--</option>
+															<option>Institution ABC</option>
+															<option selected="selected">NCICB</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Address Line 1:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="address1" id="address1" value="5859 15th Rd N" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label">Address Line 2:</td>
+													<td class="value"><input type="text" name="address2" id="address2" value="" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">City:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="city" id="city" value="Arlington" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label">State:</td>
+													<td class="value">
+														<select name="user.state">
+															<option value="0">--Please select a State--</option>
+															<option value="AK">AK</option>
+															<option value="AL">AL</option>
+															<option value="AR">AR</option>
+															<option value="AS">AS</option>
+															<option value="AZ">AZ</option>
+															<option value="CA">CA</option>
+															<option value="CO">CO</option>
+															<option value="CT">CT</option>
+															<option value="DC">DC</option>
+															<option value="DE">DE</option>
+															<option value="FL">FL</option>
+															<option value="FM">FM</option>
+															<option value="GA">GA</option>
+															<option value="GU">GU</option>
+															<option value="HI">HI</option>
+															<option value="IA">IA</option>
+															<option value="ID">ID</option>
+															<option value="IL">IL</option>
+															<option value="IN">IN</option>
+															<option value="KS">KS</option>
+															<option value="KY">KY</option>
+															<option value="LA">LA</option>
+															<option value="MA">MA</option>
+															<option value="MD">MD</option>
+															<option value="ME">ME</option>
+															<option value="MH">MH</option>
+															<option value="MI">MI</option>
+															<option value="MN">MN</option>
+															<option value="MO">MO</option>
+															<option value="MP">MP</option>
+															<option value="MS">MS</option>
+															<option value="MT">MT</option>
+															<option value="NC">NC</option>
+															<option value="ND">ND</option>
+															<option value="NE">NE</option>
+															<option value="NH">NH</option>
+															<option value="NJ">NJ</option>
+															<option value="NM">NM</option>
+															<option value="NV">NV</option>
+															<option value="NY">NY</option>
+															<option value="OH">OH</option>
+															<option value="OK">OK</option>
+															<option value="OR">OR</option>
+															<option value="PA">PA</option>
+															<option value="PR">PR</option>
+															<option value="PW">PW</option>
+															<option value="RI">RI</option>
+															<option value="SC">SC</option>
+															<option value="SD">SD</option>
+															<option value="TN">TN</option>
+															<option value="TX">TX</option>
+															<option value="UT">UT</option>
+															<option value="VA" selected="selected">VA</option>
+															<option value="VI">VI</option>
+															<option value="VT">VT</option>
+															<option value="WA">WA</option>
+															<option value="WI">WI</option>
+															<option value="WV">WV</option>
+															<option value="WY">WY</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Postal Code:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="user.zipcode" maxlength="10" size="20" value="22205" style="size:30%" /></td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Country:<span class="asterisk">*</span></span></td>
+													<td class="value">
+														<select name="countryHelper.id">
+															<option value="0">--Please select a Country--</option>
+															<option value="1">Afghanistan</option>
+															<option value="2">Albania</option>
+															<option value="3">Algeria</option>
+															<option value="4">American Samoa</option>
+															<option value="5">Andorra</option>
+															<option value="6">Angola</option>
+															<option value="7">Anguilla</option>
+															<option value="8">Antarctica</option>
+															<option value="9">Antigua and Barbuda</option>
+															<option value="10">Argentina</option>
+															<option value="11">Armenia</option>
+															<option value="12">Aruba</option>
+															<option value="13">Australia</option>
+															<option value="14">Austria</option>
+															<option value="15">Azerbaidjan</option>
+															<option value="16">Bahamas</option>
+															<option value="17">Bahrain</option>
+															<option value="18">Bangladesh</option>
+															<option value="19">Barbados</option>
+															<option value="20">Belarus</option>
+															<option value="21">Belgium</option>
+															<option value="22">Belize</option>
+															<option value="23">Benin</option>
+															<option value="24">Bermuda</option>
+															<option value="25">Bhutan</option>
+															<option value="26">Bolivia</option>
+															<option value="27">Bosnia-Herzegovina</option>
+															<option value="28">Botswana</option>
+															<option value="29">Bouvet Island</option>
+															<option value="30">Brazil</option>
+															<option value="31">Brunei Darussalam</option>
+															<option value="32">Bulgaria</option>
+															<option value="33">Burkina Faso</option>
+															<option value="34">Burundi</option>
+															<option value="35">Cambodia</option>
+															<option value="36">Cameroon</option>
+															<option value="37">Canada</option>
+															<option value="38">Cape Verde</option>
+															<option value="39">Cayman Islands</option>
+															<option value="40">Central African Republic</option>
+															<option value="41">Chad</option>
+															<option value="42">Chile</option>
+															<option value="43">China</option>
+															<option value="44">Christmas Island</option>
+															<option value="45">Colombia</option>
+															<option value="46">Comoros</option>
+															<option value="47">Congo</option>
+															<option value="48">Cook Islands</option>
+															<option value="49">Costa Rica</option>
+															<option value="50">Croatia</option>
+															<option value="51">Cuba</option>
+															<option value="52">Cyprus</option>
+															<option value="53">Czech Republic</option>
+															<option value="54">Denmark</option>
+															<option value="55">Djibouti</option>
+															<option value="56">Dominica</option>
+															<option value="57">Dominican Republic</option>
+															<option value="58">East Timor</option>
+															<option value="59">Ecuador</option>
+															<option value="60">Egypt</option>
+															<option value="61">El Salvador</option>
+															<option value="62">Equatorial Guinea</option>
+															<option value="63">Eritrea</option>
+															<option value="64">Estonia</option>
+															<option value="65">Ethiopia</option>
+															<option value="66">Falkland Islands</option>
+															<option value="67">Fiji</option>
+															<option value="68">Finland</option>
+															<option value="69">France</option>
+															<option value="70">French Guyana</option>
+															<option value="71">Gabon</option>
+															<option value="72">Gambia</option>
+															<option value="73">Georgia</option>
+															<option value="74">Germany</option>
+															<option value="75">Ghana</option>
+															<option value="76">Gibraltar</option>
+															<option value="77">Great Britain</option>
+															<option value="78">Greece</option>
+															<option value="79">Greenland</option>
+															<option value="80">Grenada</option>
+															<option value="81">Guadeloupe</option>
+															<option value="82">Guam</option>
+															<option value="83">Guatemala</option>
+															<option value="84">Guinea</option>
+															<option value="85">Guinea Bissau</option>
+															<option value="86">Guyana</option>
+															<option value="87">Haiti</option>
+															<option value="88">Honduras</option>
+															<option value="89">Hong Kong</option>
+															<option value="90">Hungary</option>
+															<option value="91">Iceland</option>
+															<option value="92">India</option>
+															<option value="93">Indonesia</option>
+															<option value="94">Iran</option>
+															<option value="95">Iraq</option>
+															<option value="96">Ireland</option>
+															<option value="97">Israel</option>
+															<option value="98">Italy</option>
+															<option value="99">Ivory Coast</option>
+															<option value="100">Jamaica</option>
+															<option value="101">Japan</option>
+															<option value="102">Jordan</option>
+															<option value="103">Kazakhstan</option>
+															<option value="104">Kenya</option>
+															<option value="105">Kiribati</option>
+															<option value="106">Kuwait</option>
+															<option value="107">Kyrgyz Republic</option>
+															<option value="108">Laos</option>
+															<option value="109">Latvia</option>
+															<option value="110">Lebanon</option>
+															<option value="111">Lesotho</option>
+															<option value="112">Liberia</option>
+															<option value="113">Libya</option>
+															<option value="114">Liechtenstein</option>
+															<option value="115">Lithuania</option>
+															<option value="116">Luxembourg</option>
+															<option value="117">Macau</option>
+															<option value="118">Macedonia</option>
+															<option value="119">Madagascar</option>
+															<option value="120">Malawi</option>
+															<option value="121">Malaysia</option>
+															<option value="122">Maldives</option>
+															<option value="123">Mali</option>
+															<option value="124">Malta</option>
+															<option value="125">Marshall Islands</option>
+															<option value="126">Martinique</option>
+															<option value="127">Mauritania</option>
+															<option value="128">Mauritius</option>
+															<option value="129">Mayotte</option>
+															<option value="130">Mexico</option>
+															<option value="131">Moldavia</option>
+															<option value="132">Monaco</option>
+															<option value="133">Mongolia</option>
+															<option value="134">Montserrat</option>
+															<option value="135">Morocco</option>
+															<option value="136">Mozambique</option>
+															<option value="137">Myanmar</option>
+															<option value="138">Namibia</option>
+															<option value="139">Nauru</option>
+															<option value="140">Nepal</option>
+															<option value="141">Netherlands</option>
+															<option value="142">Netherlands Antilles</option>
+															<option value="143">New Caledonia</option>
+															<option value="144">New Zealand</option>
+															<option value="145">Nicaragua</option>
+															<option value="146">Niger</option>
+															<option value="147">Nigeria</option>
+															<option value="148">Norfolk Island</option>
+															<option value="149">North Korea</option>
+															<option value="150">Northern Mariana Islands</option>
+															<option value="151">Norway</option>
+															<option value="152">Oman</option>
+															<option value="153">Pakistan</option>
+															<option value="154">Palau</option>
+															<option value="155">Panama</option>
+															<option value="156">Papua New Guinea</option>
+															<option value="157">Paraguay</option>
+															<option value="158">Peru</option>
+															<option value="159">Philippines</option>
+															<option value="160">Poland</option>
+															<option value="161">Portugal</option>
+															<option value="162">Puerto Rico</option>
+															<option value="163">Qatar</option>
+															<option value="164">Romania</option>
+															<option value="165">Russia</option>
+															<option value="166">Rwanda</option>
+															<option value="167">Saint Helena</option>
+															<option value="168">Saint Lucia</option>
+															<option value="169">Samoa</option>
+															<option value="170">San Marino</option>
+															<option value="171">Saudi Arabia</option>
+															<option value="172">Senegal</option>
+															<option value="173">Seychelles</option>
+															<option value="174">Sierra Leone</option>
+															<option value="175">Singapore</option>
+															<option value="176">Slovak Republic</option>
+															<option value="177">Slovenia</option>
+															<option value="178">Solomon Islands</option>
+															<option value="179">Somalia</option>
+															<option value="180">South Africa</option>
+															<option value="181">South Korea</option>
+															<option value="182">Spain</option>
+															<option value="183">Sri Lanka</option>
+															<option value="184">Sudan</option>
+															<option value="185">Suriname</option>
+															<option value="186">Swaziland</option>
+															<option value="187">Sweden</option>
+															<option value="188">Switzerland</option>
+															<option value="189">Syria</option>
+															<option value="190">Tadjikistan</option>
+															<option value="191">Taiwan</option>
+															<option value="192">Tanzania</option>
+															<option value="193">Thailand</option>
+															<option value="194">Togo</option>
+															<option value="195">Tokelau</option>
+															<option value="196">Tonga</option>
+															<option value="197">Trinidad and Tobago</option>
+															<option value="198">Tunisia</option>
+															<option value="199">Turkey</option>
+															<option value="200">Turkmenistan</option>
+															<option value="201">Turks and Caicos Islands</option>
+															<option value="202">Tuvalu</option>
+															<option value="203">Uganda</option>
+															<option value="204">Ukraine</option>
+															<option value="205">United Arab Emirates</option>
+															<option value="206">United Kingdom</option>
+															<option value="207" selected="selected">United States</option>
+															<option value="208">Uruguay</option>
+															<option value="209">Uzbekistan</option>
+															<option value="210">Vanuatu</option>
+															<option value="211">Venezuela</option>
+															<option value="212">Vietnam</option>
+															<option value="213">Virgin Islands</option>
+															<option value="214">Western Sahara</option>
+															<option value="215">Yemen</option>
+															<option value="216">Yugoslavia</option>
+															<option value="217">Zaire</option>
+															<option value="218">Zambia</option>
+															<option value="219">Zimbabwe</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Phone:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="phone" maxlength="25" size="20" value="703-534-5103" style="size:30%" /></td>
+												</tr>
+												<tr>
+													<td class="label">Fax:</td>
+													<td class="value"><input type="text" name="fax" maxlength="25" size="20" value="" style="size:30%" /></td>
+												</tr>
+											</table>
+											
+											<div class="actions">												
+												
+												<del class="btnwrapper">
+													<ul id="btnrow">
+														<li><a href="manage_users.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
+														<li><a href="user_edit.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="save">Save</span></span></a></li>
+													</ul>
+												</del>												
+												
+											</div>
+											
+										</form>
+										
+									</div>
+									
+								
+								</div>
+									
+								<!--/Results-->
+								
+								
+								</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+				
+				
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

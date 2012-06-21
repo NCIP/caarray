@@ -1,0 +1,29 @@
+Investigation Title	"A catalytic antioxidant (AEOL 10150) attenuates expression of inflammatory genes in stroke."
+Experimental Design	"injury_design"	"compound_treatment_design"
+Experimental Factor Name	"Treatment"
+Experimental Factor Type	"compound_based_treatment"
+Experimental Factor Type Term Source REF	"MGED Ontology"
+Person Last Name	"Bowler"	"Crapo"
+Person First Name	"Russell"	"JD"
+Person Mid Initials		
+Person Email		
+Person Phone		
+Person Fax		
+Person Address	"1400 Jackson Street"	"National Jewish Medical and Research Center"
+Person Affiliation	"National Jewish Medical and Research Center"	"National Jewish Medical and Research Center"
+Person Roles	"investigator"	"submitter"
+Person Roles Term Source REF	"MGED Ontology"	"MGED Ontology"
+Quality Control Type	
+Quality Control Term Source REF	
+Replicate Type	
+Replicate Term Source REF	
+Normalization Type	
+Normalization Term Source REF	
+Date of Experiment	"2000-01-01"
+PubMed ID	"12374626 "
+Publication DOI	
+Publication Author List	"Bowler RP, Sheng H, Enghild JJ, Pearlstein RD, Warner DS, Crapo JD."
+Publication Title	"A catalytic antioxidant (AEOL 10150) attenuates expression of inflammatory genes in stroke."
+Publication Status	
+Publication Status Term Source REF	
+Experiment Description	"Oxidative stress is a major source of injury from cerebral ischemia and reperfusion. We hypothesized that a catalytic antioxidant AEOL 10150 [manganese (III) meso-tetrakis (di-N-ethylimidazole) porphyrin] would attenuate changes in brain gene expression in a mouse model of transient middle cerebral artery occlusion (MCAO). C57BL/6J mice were subjected to either sham surgery or 60 min of right MCAO. AEOL 10150 or phosphate-buffered saline was given intravenously 5 min after onset of reperfusion (n = 6 per group). Six hours later, parenchyma within the MCA distribution was harvested. RNA from the six brains in each group was pooled and mRNA expression determined using an Affymetrix murine MG_U74A v. 2.0 expression microarray. Each experiment was performed three times. The largest changes in expression occurred in stress response and inflammatory genes such as heat shock protein, interleukin-6, and macrophage inflammatory protein-2. Treatment with AEOL 10150 attenuated only the increase in expression of inflammatory genes. This suggests that AEOL 10150 protects brain by attenuating the immune response to ischemia and reperfusion."

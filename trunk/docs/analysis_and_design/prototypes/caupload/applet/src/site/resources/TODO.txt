@@ -1,0 +1,394 @@
+
+As always, a lot of things can be made better:
+
+
+Main TODO list:
+
+- Manage these UTF-8 encoding warning :
+		[INFO] 4 warnings
+		[INFO] [WARNING] Javadoc Warnings
+		[INFO] [WARNING] D:\Documents and Settings\egauthie\Mes documents\Java\eclipse\jupload\src\test\java\wjhk\jupload2\upload\helper\ByteArrayEn
+		coderHTTPTest.java:22: warning: unmappable character for encoding UTF-8
+		[INFO] [WARNING] final static String testCase = "A string, with accents: ????\u00f8\u00e5\u00d8\u00e6";
+		[INFO] [WARNING] ^
+		[INFO] [WARNING] D:\Documents and Settings\egauthie\Mes documents\Java\eclipse\jupload\src\test\java\wjhk\jupload2\upload\helper\ByteArrayEn
+		coderHTTPTest.java:22: warning: unmappable character for encoding UTF-8
+		[INFO] [WARNING] final static String testCase = "A string, with accents: ????\u00f8\u00e5\u00d8\u00e6";
+		[INFO] [WARNING] ^
+		[INFO] [WARNING] D:\Documents and Settings\egauthie\Mes documents\Java\eclipse\jupload\src\test\java\wjhk\jupload2\upload\helper\ByteArrayEn
+		coderHTTPTest.java:22: warning: unmappable character for encoding UTF-8
+		[INFO] [WARNING] final static String testCase = "A string, with accents: ????\u00f8\u00e5\u00d8\u00e6";
+		[INFO] [WARNING] ^
+		[INFO] [WARNING] D:\Documents and Settings\egauthie\Mes documents\Java\eclipse\jupload\src\test\java\wjhk\jupload2\upload\helper\ByteArrayEn
+		coderHTTPTest.java:22: warning: unmappable character for encoding UTF-8
+		[INFO] [WARNING] final static String testCase = "A string, with accents: ????\u00f8\u00e5\u00d8\u00e6";
+
+- SSL : Client certificate authentication doesn't work. Test done with :
+D:\Documents and Settings\egauthie>keytool -importcert -file "D:\Documents and Settings\egauthie\Mes documents\openssl\crt\ca.crt" -storepass "keystore" -alias CA
+D:\Documents and Settings\egauthie>keytool -importcert -file "D:\Documents and Settings\egauthie\Mes documents\openssl\crt\clientGDF.crt" -storepass "keystore" -alias clientGDF
+
+
+- Patch to zip the uploaded files
+https://sourceforge.net/tracker/index.php?func=detail&aid=3289956&group_id=59144&atid=490055
+To be tested
+
+- https://sourceforge.net/tracker/?func=detail&atid=490053&aid=3307931&group_id=59144
+The status bar updates too frequently. It it distracting and makes it hard to read the information in the status bar. It used to only update once per second in JUpload 4.6.0.
+
+- Check Quaqua project (drop on Mac)
+https://sourceforge.net/projects/jupload/forums/forum/199107/topic/4526342:
+
+- A text saying 'N Files prepared' would be the good answer to your point. 
+http://sourceforge.net/tracker/?func=detail&atid=490053&aid=3307935&group_id=59144
+
+- Add a Download link and a link to the SF page 
+
+- Integrate the donate button on Jupload site.
+<a href="http://sourceforge.net/donate/index.php?group_id=59144"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project" /> </a>
+
+- translation plugin : Answer to give 
+
+- https://sourceforge.net/projects/jupload/forums/forum/199106/topic/4514521:
+Nice to Have: Ability to reorder files
+You can select a bunch of pictures...preview them...then maybe reoder them by clicking the file in the list, and dragging 
+it up or down? Or even adding "Move Up" and "Move Down" buttons? 
+
+
+- java.lang.ClassCastException: sun.applet.AppletViewer cannot be cast to sun.applet.PluginAppletViewer
+Thread: http://sourceforge.net/projects/jupload/forums/forum/199106/topic/4016548 
+http://ubuntuforums.org/showthread.php?t=1492312). The JSObject triggers this exception.
+--> Check the applet with openJDK.*  (needs a check under Linux) 
+
+- https://sourceforge.net/projects/jupload/forums/forum/199107/topic/3677664
+I ended up going with an approach similar to that of the one suggested by 'realleoman'. 
+I added a call to "updateStatus(fileData)" inside the fileData for loop. The updateStatus method is defined below. Then, 
+on my web page I set "afterUploadURL" to "javascript:afterUpload('%success%', '%msg%', '%body%', '%filename%');" and 
+check to see if the variable has been replaced in the function, if so handle it as an incremental file update, if not, 
+handle it as a completion message. 
+private void updateStatus(FileData fileData) throws JUploadException { 
+	String fileName = fileData.getFileName(); 
+	JUploadContext uploadContext = this.uploadPolicy.getContext(); 
+	String afterUpload = uploadContext.getUploadPolicy().getAfterUploadURL(); 
+	if (afterUpload != null && afterUpload.toLowerCase().startsWith("javascript:")) { 
+		String expr = afterUpload; 
+		// Replacement of %filename% 
+		expr = expr.replaceAll("%filename%", Matcher .quoteReplacement(jsString(fileName))); 
+		uploadContext.displayURL(expr, true);
+	}
+} 
+
+- Implement mockito
+
+- In pictureMode: the icon display doesn't work (to be confirmed, may depend on applet parameters)
+Check message https://sourceforge.net/projects/jupload/forums/forum/199107/topic/3754177
+and fileChooserIconFromFileContent set to -1
+
+- Check with openJDK
+
+- HTTP 407 error.
+https://sourceforge.net/projects/jupload/forums/forum/199107/topic/2639127/index/page/2
+
+- Problem with TIF preview
+Standard JRE manages: GIF, PNG, JPEG, BMP, and WBMP
+JRE plugins are available for: TIF and JPEG 2000 (but not embedded into the applet)
+First step (done) :just prevent picture preview for tiff pictures.
+Next step : use another library, with TIF support.
+https://sourceforge.net/tracker/index.php?func=detail&aid=3152487&group_id=59144&atid=490053
+
+- http://sourceforge.net/tracker/?func=detail&atid=490053&aid=3136177&group_id=59144
+When I try to upload PNG with transparency and param "targetPictureFormat" is set to value="png:jpg" - uploaded file looked ugly.
+Bug 3136177
+
+- Check why "mvn site-deploy" doesn't sign the applet.
+
+- Use the plugin configuration, on the way JUpload connects to the server. When the proxy needs an 
+authentication, the applet should ask for it...
+https://sourceforge.net/projects/jupload/forums/forum/199107/topic/2639127/index/page/2
+Dev going on: using urlConnection
+To be tested : various proxy configuration (with and without authentifcation), https, ftp, ftps
+
+- Picture mode under Linux: doesn't work ?
+java version "1.6.0_18" OpenJDK Runtime Environment (IcedTea6 1.8.1) (fedora-40.b18.fc12-i386) OpenJDK Server VM (build 14.0-b16, mixed mode) 
+
+- Bug 3052790:  (JUpload 4.6.0)
+	Our Customers use Photoshop and sometimes wired Color Profiles appear in some Jpeg Files (photographers that use a Canon EOS and the MAC Version of Photoshop CS3)
+	Some Sun JREs sometimes crash with this broken jpeg headers. I found a short java solution to fix it. See below
+	The trick is to read the jpeg as a stream and not with ImageIo.ImageReader.read ....
+	
+	Short FIX
+	private static String getFormatName (Object o) {
+	try {
+	// Create an image input stream on the image
+	ImageInputStream iis = ImageIO.createImageInputStream (o);
+	
+	// Find all image readers that recognize the image format
+	Iterator iter = ImageIO.getImageReaders (iis);
+	
+	if (!iter.hasNext ())
+	
+	// No readers found
+	return null;
+	
+	// Use the first reader
+	ImageReader reader = ( ImageReader ) iter.next ();
+	
+	// Close stream
+	iis.close ();
+	
+	// Return the format name
+	return reader.getFormatName ();
+	} catch (IOException e) {}
+	
+	// The image could not be read
+	return null;
+	}
+	
+	USE:
+	String imageFormat = getFormatName (imageFile);
+	
+	if (imageFormat.equalsIgnoreCase (\"JPEG\")) {
+	FileInputStream input = new FileInputStream(imageFile);
+	JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder (input);
+	image = decoder.decodeAsBufferedImage ();
+	input.close();
+	} else
+	image = ImageIO.read (imageFile);
+	
+	Look there i found this code: http://www.exampledepot.com/egs/javax.imageio/DiscType.html 
+
+- document the developper code formatting files (for eclipse).
+
+- Add a link to the wiki
+
+- howto-compile.html
+Response to Jacob Nordfalk
+"Compiled applet, ready to use: from the central Maven Repository. You can just download the compiled and signed applet from this URL:http://repo1.maven.org/maven2/net/sf/jupload/"
+  the URL http://repo1.maven.org/maven2/net/sf/jupload/ seems to be broken. 
+
+- howto-compile.html 
+Add a link to the SVN folder
+
+- Picture mode under Linux: doesn't work ?
+https://sourceforge.net/projects/jupload/forums/forum/199106/topic/3737398/
+It seems to generally work unless you set the uploadPolicy to "PictureUploadPolicy". When you do this you can select a set of 
+pictures in the browse window, but when you click on "Open" no pictures appear in the list in the main window. If uploadPolicy 
+is left to default it appears to work fine ... 
+
+- Problem under Linux
+https://sourceforge.net/projects/jupload/forums/forum/199106/topic/3737398/index/page/1
+- Adding Picture in picture mode doesn't work (the applet get stuck when adding a picture file)
+- Drag'n'drop doesn't work.
+ 
+
+- gif management: there should be no message on gif support in jre 1.5, if the applet has just to send them.
+Problem is: default is to not transfert metadata. This implies to transform pictures, which is not compatible
+with gif files under JVM 1.5 ....   hum, hum
+Problem is: with the picture meadata bug, it's better to block the metadata transfert...
+    No solution there ????? 
+
+---------------------------------------------------------------------------------------------------------------
+
+secondary TODO list (ideas that could be done):
+
+- Build a javascript API.
+To start with: https://sourceforge.net/projects/jupload/forums/forum/199107/topic/3677664
+(call a JS function for each uploaded file)
+		// We should now remove this file from the list of files to upload,
+		// to show the user that there is less and less work to do.
+		for (FileData fileData : uploadFilePacket) {
+		this.filePanel.remove(fileData);
+		this.nbSuccessfullyUploadedFiles += 1;
+		
+		// LEO CODE
+		//This snippet will allow me to get each filename already transferred to the server and then send it
+		//on a JSObject to handle it on my web browser application
+		try {
+		String js = fileData.getFileName().toString();
+		System.out.println("Show transferred filename: "+js);
+		this.uploadPolicy.displayDebug("Show transferred filename: "+js, 30);
+		JSObject window = JSObject.getWindow(this.uploadPolicy.getContext().getApplet());
+		window.call("setTextData", new String[] {js}); //I'm using window.call but could be any other method supported by JSObject
+		} catch (Exception ee) {
+		ee.getMessage();
+		}
+		
+		
+		}
+
+- Check etienne_sf
+(done in 5.0rc4)
+
+- To accelerate the applet loading: have a minimal applet jar file, to display the applet as quick as possible,
+then load other jar files in background...
+
+- When an exception occurs, all threads should be interrupted. Behavior to check.
+
+
+
+
+During upload, howto prevent one error (or warning) message to be displayed for all pictures (eg: too big picture)
+Principles:
+- The message must always be displayed the first time.
+- Each time the message is displayed, the user may choose :
+	* [Default] Yes: go on with upload. Displays the same message the next time this error occurs (same Exception class).
+	As this picture is not uploaded, it is not removed from the file list.
+	* No:  go on with upload. Errors of the same kind (same Exception class) in the same upload, will be logged, but no
+	message will be displayed to the user. As this picture is not uploaded, it is not removed from the file list.
+	* Cancel: stop the upload here.  
+- What to do next: If there are already uploaded files (TAKE CARE TO MULTI-THREADING HERE, WHAT TO DO WITH FILES THAT 
+	ARE CURRENTLY BEING SENT), the applet should now ask to the user what to do:
+	1) Consider already uploaded files are successfull upload, and validate these (can switch to afterUploadURL, and lost 
+	the non uploaded files).
+	2) Consider already uploaded files are successfull uploaded, and validate these (the afterUploadURL is called in another
+	window, and there will be two windows with the application: one with the applet, containing the non uploaded files,
+	and one with the afterUploadURL for correctly uploaded files
+	3) Send a cancel message to the server, to make it ignore the uploaded files. This can't be managed on applet side,
+	or it will make server implementation always have to manage this. So, this must be managed on server side only.
+	Proposal: wherever the server stores the file data, it attach a 'temporary status' to it (can be in a database, or 
+	by storing the uploaded files in some kind of temporary folders. The uploaded files will be 'validated' (transaction
+	is commited) when the afterUploadURL is called by the applet. The server then knows that the upload is finished, and 
+	can do whatever is needed for the application.
+	4) Wait (the user does nothing). If the user does nothing (he's taking a coffee, because upload is too long...), the
+	server may have some kind of timeout. If so, he must send a specific error message to the applet, when the user
+	decide to choose yes (for instance) one hour latter... 
+
+
+- Check too big files (before and after transformation, after refactoring).
+
+- ANT_COPYDOC_END: Is it still used in the ant script ?
+
+- Complete the upload package documentation (add a sequence diagramm)
+
+- Some improvement and remarks
+https://sourceforge.net/projects/jupload/forums/forum/199106/topic/3489660
+When the applet is configured to resize images before uploading then sometimes bigger images do not get resized. 
+In such a case a popup message is displayed with the message that the image is too big to convert and will be uploaded as-is.
+I have a few questions about this:
+3) Is there a way to suppress this message? (if a user has a high res camera and wants to upload alot of photo's, clicking OK 
+every time is annoying)
+4) Is there a way to block uploads based on maximum image size AFTER client side conversion? This so i can block uploads if the 
+images are too big to process server side (memory limits). So what i mean is this: applet (tries to) convert images to maxsize, 
+after this is done, apply the check for maximum dimensions (and if too big do not upload, just like the maximum file size check).
+
+- JPEG-EXIF autorotate
+https://sourceforge.net/tracker/?func=detail&atid=490056&aid=2916946&group_id=59144
+
+ Rename wwwroot/pages to wwwroot/samples.java
+
+- In picture mode (Coppermine?)
+Uploading an empty text file (niv1.txt) generates an error.
+Bug n�: 2793404. Solved in 4.6.0. Answer to post.
+
+- maxChunkSize should be set to MAX_INTEGER, when in FTP protocol.
+
+- [Minor] Response to bug 2891909 (Picture 1px too small)
+Need rewriting of the picture resizing code
+See initScale(), and identification of rounding troubles. This code should manage differently widht and height.
+First: repeat the problem.
+Original Picture: 3296x2472
+maxWidth=120
+maxHeight=0
+Resulting Picture: 119x90 (it should be: 120x90)
+
+ImageHelper.java 4.5.0
+198 // With number rounding, it can happen that width or
+size
+199 // became one pixel too big. Let's correct it.
+
+231 // Due to rounded numbers, the resulting targetWidth or
+232 // targetHeight
+233 // may be one pixel too big. Let's check that.
+
+- Improve log management. Separate all displayXxx method from UploadPolicy to something like LogPolicy.
+
+- Instead of registering a particular function name, unload callback should implement a UnloadCallback interface, and 
+this interface would be registered as the callback. No more introspection, and compilation time validation of the code. 
+
+- [Minor] Replace juploadContext by applet in the DefaultUploadPolicy.java comments.
+
+- Generalize the use of httpUploadParameterName and httpUploadParameterType applet parameter to all upload data (md5, path...)
+
+- Response to [Help] pngs: alpha-transparency lost
+example: after uploading this pic 
+http://picbite.com/image/66099ydqkk/ 
+the alpha-transparency will be lost and the former transparent background appears black: http://picbite.com/image/66100jiujf/ 
+I don't know what code is used internally to resize the picture and to detect alpha-transparency, but I had the same problem for our HTML upload, so here is what we do - maybe it helps: 
+http://www.easy-share.com/1907277312/imageScaling.java 
+this is based on the examples here: http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html 
+
+- 'Paste' String is not localized.
+Answer to https://sourceforge.net/forum/forum.php?thread_id=3346125&forum_id=199107
+
+- Check doc of specificHeaders (display of \n in the javadoc)
+
+- Error in Java with picture (local on my computer): Comprendre/floral (erreur in Java).jpg
+Answer to:
+http://forum.coppermine-gallery.net/index.php/topic,60184.msg297777.html#new
+
+- STOP button: problems in chunk upload.
+Add a way to advertise the server, that the upload was stopped.
+https://sourceforge.net/forum/forum.php?thread_id=3175188&forum_id=199107
+
+- Manage tiff pictures
+See Feature request on sourceforge.
+
+- The applet should not ask the user to send the error to urlToSendErrorTo, when there is a functional error
+(e.g.: wrong file type, file too big...)
+
+- In picture mode: The file size should be checked after file preparation
+(would not block files of 3M, in my standard coppermine conf)
+
+- Add a HowToOptimize page
+(allowHttpPersistent, nbFilesPerRequest...)
+
+- Make FTP upload (and HTTP?) work with space in the path
+
+- Check if it's possible to make quicker the add of thousands of files.
+Probably not possible... :-(
+
+- kb or kB ?
+kB should by kilo bytes. Answer in 'Open Discussions'
+
+- When the file filter contains too many file extensions, the browser window may be larger than the screen!
+=> Add an option to display or not this list ?   Or automatically hide the list of file extensions, when they are too many.
+Answer to Heroes, on Coppermine PM.
+
+- BUG: mimetype works only when the extension is in lower case.
+Response to: https://sourceforge.net/forum/forum.php?thread_id=2925505&forum_id=199107
+
+- BUG: relpathinfo not being set when dragging
+https://sourceforge.net/tracker2/index.php?func=detail&aid=2529111&group_id=59144&atid=490053
+The content of relpathinfo is not the same for dropped files and for files added by the file chooser.
+Corrected (is Ok in 4.2.0)
+
+
+- When a file is too big, it could non-blocking, and up to the user to go on or not.
+Suggestion from Michel Verstraeten, in https://sourceforge.net/forum/forum.php?thread_id=2593046&forum_id=199106 
+
+- Document the content of the HTTP post of the applet (folders...).
+
+- Message incorrect (no 'wait for server response' when using the applet with Coppermine)
+- What to do with NoAlertPolicy ?
+
+- implement setUncaughtExceptionHandler for the uploading threads.
+
+- 99.111.222.333 - - [19/Nov/2008:15:51:48 -0800] "GET /app/wjhk/jupload2/lang/lang_en_US.properties HTTP/1.1" 404 1123 "-" "Mozilla/4.0 (Windows XP 5.1) Java/1.6.0_07" 
+Response to https://sourceforge.net/forum/message.php?msg_id=5678495
+
+- Enable compression
+- Add a new parameter, to control the current applet directory, that is: the directory that should be used
+when first clicking on the 'Browse' button.
+Answer to:
+http://imp.free.fr/horde/util/go.php?url=http%3A%2F%2Fforum.coppermine-gallery.net%2Findex.php%3Ftopic%3D54149.new%3Btopicseen%23new&Horde=6a59e39abfc69075abe6e56527d514f9
+
+- Integrate the proposal in the 'Trying to Add Upload Path via Javascript'
+http://sourceforge.net/forum/forum.php?thread_id=2107422&forum_id=199107
+
+- Debug file output: should be enabled only in debug mode.
+- Depending on the camera configuration, metadata coming from Canon (10D, 20D, 30D) may not work with picture 
+resizing: colors of the picture resized are wrong. Prevent transmition of metadata, with the pictureTransmitMetadata 
+parameter corrects the problem: there is a big in the SUN JRE.
+==> This is a Java bug.
+- Picture mode: applet parameter to control the size of the preview on the file chooser.
+- Remove support for the deprecated applet parameter filenameEncoding.
+- Also upload empty sub-directories (must be conditioned by a new applet parameter).

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fileset-config file-format-version="1.2.0" simple-config="false">
+    <local-check-config name="caArray" location="software/build/resources/caarray_checks.xml" type="project" description="">
+        <additional-data name="protect-config-file" value="false"/>
+    </local-check-config>
+    <fileset name="all" enabled="true" check-config-name="caArray" local="true">
+        <file-match-pattern match-pattern="src/main/java" include-pattern="true"/>
+    </fileset>
+    <filter name="FilesFromPackage" enabled="true">
+        <filter-data value="api_client_examples/java_api_client_examples_v1_0/src/caarray/client/examples"/>
+        <filter-data value="api_client_examples/grid_api_client_examples_v1_0/src/caarray/client/examples"/>
+    </filter>
+</fileset-config>

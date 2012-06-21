@@ -1,0 +1,12 @@
+<!--
+An ivy settings file specifically for eclipse. Makes it read from the default.proprties and local.properties,
+which define the local.repo.dir (normally ivy inherits Ant properties, which already include these.
+
+For this to work, you must create a local.properties file in your build directory, even if it's empty.
+-->
+
+<ivysettings>
+    <properties file="${ivy.settings.dir}/../build/local.properties" override="false"/>
+    <properties file="${ivy.settings.dir}/../build/default.properties" override="false"/>
+    <include file="${ivy.settings.dir}/ivy-caarray-settings.xml"/>
+</ivysettings>

@@ -1,0 +1,24 @@
+caArray User Stories to Support TRANSCEND
+
+1. Grid Security. Allow login to web application with a caGrid account by integrating CGMM. (ARRAY-1463)
+
+2. Grid Security. Allow migration of existing "old-style" (CSM) user accounts to Grid accounts by integrating CGMM. (ARRAY-1928)
+
+3. Grid Security. Implement Grid authentication in remote java API. (ARRAY-1353)
+
+4. Grid Security. Change the installer/build infrastructure to allow for secure grid services. (ARRAY-1462)
+
+5. Single Sign-on. As a user, I want to be able to log in to a caBIG application like caIntegrator or caArray and navigate between the applications without having to log in again. (ARRAY-1930)
+
+6. Audit Trail. Maintain audit log of sample/data deletions and data imports. (ARRAY-1931)
+
+7. Audit Trail. Make sample/data change log visible to Data Owner and Collaborator. (ARRAY-1933)
+
+8. Audit Trail. Publish audit log of sample/data deletions and data imports. (ARRAY-1932)
+
+9. Permissions. Allow permissions to be set at the file level. (ARRAY-1938)
+
+10. Grid Security: Use Grid Grouper to manage groups and role-based authorization. (ARRAY-1929)
+
+11. Grid Security. Implement bulk-migration of CSM to Grid accounts if those accounts are on a known LDAP server that will be grid enabled. (ARRAY-1472)
+

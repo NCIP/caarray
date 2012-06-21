@@ -1,0 +1,45 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>src-${project.version}</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<includeSiteDirectory>true</includeSiteDirectory>
+	<fileSets>
+		<fileSet>
+			<includes>
+				<include>${project.basedir}/.classpath_template_for_and_build</include>
+				<include>${project.basedir}/build.xml</include>
+				<include>${project.basedir}/maven-build.properties</include>
+				<include>${project.basedir}/maven-build.xml</include>
+				<include>${project.basedir}/pom.xml</include>
+				<include>${project.basedir}/readme.txt</include>
+			</includes>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src</directory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/lib</directory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/maven-translation-plugin</directory>
+		</fileSet>
+		<fileSet>
+			<!--
+				Copying the site, won't copy the wjhk.jupload.jar, even if it's in
+				the site folder ... ???
+			-->
+			<directory>${project.basedir}/target</directory>
+			<includes>
+				<include>wjhk.jupload.jar</include>
+			</includes>
+			<outputDirectory>site</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exp="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+    xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    xmlns:voc="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+    xmlns:fac="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
+    xmlns:arr="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.factor.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.array.xsd" />
+
+    <xs:element name="Organism" type="exp:Organism" />
+    <xs:complexType name="Organism">
+        <xs:complexContent>
+            <xs:extension base="voc:Term">
+                <xs:sequence/>
+		<xs:attribute name="commonName" type="xs:string" />
+		<xs:attribute name="scientificName" type="xs:string" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="Person" type="exp:Person" />
+    <xs:complexType name="Person">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence/>
+		<xs:attribute name="firstName" type="xs:string" />
+		<xs:attribute name="lastName" type="xs:string" />
+		<xs:attribute name="middleInitials" type="xs:string" />
+		<xs:attribute name="emailAddress" type="xs:string" />
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="ExperimentalContact" type="exp:ExperimentalContact" />
+    <xs:complexType name="ExperimentalContact">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+		  <xs:element name="roles">
+		    <xs:complexType>
+		      <xs:sequence>
+		        <xs:element ref="voc:Term" minOccurs="0" maxOccurs="unbounded"/>
+		      </xs:sequence>
+		    </xs:complexType>
+		  </xs:element>
+		  <xs:element name="person" minOccurs="0" maxOccurs="1" type="exp:Person"/>
+		</xs:sequence>
+	    </xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="Experiment" type="exp:Experiment" />
+    <xs:complexType name="Experiment">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="organism" minOccurs="0" maxOccurs="1" type="exp:Organism" />
+                    <xs:element name="arrayProvider" minOccurs="0" maxOccurs="1" type="arr:ArrayProvider" />
+                    <xs:element name="assayTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="arr:AssayType" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="contacts">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="exp:ExperimentalContact" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="experimentalDesigns">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="voc:Term" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="replicateTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="voc:Term" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="normalizationTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="voc:Term" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="qualityControlTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="voc:Term" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="factors">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="fac:Factor" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="arrayDesigns">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="arr:ArrayDesign" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="description" type="xs:string" />
+                <xs:attribute name="title" type="xs:string" />
+                <xs:attribute name="publicIdentifier" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,49 @@
+<project name="caArray 2.1 Silver Compliance Submission Generator" default="build-package" basedir=".">
+
+    <property name="root.dir" value="${basedir}/../../.." />
+    <property name="docs.dir" value="${root.dir}/docs" />
+    <property name="software.dir" value="${root.dir}/software" />
+    <property name="build.dir" value="${software.dir}/build" />
+
+    <target name="build-package" depends="get-package-contents">
+        <zip destfile="caArray_2.1_silver_compliance_submission.zip">
+            <fileset dir="${basedir}">
+                <exclude name="build.xml"/>
+                <exclude name="*.js"/>
+                <exclude name="2.0/"/>
+                <exclude name="2.1/"/>
+                <exclude name="caArray_2.1_silver_compliance_submission.zip"/>
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="get-package-contents">
+        <copy tofile="02. caarray_supplementary_specification.doc" file="${docs.dir}/requirements/caarray_supplementary_specification.doc" />
+        <copy tofile="02. caarray_vision.doc" file="${docs.dir}/requirements/caarray_vision.doc" />
+        <copy tofile="03. caarray_software_architecture_document.doc" file="${docs.dir}/analysis_and_design/caarray_software_architecture_document.doc" />
+        <copy tofile="04a. caarray_client_model.eap" file="${docs.dir}/analysis_and_design/models/caarray_client_model.eap" />
+        <copy tofile="04b. caarray_full_model.eap" file="${docs.dir}/analysis_and_design/models/caarray.EAP" />
+        <copy tofile="05. approved_annotated_caArray_v2_1_rv2.xmi" file="${docs.dir}/analysis_and_design/cadsr_submissions/approved_annotated_caArray_v2_1_rv2.xmi" />
+        <copy tofile="07. caarray_uml_loader_checklist.doc" file="${docs.dir}/analysis_and_design/cadsr_submissions/submission_form_caArray_v2_1_rv1.doc" />
+        <zip destfile="12. caArray_grid_client_api_doc.zip" basedir="C:/temp/generated_java/doc" />
+        <copy tofile="16. caarray_use_case_summary.doc" file="${docs.dir}/requirements/caarray_use_case_summary.doc" />
+    </target>
+
+    <target name="clean">
+        <delete>
+             <fileset dir="${basedir}">
+                 <include name="caArray_2.1_silver_compliance_submission.zip" />
+                 <include name="02. caarray_supplementary_specification.doc" />
+                 <include name="02. caarray_vision.doc" />
+                 <include name="03. caarray_software_architecture_document.doc" />
+                 <include name="04a. caarray_client_model.eap" />
+                 <include name="04b. caarray_full_model.eap" />
+                 <include name="05. approved_annotated_caArray_v2_1_rv2.xmi" />
+                 <include name="07. caarray_uml_loader_checklist.doc" />
+                 <include name="12. caArray_grid_client_api_doc.zip" />
+                 <include name="16. caarray_use_case_summary.doc" />
+             </fileset>
+        </delete>
+    </target>
+
+</project>

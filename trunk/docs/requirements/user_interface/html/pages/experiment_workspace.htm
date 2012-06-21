@@ -1,0 +1,497 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Experiment Workspace</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Assay Type</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm" class="selected">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>My Experiment Workspace</h1>
+							
+							<div class="pagehelp">
+								<a href="#" class="help">Help</a>
+								<a href="#" class="print">Print</a>
+							</div>
+							
+							<div class="padme">
+														
+								<!--Tabs -->
+								
+								<ul id="tabs" class="tabs">
+									<li><a href="#workqueue" class="active">Work Queue (4)</a></li>
+									<li><a href="#completed">Completed Experiments (1)</a></li>
+									<li><a href="#public">Public Experiments (0)</a></li>								
+								</ul>
+								
+								<div class="addlink">
+									<a href="experiment_create.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="add">Add a New Experiment</span></span></a>
+								</div>
+								
+								<!--/Tabs -->
+								
+								<!-- 
+									directions on http://livepipe.net/projects/control_tabs/ 
+									- make sure you add control.tabs.js to your scripts directory! 
+									- Matt 
+									-->
+									<script type="text/javascript">				
+										//<![CDATA[
+										Event.observe(window,'load',function(){
+											$$('.tabs').each(function(tabs){
+												new Control.Tabs(tabs);
+											});
+										});
+										//]]>
+									</script>			
+								
+									<!--Results-->
+									
+									<div id="tabboxwrapper">
+									
+										<!--Work Queue-->
+											
+											<div id="workqueue">
+											
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 1-4 of 4 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+												
+												<table class="searchresults" cellspacing="0">
+													<tr>
+														<th><a href="#" style="white-space:nowrap">Experiment ID</a></th>
+														<th><a href="#">Experiment Title</a></th>
+														<th><a href="#">Assay Type</a></th>
+														<!--<th><a href="#">Organism</a></th>
+														<th><a href="#">Disease</a></th>-->
+														<th><a href="#">Samples</a></th>
+														<th><a href="#">Status</a></th>
+														<th><a href="#">Updated</a></th>
+														<th class="actions">Permissions</th>
+														<th class="actions">Edit</th>
+														<th class="actions">Delete</th>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">kletzl-89564</a></td>
+														<td>Interlaboratory comparability study of cancer gene expression analysis using oligonucleotide microarrays</td>
+														<td>Gene Expression </td>
+														<!--<td>Mouse</td>
+														<td>Acute Lymphoblastic Leukemia, Adult</td>-->
+														<td class="alignright"><a href="experiment_annotations_samples.htm">10</a></td>
+														<td>Draft</td>
+														<td>09/23/2007</td>
+														<td class="icon"><a href="experiment_properties.htm"><img src="images/ico_permissions.gif" alt="Permissions" /></a></td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+														<td class="icon"><a href="#"><img src="images/ico_delete.gif" alt="Delete" /></a></td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">kletzl-89576</a></td>
+														<td>Sample Experiment Title</td>
+														<td>Gene Expression </td>
+														<!--<td>Human</td>
+														<td>Cancer</td>-->
+														<td class="alignright"><a href="experiment_annotations_samples.htm">23</a></td>
+														<td>Draft</td>
+														<td>10/01/2007</td>
+														<td class="icon"><a href="experiment_properties.htm"><img src="images/ico_permissions.gif" alt="Permissions" /></a></td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+														<td class="icon"><a href="#"><img src="images/ico_delete.gif" alt="Delete" /></a></td>
+													</tr>													
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">kletzl-89790</a></td>
+														<td>Oligonucleotide microarrays sample title</td>
+														<td>Gene Expression </td>
+														<!--<td>Mouse</td>
+														<td>Brain Stem Glioma, Childhood</td>-->
+														<td class="alignright"><a href="experiment_annotations_samples.htm">121</a></td>
+														<td>Draft</td>
+														<td>09/23/2007</td>
+														<td class="icon"><a href="experiment_properties.htm"><img src="images/ico_permissions.gif" alt="Permissions" /></a></td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+														<td class="icon"><a href="#"><img src="images/ico_delete.gif" alt="Delete" /></a></td>
+													</tr>
+													<tr>
+														<td class="title"><a href="experiment_details.htm">kletzl-90543</a></td>
+														<td>Gene expression study ABC</td>
+														<td>Gene Expression </td>
+														<!--<td>Human</td>
+														<td>Cancer</td>-->
+														<td class="alignright"><a href="experiment_annotations_samples.htm">44</a></td>
+														<td>Draft</td>
+														<td>10/01/2007</td>
+														<td class="icon"><a href="experiment_properties.htm"><img src="images/ico_permissions.gif" alt="Permissions" /></a></td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+														<td class="icon"><a href="#"><img src="images/ico_delete.gif" alt="Delete" /></a></td>
+													</tr>													
+												</table>
+												
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 1-4 of 4 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+														
+											</div>
+											
+										<!--/Work Queue-->
+										
+										<!--Completed-->
+											
+											<div id="completed">
+											
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 1-1 of 1 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+												
+												
+												<table class="searchresults" cellspacing="0">
+													<tr>
+														<th><a href="#">ID</a></th>
+														<th><a href="#">Title</a></th>
+														<th><a href="#">Assay Type</a></th>
+														<th><a href="#">Organism</a></th>
+														<th><a href="#">Disease State</a></th>
+														<th><a href="#">Status</a></th>
+														<th><a href="#">Updated</a></th>
+														<th><a href="#">Samples</a></th>
+														<th class="actions">Properties</th>
+														<th class="actions">Edit</th>
+													</tr>
+													<tr class="odd">
+														<td class="title"><a href="experiment_details.htm">kletzl-89564</a></td>
+														<td>Interlaboratory comparability study of cancer gene expression...</td>
+														<td>Gene Expression </td>
+														<td>Mouse</td>
+														<td>Acute Lymphoblastic Leukemia, Adult</td>
+														<td>Completed</td>
+														<td>09/23/2007</td>
+														<td class="alignright"><a href="experiment_annotations_samples.htm">121</a></td>
+														<td class="icon"><a href="experiment_properties.htm"><img src="images/ico_permissions.gif" alt="Permissions" /></a></td>
+														<td class="icon"><a href="experiment_edit.htm"><img src="images/ico_edit.gif" alt="Edit" /></a></td>
+													</tr>
+												</table>
+												
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 1-1 of 1 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+														
+											</div>
+											
+										<!--/Completed-->
+										
+										<!--public-->
+											
+											<div id="public">
+												
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 0-0 of 0 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+												
+												<table class="searchresults" cellspacing="0">
+													<tr>
+														<th><a href="#">ID</a></th>
+														<th><a href="#">Title</a></th>
+														<th><a href="#">Assay Type</a></th>
+														<th><a href="#">Organism</a></th>
+														<th><a href="#">Disease State</a></th>
+														<th><a href="#">Status</a></th>
+														<th><a href="#">Updated</a></th>
+														<th><a href="#">Samples</a></th>
+														<th class="actions">Properties</th>
+														<th class="actions">Edit</th>
+													</tr>
+													<tr class="odd">
+														<td colspan="10">There are currently no items in this list.</td>
+													</tr>
+												</table>
+												
+												<!--Paging-->
+										
+													<div class="pagecontrol">
+													
+														<p class="small">Displaying 1-1 of 1 Total.</p>
+												
+														<div class="paging">													
+															&nbsp;&nbsp;
+															Page 1
+															&nbsp;&nbsp;
+															&lt; Back <span class="bar">|</span> 
+															Next &gt;
+														</div>
+													
+													</div>
+												
+												<!--/Paging-->
+														
+											</div>
+											
+										<!--/Completed-->
+									
+									</div>
+									
+								<!--/Results-->
+								
+								
+								</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+				
+			</div>
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

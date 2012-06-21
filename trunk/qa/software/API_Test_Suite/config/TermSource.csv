@@ -1,0 +1,7 @@
+Test Case,API,Name,Url,Expected Name,Expected Url,Expected Results,Min Results
+97,java,,,,,,30
+98,grid,,,,,,30
+99,java,,http://mged.sourceforge.net/ontologies/MGEDontology.php,,http://mged.sourceforge.net/ontologies/MGEDontology.php,,1
+100,grid,,http://mged.sourceforge.net/ontologies/MGEDontology.php,,http://mged.sourceforge.net/ontologies/MGEDontology.php,,1
+271,java,invalid#%!,,,,0,
+272,grid,invalid#%!,,,,0,

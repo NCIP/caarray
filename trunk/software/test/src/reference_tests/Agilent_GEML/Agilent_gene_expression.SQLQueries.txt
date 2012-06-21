@@ -1,0 +1,132 @@
+-- select * for ArrayDesign
+SELECT * FROM array_design where array_design.name = 'Agilent_gene_expression_reference_array_design' ;
+
+-- select * for ProbeGroup  
+SELECT * 
+FROM   probe_group 
+WHERE  array_design_details IN (SELECT design_details 
+                                FROM   array_design 
+                                WHERE  array_design.lsid_namespace = 
+                                       'PhysicalArrayDesign' 
+                                       AND array_design.lsid_object_id = 
+                                           'Agilent_gene_expression_reference_array_design' 
+                               ); 
+
+-- select for Probe - Feature mapping
+SELECT p.name AS probe_name, 
+       p.id   AS probe_id, 
+       f.feature_number, 
+       f.id   AS feature_id 
+FROM   design_element p, 
+       probefeature p2f, 
+       design_element f 
+WHERE  p.id = p2f.physical_probe_id 
+       AND f.id = p2f.feature_id 
+       AND f.feature_details_id IN (SELECT design_details 
+                                    FROM   array_design 
+                                    WHERE  array_design.lsid_namespace = 
+                                           'PhysicalArrayDesign' 
+                                           AND 
+               array_design.lsid_object_id = 
+               'Agilent_gene_expression_reference_array_design'); 
+
+
+-- select * for Features  
+SELECT * 
+FROM   design_element 
+WHERE  discriminator = 'F' 
+       AND feature_details_id IN (SELECT design_details 
+                                  FROM   array_design 
+                                  WHERE 
+               array_design.lsid_namespace = 'PhysicalArrayDesign' 
+               AND array_design.lsid_object_id = 
+                   'Agilent_gene_expression_reference_array_design'); 
+
+-- select * for Features left join Term (in order to get the feature_coordinate_units)   
+SELECT 
+ F.discriminator, F.bigid, F.name, F.feature_row, F.block_column, F.block_row, F.feature_column, F.probe_group, F.physicalprobe_details_id, F.feature_details_id, F.control_type, F.annotation, F.logicalprobe_details_id, F.feature_number, F.feature_x_coordinate, F.feature_y_coordinate, F.feature_coordinate_units, T.value 
+FROM   design_element F
+       LEFT JOIN term T
+         ON F.feature_coordinate_units = T.id 
+WHERE  F.discriminator = 'F' 
+       AND F.feature_details_id IN (SELECT design_details 
+                                                 FROM   array_design 
+                                                 WHERE 
+               array_design.lsid_namespace = 'PhysicalArrayDesign' 
+               AND array_design.lsid_object_id = 
+                   'Agilent_gene_expression_reference_array_design'); 
+
+-- select * for PhysicalProbes  
+SELECT * 
+FROM   design_element 
+WHERE  discriminator = 'PP' 
+       AND physicalprobe_details_id IN (SELECT design_details 
+                                        FROM   array_design 
+                                        WHERE 
+               array_design.lsid_namespace = 'PhysicalArrayDesign' 
+               AND array_design.lsid_object_id = 
+                   'Agilent_gene_expression_reference_array_design'); 
+
+-- select * for ExpressionProbeAnnotation 
+SELECT * 
+FROM   probeannotation 
+WHERE  id IN (SELECT annotation 
+              FROM   design_element 
+              WHERE  design_element.discriminator = 'PP' 
+                     AND design_element.physicalprobe_details_id IN (SELECT 
+                         design_details 
+                                                                     FROM 
+                         array_design 
+                                                                     WHERE 
+                             array_design.lsid_namespace = 'PhysicalArrayDesign' 
+                             AND array_design.lsid_object_id = 
+                                 'Agilent_gene_expression_reference_array_design')); 
+ 
+
+-- select * from gene  
+SELECT * 
+FROM   gene 
+WHERE  id IN (SELECT gene 
+              FROM   probeannotation 
+              WHERE  id IN (SELECT annotation 
+                            FROM   design_element 
+                            WHERE  discriminator = 'PP' 
+                                   AND physicalprobe_details_id IN 
+                                       (SELECT 
+                                       design_details 
+                                                                    FROM 
+                                       array_design 
+                                                                    WHERE 
+                                       lsid_namespace = 'PhysicalArrayDesign' 
+                                       AND 
+                                           array_design.lsid_object_id = 
+                                           'Agilent_gene_expression_reference_array_design' 
+                                       ) 
+                           ));  
+                           
+                           
+-- select * for Gene Accession   
+SELECT g.full_name as gene_full_name, 
+       a.gene_id, 
+       a.database_name, 
+       a.accession_number
+FROM   accession a, 
+       gene g 
+WHERE  a.gene_id = g.id 
+       AND g.id IN (SELECT gene 
+                    FROM   probeannotation 
+                    WHERE  id IN (SELECT annotation 
+                                  FROM   design_element 
+                                  WHERE  discriminator = 'PP' 
+                                         AND physicalprobe_details_id IN (SELECT 
+                                             design_details 
+                                                                          FROM 
+                                             array_design 
+                                                                          WHERE 
+                                             lsid_namespace = 
+                                             'PhysicalArrayDesign' 
+                                             AND 
+                                                 array_design.lsid_object_id = 
+                                 'Agilent_gene_expression_reference_array_design') 
+                                 )); 
+                                 

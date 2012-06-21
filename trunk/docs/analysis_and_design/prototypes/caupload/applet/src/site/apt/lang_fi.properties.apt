@@ -1,0 +1,257 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (Finnish)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in Finnish)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = false
+language = Finnish
+contributor = No maintainer (same content as lang.properties)
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = finnish
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Selaa ...
+buttonRemoveSelected = Poista valittu
+buttonRemoveAll = Poista kaikki
+buttonRotateLeft = Käännä vastapäivään
+buttonRotateRight = Käännä myötäpäivään
+buttonUpload = Lähetä
+buttonStop = KESKEYTÄ
+messageLogWindowCopiedToClipboard = Lokiin tulleet viestit on kopioitu leikepöydälle.
+#JUploadPanel, The components of the status line
+speedunit_gb_per_second = Gt/s
+speedunit_mb_per_second = Mt/s
+speedunit_kb_per_second = Kt/s
+speedunit_b_per_second = t/s
+timefmt_hms = %1$dh, %2$d min. and %3$d sek.
+timefmt_ms = %1$d min. and %2$d sek.
+timefmt_s = %1$d sekuntia
+timefmt_unknown = tuntemton
+status_msg = JUpload %1$d%% valmis, Siirtonopeus: %2$s, Valmis: %3$s
+#MISSING  menuitem_paste = Paste
+
+#JUploadExceptionTooBigFile
+errFileTooBig = Tiedoston '%1$s' pituus on liian suuri (%2$s)
+
+#FileUploadThread
+preparingFile = Valmistellaan tiedostoa %1$d/%2$d
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Lähetetään tiedostoa %1$s
+infoUploaded = %1$s tiedosto(a) siirretty. Odotetaan vastausta ...
+infoAborted = Siirto keskeytetty %1$d tiedoston jälkeen.
+nbUploadedFiles = %1$d tiedosto(a) siirretty.
+errDuringUpload = Lähetys keskeytyi virheeseen.
+errHttpResponse = Lähetys epäonnistui: vastauksen HTTP-koodi virheellinen
+questionSendMailOnError = Virhe tiedostojen lähetyksessä. Haluatko lähettää virheraportin ylläpidolle?
+
+#DialogUploadRetry
+#MISSING  dialogUploadRetryText = An error occurs occured during the upload of the files to the server. Do you want to retry uploading these files?\n\nThe upload will automatically be re-executed in %1$d seconds.
+#MISSING  dialogUploadRetryTitle = Retry the upload?
+#MISSING  buttonDetails = Details
+#MISSING  buttonYes = Yes
+#MISSING  buttonNo = No
+
+#FileUploadManagerThread
+#MISSING  errorDuringUpload = The following error occured during upload:\n%1$s\n\nDo you want to go on with the current upload?
+
+#FilePanelDataModel
+colName = Nimi
+colSize = Koko
+colDirectory = Hakemisto
+colModified = Muokattu
+colReadable = Luettavissa?
+errForbiddenExtension = Kielletty tiedoston pääte.
+
+#DefaultUploadPolicy
+errDuringLogManagement = Virhe login hallinnoinnissa.
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Ole hyvä ja valitse ensin albumi.
+coppermineUploadOk = Kuvat on onnistuneesti välitetty palvelimelle valittuun albumiin.\n\nPaina nyt Ok:ta assosioidaksesi nimiä ja kommentteja kuviin.\n\nMuistathan painaa 'Tallenna muokkaukset' tallentaaksesi muutokset palvelimella!
+
+#SuperSimpleUploadPolicy
+#MISSING  dragDirectoriesAndFilesToHere = Drag directories an files to here
+
+#PictureFileData
+tooBigPicture = Kuva '%1$s' on liian suuri. Se lähetetään sellaisenaan (ei kääntöä tai koon muokkausta...)
+notAPicture = Tiedosto '%1$s' ei ole kuva. Sitä ei lisätty lähetettävien tiedostojen listaan.
+
+#PictureDialog
+buttonClose = Sulje
+
+#DateRenderer
+dateformat = dd.MM.yyyy hh:mm aaa
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = t
+unitGigabytes = Git
+unitMegabytes = Mit
+unitKilobytes = Kit
+
+#sendDebugInformation
+Confirm = Vahvista
+
+#InteractiveTrustManager
+itm_title_pass = Anna %1$s salasana
+itm_prompt_pass = %1$s salasana:
+itm_cert_alert = SSL-varmenteen suojaushälytys
+itm_cert_details = Varmenteen tiedot:
+itm_cert_subject = Varmennettu taho:
+itm_cert_issuer = Varmenteen myöntäjä:
+itm_cert_nbefore = Voimassa alkaen:
+itm_cert_nafter = Voimassa asti:
+itm_cert_serial = Sarjanumero:
+itm_cert_fprint = %1$s sormenjälki:
+itm_cert_C = Maa:
+itm_cert_CN = Nimi:
+itm_cert_L = Sijainti:
+itm_cert_ST = Osavaltio tai lääni:
+itm_cert_O = Organisaatio:
+itm_cert_OU = Organisaatioyksikkö:
+itm_reasons = Syy(t):
+itm_reason_cnmatch = Varmenteelle tallennettu nimi ei vastaa palvelimen nimeä (%1$s).
+itm_reason_itrust = Varmenteen myöntäjä ei ole luotettu.
+itm_reason_expired = Varmenne on vanhentunut.
+itm_reason_notyet = Varmenne ei ole vielä voimassa.
+itm_fail_verify = Palvelimen tarjoilemaa varmennetta ei kyetty tarkistamaan.
+itm_accept_prompt = Haluatko hyväksyä tämän varmenteen?
+itm_accept_always = Aina
+itm_accept_now = Vain tällä kertaa
+itm_accept_no = Ei
+itm_new_tstore = Uusi varmenesäilö
+itm_tstore = Varmennesäilö
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in Finnish)
+
+   Content of the <finnish.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+// ------------------------------------------------------------------------- //
+// File jupload.php
+// ------------------------------------------------------------------------- //
+
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+		  'link_title' => 'JUpload',
+		  'link_comment' => 'Lähetä tiedosto galleriaan ilman java-applettia.',
+		  'perm_denied' => 'Sinulla ei ole oikeutta suorittaa tätä toimintoa.<BR><BR>Jos et ole jo kytkeytynyt, <a href="$1">kirjaudu aluksi sisään</a>',
+		  'select_album' => 'Ole hyvä ja valitse albumi, johon haluat lähettää kuvia',
+		  'button_update_album' => 'Päivitä albumia',
+		  'button_create_album' => 'Luo albumi',
+		  'success' => 'Toiminto onnistui!',
+		  'error_select_album' => 'Ole hyvä ja valitse ensin albumi',
+		  'error_album_name' => 'Anna albumille nimi.',
+		  'error_album_already_exists' => 'Olet jo luonut albumin, jolla on annetamasi nimi.<BR><BR>Paina selaimesi paluupainiketta ja valitse toinen nimi uudelle albumillesi.',
+		  'album_name' => 'Albumin nimi',
+		  'album_presentation' => 'Sinun on valittava albumi tässä. Kuvat, jotka lähetät palvelimelle tallennetaan valittuun albumiin.<BR>Jos sinulla ei ole yhtäkään albumia, albumilista on tyhjä. Käytä \'Luo albumi\'-toimintoa luodaksesi ensimmäisen albumisi.',
+		  'album_description' => 'Albumin kuvaus',
+		  'add_pictures' => 'Lisää kuvia valittuun albumiin',
+		  'max_upload_size' => 'Kuvan maksimikoko on $1 kt',
+		  'upload_presentation' => 'Jos allaolevassa neliönmuotoisessa alueessa ei näy java-applettia, ja selaimesi indikoi että sivulla on virheitä, sinulta luultavasti puuttuu javan ajonaikainen ympäristö.<BR>Asennuksen jälkeen tiedostojen lähetys on todella helppoa! Valitse <B>Selaa</B> lähettääksesi tiedostoja tai pudota tiedostoja työpöydältä. Paina sitten <B>Lähetä</B> lähettääksesi kuvat palvelimelle.'
+		. "<BR><a href='upload.php'>Siirry käyttämään vanhaa lähetyssivua.</a>",
+		  'album' => 'Albumi',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Selaimessasi ei ole java-tukea. Tiedostojen lähetys tarvitsee java-tuen. Voit noutaa java-tuen <a href="http:\\java.oracle.com\jre\">javan www-sivustolta</a>.',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Paina tätä linkkiä, ja syötä arvoja allaoleviin kenttiin, jos haluat syöttämäsi tiedot pohjaksi kaikkiin myöhemmin lähettämiisi kuviin.',
+		  'quota_used' => 'Olet käyttänyt $1 Mt ($2%) $3 Mt tallennustilastasi.',
+		  'quota_about_full' => 'Poista joitakin kuvia, tai pyydä ylläpitoa kasvattamaan tallennustilaasi.',
+		  //Since 3.2.0
+		  'need_approval' => 'Gallerian ylläpidon on hyväksyttävä nämä lähetetyt kuvat ennen kuin ne ilmestyvät näkyviin.',
+		  //Since 4.1.0
+		  'see_uploaded_pictures_url' => 'Paina tästä nähdäksesi tällä sivulla olevien kuvien URL:n.',
+		)
+	);
+}
+
+
+--------------
+

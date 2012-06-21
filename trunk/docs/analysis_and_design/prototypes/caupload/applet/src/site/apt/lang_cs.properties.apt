@@ -1,0 +1,254 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (Czech)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in Czech)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = false
+language = Czech
+contributor = Vladan Zajda
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = czech
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Procházet ...
+buttonRemoveSelected = Odstranit označené
+buttonRemoveAll = Odstranit vše
+buttonRotateLeft = Otočit vlevo
+buttonRotateRight = Otočit vpravo
+buttonUpload = Přenést
+buttonStop = UKONČIT
+#MISSING  messageLogWindowCopiedToClipboard = Debugging messages have been copied to the clipboard.
+#JUploadPanel, The components of the status line
+#MISSING  speedunit_gb_per_second = Gb/s
+#MISSING  speedunit_mb_per_second = Mb/s
+#MISSING  speedunit_kb_per_second = Kb/s
+#MISSING  speedunit_b_per_second = b/s
+#MISSING  timefmt_hms = %1$dh, %2$d min. and %3$d sec.
+#MISSING  timefmt_ms = %1$d min. and %2$d sec.
+#MISSING  timefmt_s = %1$d seconds
+#MISSING  timefmt_unknown = unknown
+#MISSING  status_msg = JUpload %1$d%% done, Transfer rate: %2$s, ETA: %3$s
+#MISSING  menuitem_paste = Paste
+
+#JUploadExceptionTooBigFile
+errFileTooBig = Soubor %1$s je příliš veliký (%2 bytů)
+
+#FileUploadThread
+preparingFile = Připravuji soubor %1$d/%2$d
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Přenáším soubory %1$s
+infoUploaded = %1$s soubor(ů) přeneseno. Čekám na odpověď serveru ...
+infoAborted = Přenos byl přerušen po %1$d souborech.
+nbUploadedFiles = %1$d soubor(ů) přeneseno
+errDuringUpload = Přenos byl ukončen s chybami
+errHttpResponse = Přenos byl ukončen: neočekávaná odpověď HTTP
+questionSendMailOnError = Nastala chyba při přenosu. Přejete si odeslat detailní informace správci serveru?
+
+#DialogUploadRetry
+#MISSING  dialogUploadRetryText = An error occurs occured during the upload of the files to the server. Do you want to retry uploading these files?\n\nThe upload will automatically be re-executed in %1$d seconds.
+#MISSING  dialogUploadRetryTitle = Retry the upload?
+#MISSING  buttonDetails = Details
+#MISSING  buttonYes = Yes
+#MISSING  buttonNo = No
+
+#FileUploadManagerThread
+#MISSING  errorDuringUpload = The following error occured during upload:\n%1$s\n\nDo you want to go on with the current upload?
+
+#FilePanelDataModel
+colName = Název
+colSize = Velikost
+colDirectory = Adresář
+colModified = Modifikováno
+colReadable = Čitelný?
+errForbiddenExtension = Zak zan  souborov  pr¡pona.
+
+#DefaultUploadPolicy
+errDuringLogManagement = Nastala chyba při zpracování logu
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Nejprve prosím vyberte album.
+coppermineUploadOk = Obrázky byly úspěšně přeneseny do vybraného alba na serveru.\n\nNyní klikněte OK abyste mohli přiřadit názvy a komentáře k obrázkům.\n\nNezapomeňte kliknout na tlačítko 'Uložit úpravy', aby došlo k uložení úprav na serveru !
+
+#SuperSimpleUploadPolicy
+#MISSING  dragDirectoriesAndFilesToHere = Drag directories an files to here
+
+#PictureFileData
+tooBigPicture = Obrázek '%1$s' je příliš velký. Bude přenesen neupravený (bez otočení, změny velikosti...).
+notAPicture = Soubor s názvem '%1$s' není obrázek. Nebyl tedy vložen do seznamu souborů k přenesení.
+
+#PictureDialog
+buttonClose = Zavřít
+
+#DateRenderer
+dateformat = yyyy-MM-dd hh:mm aaa
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = b
+unitGigabytes = GiB
+unitMegabytes = MiB
+unitKilobytes = KiB
+
+#sendDebugInformation
+Confirm = Potvrdit
+
+#InteractiveTrustManager
+#MISSING  itm_title_pass = Enter %1$s password
+#MISSING  itm_prompt_pass = %1$s password:
+#MISSING  itm_cert_alert = SSL Certificate Alert
+#MISSING  itm_cert_details = Certificate details:
+#MISSING  itm_cert_subject = Subject:
+#MISSING  itm_cert_issuer = Issuer:
+#MISSING  itm_cert_nbefore = Not before:
+#MISSING  itm_cert_nafter = Not after:
+#MISSING  itm_cert_serial = Serial:
+#MISSING  itm_cert_fprint = %1$s Fingerprint:
+#MISSING  itm_cert_C = Country:
+#MISSING  itm_cert_CN = Common name:
+#MISSING  itm_cert_L = Locality:
+#MISSING  itm_cert_ST = State or province:
+#MISSING  itm_cert_O = Organization:
+#MISSING  itm_cert_OU = Organizational unit:
+#MISSING  itm_reasons = Reason(s):
+#MISSING  itm_reason_cnmatch = The certificate common name does not match the hostname (%1$s).
+#MISSING  itm_reason_itrust = Certificate issuer is not trusted.
+#MISSING  itm_reason_expired = The certificate is expired.
+#MISSING  itm_reason_notyet = The certificate is not yet valid.
+#MISSING  itm_fail_verify = The certificate, presented by the server could not be verified.
+#MISSING  itm_accept_prompt = Do you want to accept this certificate?
+#MISSING  itm_accept_always = Always
+#MISSING  itm_accept_now = Only for this session
+#MISSING  itm_accept_no = No
+#MISSING  itm_new_tstore = New TrustStore
+#MISSING  itm_tstore = TrustStore
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in Czech)
+
+   Content of the <czech.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+
+// ------------------------------------------------------------------------- //
+// File jupload.php
+// ------------------------------------------------------------------------- //
+
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+		  'perm_denied' => 'K provedení této operace nemáte dostatečná oprávnění.<BR><BR>Pokud nejste připojen, <a href="login.php' . ( isset($_SERVER['PHP_SELF']) ? '?referer=' . $_SERVER['PHP_SELF'] : '') . '">přihlašte se</a> prosím',
+		  'select_album' => 'Vyberte prosím album, do kterého si přejete přenést obrázky',
+		  'button_update_album' => 'Aktualizovat album',
+		  'button_create_album' => 'Vytvořit album',
+		  'success' => 'Úspěšně provedeno !',
+		  'error_select_album' => 'Nejprve prosím vyberte album',
+		  'error_album_name' => 'Zadejte prosím název alba.',
+		  'error_album_already_exists' => 'Album s tímto názvem již vlastníte.<BR><BR>Klikněte prosím na tlačítko<I>Zpět</I> vašeho prohlížeče, abyste mohli vyplnit jiný název vašeho nového alba.',
+		  'album_name' => 'Název alba',
+		  'album_presentation' => 'Zde musíte vybrat album. Obrázky, které přenesete na server budou uloženy v tomto albu. <BR>Pokud nemáte žádné album, je seznam alb prázdný. Použijte tlačítko \'Vytvořit album\' k vytvoření vašeho prvního alba.',
+		  'album_description' => 'Popis alba',
+		  'add_pictures' => 'Vložit obrázky do vybraného alba',
+		  'max_upload_size' => 'Maximální velikost obrázku je $1 Ko',
+		  'upload_presentation' => 'Pokud prohlížeč odmítá zobrazit applet a hlásí na této stránce chyby, je vhodné nainstalovat rozšíření java runtime.<BR>Poté je již přenos souborů opravdu jednoduchý! Klikňete <B>Procházet</B> pro výběr souborů nebo použijte přetažení souborů (drag\'n\'drop) z Průzkumníka, poté klikněte <B>Přenést</B> k odeslání obrázků na server.'
+		  	. "<BR>Pro použití <U>původní stránky pro přenos souborů</U>, <a href='upload.php'>klikněte zde</a>.",
+		  'album' => 'Album',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Your navigator doesn\'t allow java. The upload applet need java. You can easily download it from the <a href="http:\\java.sun.com\jre\">java web site</a>',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Click on this link, and enter data in the fields below, if you want these to be applied to all pictures in the next upload.',
+		  'quota_used' => 'You are currently using $1 MB ($2%) of your $3 MB of storage.',
+		  'quota_about_full' => 'Remove some pictures, or ask the admin to make your quota bigger.',
+		  //Since 3.2.0
+		  'need_approval' => 'The gallery admin must approve these uploaded pictures, before you can see them on the gallery.'
+		)
+	);
+}
+		
+
+--------------
+

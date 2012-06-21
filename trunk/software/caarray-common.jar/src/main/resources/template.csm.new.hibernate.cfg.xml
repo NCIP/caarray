@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- @DATASOURCE_CONFIG_START@
+        <property name="hibernate.connection.datasource">java:jdbc/CaArrayDataSource</property>
+        <property name="current_session_context_class">jta</property>
+        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.CMTTransactionFactory</property>
+        <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
+        <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
+        @DATASOURCE_CONFIG_END@ -->
+
+        <!-- @HIBERNATE_CONFIG_START@
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@:@PORT@/@DBNAME@</property>
+        <property name="hibernate.connection.username">@DBUSER@</property>
+        <property name="hibernate.connection.password">@DBPASSWD@</property>
+        <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
+        @HIBERNATE_CONFIG_END@ -->
+
+        <!-- mapping files -->
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/Application.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/Group.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/Privilege.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/ProtectionElement.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/ProtectionGroup.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/Role.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/User.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/FilterClause.hbm.xml"/>        
+        <mapping resource="gov/nih/nci/security/dao/hibernate/UserGroup.hbm.xml"/>       
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/InstanceLevelMappingElement.hbm.xml"/>         
+    </session-factory>
+</hibernate-configuration>

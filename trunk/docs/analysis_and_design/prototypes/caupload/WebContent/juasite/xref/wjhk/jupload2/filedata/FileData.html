@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<title>FileData xref</title>
+<link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../apidocs/wjhk/jupload2/filedata/FileData.html">View Javadoc</a></div><pre>
+
+<a name="1" href="#1">1</a>   <em class="jxr_comment">//</em>
+<a name="2" href="#2">2</a>   <em class="jxr_comment">// $Id: FileData.java 95 2007-05-02 03:27:05Z</em>
+<a name="3" href="#3">3</a>   <em class="jxr_comment">// /C=DE/ST=Baden-Wuerttemberg/O=ISDN4Linux/OU=Fritz</em>
+<a name="4" href="#4">4</a>   <em class="jxr_comment">// Elfert/CN=svn-felfert@isdn4linux.de/emailAddress=fritz@fritz-elfert.de $</em>
+<a name="5" href="#5">5</a>   <em class="jxr_comment">//</em>
+<a name="6" href="#6">6</a>   <em class="jxr_comment">// jupload - A file upload applet.</em>
+<a name="7" href="#7">7</a>   <em class="jxr_comment">// Copyright 2007 The JUpload Team</em>
+<a name="8" href="#8">8</a>   <em class="jxr_comment">//</em>
+<a name="9" href="#9">9</a>   <em class="jxr_comment">// Created: 2006-11-20</em>
+<a name="10" href="#10">10</a>  <em class="jxr_comment">// Creator: etienne_sf</em>
+<a name="11" href="#11">11</a>  <em class="jxr_comment">// Last modified: $Date: 2010-06-28 13:35:55 +0200 (lun., 28 juin 2010) $</em>
+<a name="12" href="#12">12</a>  <em class="jxr_comment">//</em>
+<a name="13" href="#13">13</a>  <em class="jxr_comment">// This program is free software; you can redistribute it and/or modify it under</em>
+<a name="14" href="#14">14</a>  <em class="jxr_comment">// the terms of the GNU General Public License as published by the Free Software</em>
+<a name="15" href="#15">15</a>  <em class="jxr_comment">// Foundation; either version 2 of the License, or (at your option) any later</em>
+<a name="16" href="#16">16</a>  <em class="jxr_comment">// version. This program is distributed in the hope that it will be useful, but</em>
+<a name="17" href="#17">17</a>  <em class="jxr_comment">// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</em>
+<a name="18" href="#18">18</a>  <em class="jxr_comment">// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more</em>
+<a name="19" href="#19">19</a>  <em class="jxr_comment">// details. You should have received a copy of the GNU General Public License</em>
+<a name="20" href="#20">20</a>  <em class="jxr_comment">// along with this program; if not, write to the Free Software Foundation, Inc.,</em>
+<a name="21" href="#21">21</a>  <em class="jxr_comment">// 675 Mass Ave, Cambridge, MA 02139, USA.</em>
+<a name="22" href="#22">22</a>  
+<a name="23" href="#23">23</a>  <strong class="jxr_keyword">package</strong> wjhk.jupload2.filedata;
+<a name="24" href="#24">24</a>  
+<a name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
+<a name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> java.util.Date;
+<a name="28" href="#28">28</a>  
+<a name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> wjhk.jupload2.exception.JUploadException;
+<a name="30" href="#30">30</a>  <strong class="jxr_keyword">import</strong> wjhk.jupload2.exception.JUploadIOException;
+<a name="31" href="#31">31</a>  <strong class="jxr_keyword">import</strong> wjhk.jupload2.policies.UploadPolicy;
+<a name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> wjhk.jupload2.upload.FileUploadThread;
+<a name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> wjhk.jupload2.upload.helper.ByteArrayEncoder;
+<a name="34" href="#34">34</a>  
+<a name="35" href="#35">35</a>  <em class="jxr_javadoccomment">/**</em>
+<a name="36" href="#36">36</a>  <em class="jxr_javadoccomment"> * This class contains all data and methods for a file to upload. The current</em>
+<a name="37" href="#37">37</a>  <em class="jxr_javadoccomment"> * {@link wjhk.jupload2.policies.UploadPolicy} contains the necessary parameters</em>
+<a name="38" href="#38">38</a>  <em class="jxr_javadoccomment"> * to personalize the way files must be handled. &lt;BR&gt;</em>
+<a name="39" href="#39">39</a>  <em class="jxr_javadoccomment"> * The JUpload package provides a default implementation of this class in</em>
+<a name="40" href="#40">40</a>  <em class="jxr_javadoccomment"> * {@link DefaultFileData}. This default implementation contains all necessary</em>
+<a name="41" href="#41">41</a>  <em class="jxr_javadoccomment"> * methods to allow upload. You can override it to add new file behaviour. For</em>
+<a name="42" href="#42">42</a>  <em class="jxr_javadoccomment"> * instance, you could add a XMLFileData, that would check that XML is valid</em>
+<a name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * before upload. See the &lt;a href="package-summary.html"&gt;package summary&lt;/a&gt; for</em>
+<a name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * more details about that. &lt;BR&gt;</em>
+<a name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * This class is the interface that all FileData must implement. The</em>
+<a name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * {@link DefaultFileData} class contains the default implementation for this</em>
+<a name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> * interface. The {@link PictureFileData} contains another implementation of</em>
+<a name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> * this interface, adapted to manage pictures (rotation, resizing...). &lt;BR&gt;</em>
+<a name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> * The instance of FileData is created by the</em>
+<a name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> * {@link UploadPolicy#createFileData(File, File)} method. This method can be</em>
+<a name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> * overrided in a new upoad policy, to create an instance of another FileData.</em>
+<a name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> * See {@link PictureFileData} for an example about FileData customization.</em>
+<a name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> * </em>
+<a name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> * @author etienne_sf</em>
+<a name="55" href="#55">55</a>  <em class="jxr_javadoccomment"> */</em>
+<a name="56" href="#56">56</a>  
+<a name="57" href="#57">57</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../wjhk/jupload2/filedata/FileData.html">FileData</a> {
+<a name="58" href="#58">58</a>  
+<a name="59" href="#59">59</a>  	<em class="jxr_javadoccomment">/**</em>
+<a name="60" href="#60">60</a>  <em class="jxr_javadoccomment">	 * Called during the upload, by the {@link FileUploadThread}. The FileData</em>
+<a name="61" href="#61">61</a>  <em class="jxr_javadoccomment">	 * instance should then call the</em>
+<a name="62" href="#62">62</a>  <em class="jxr_javadoccomment">	 * {@link ByteArrayEncoder#appendTextProperty(String, String, int)} method</em>
+<a name="63" href="#63">63</a>  <em class="jxr_javadoccomment">	 * to add each file property to the current upload.</em>
+<a name="64" href="#64">64</a>  <em class="jxr_javadoccomment">	 * </em>
+<a name="65" href="#65">65</a>  <em class="jxr_javadoccomment">	 * @param bae</em>
+<a name="66" href="#66">66</a>  <em class="jxr_javadoccomment">	 *            The byte encoder, where the properties must be added</em>
+<a name="67" href="#67">67</a>  <em class="jxr_javadoccomment">	 * @param index</em>
+<a name="68" href="#68">68</a>  <em class="jxr_javadoccomment">	 *            Index of the file concerned by this value. -1 if this is a</em>
+<a name="69" href="#69">69</a>  <em class="jxr_javadoccomment">	 *            global parameter.</em>
+<a name="70" href="#70">70</a>  <em class="jxr_javadoccomment">	 * @throws JUploadIOException</em>
+<a name="71" href="#71">71</a>  <em class="jxr_javadoccomment">	 *             Encapsulation of the IOException, if any would occurs.</em>
+<a name="72" href="#72">72</a>  <em class="jxr_javadoccomment">	 * @see ByteArrayEncoder#appendTextProperty(String, String, int)</em>
+<a name="73" href="#73">73</a>  <em class="jxr_javadoccomment">	 */</em>
+<a name="74" href="#74">74</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> appendFileProperties(<a href="../../../wjhk/jupload2/upload/helper/ByteArrayEncoder.html">ByteArrayEncoder</a> bae, <strong class="jxr_keyword">int</strong> index)
+<a name="75" href="#75">75</a>  			<strong class="jxr_keyword">throws</strong> JUploadIOException;
+<a name="76" href="#76">76</a>  
+<a name="77" href="#77">77</a>  	<em class="jxr_javadoccomment">/**</em>
+<a name="78" href="#78">78</a>  <em class="jxr_javadoccomment">	 * Prepare the fileData to upload. For instance, picture data can be resized</em>
+<a name="79" href="#79">79</a>  <em class="jxr_javadoccomment">	 * before upload (see {@link PictureFileData}. This method is called before</em>
+<a name="80" href="#80">80</a>  <em class="jxr_javadoccomment">	 * the upload of this file. If no exception is thrown, then the file is</em>
+<a name="81" href="#81">81</a>  <em class="jxr_javadoccomment">	 * correctly prepared.</em>
+<a name="82" href="#82">82</a>  <em class="jxr_javadoccomment">	 * </em>
+<a name="83" href="#83">83</a>  <em class="jxr_javadoccomment">	 * @see FileUploadThread</em>
+<a name="84" href="#84">84</a>  <em class="jxr_javadoccomment">	 * @throws JUploadException</em>
+<a name="85" href="#85">85</a>  <em class="jxr_javadoccomment">	 *             Encapsulation of the Exception, if any error would occurs.</em>
+<a name="86" href="#86">86</a>  <em class="jxr_javadoccomment">	 */</em>
+<a name="87" href="#87">87</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> beforeUpload() <strong class="jxr_keyword">throws</strong> JUploadException;
+<a name="88" href="#88">88</a>  
+<a name="89" href="#89">89</a>  	<em class="jxr_javadoccomment">/**</em>
+<a name="90" href="#90">90</a>  <em class="jxr_javadoccomment">	 * Get size of upload, which may be different from the actual file length.</em>
+<a name="91" href="#91">91</a>  <em class="jxr_javadoccomment">	 * This call is valid only after a call to {@link #beforeUpload()} and</em>
+<a name="92" href="#92">92</a>  <em class="jxr_javadoccomment">	 * before the call to {@link #afterUpload()}.</em>
+<a name="93" href="#93">93</a>  <em class="jxr_javadoccomment">	 * </em>
+<a name="94" href="#94">94</a>  <em class="jxr_javadoccomment">	 * @return The length of upload. In this class, this is the size of the</em>
+<a name="95" href="#95">95</a>  <em class="jxr_javadoccomment">	 *         file, as it isn't transformed for upload. This size may change if</em>
+<a name="96" href="#96">96</a>  <em class="jxr_javadoccomment">	 *         encoding is necessary (needs a new FileData class), or if picture</em>
+<a name="97" href="#97">97</a>  <em class="jxr_javadoccomment">	 *         is to be resized or rotated.</em>
+<a name="98" href="#98">98</a>  <em class="jxr_javadoccomment">	 * @see PictureFileData</em>
+<a name="99" href="#99">99</a>  <em class="jxr_javadoccomment">	 */</em>
+<a name="100" href="#100">100</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getUploadLength();
+<a name="101" href="#101">101</a> 
+<a name="102" href="#102">102</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="103" href="#103">103</a> <em class="jxr_javadoccomment">	 * This function is called after upload, whether it is successful or not. It</em>
+<a name="104" href="#104">104</a> <em class="jxr_javadoccomment">	 * allows fileData to free any resource created for the upload. For</em>
+<a name="105" href="#105">105</a> <em class="jxr_javadoccomment">	 * instance, {@link PictureFileData#afterUpload()} removes the temporary</em>
+<a name="106" href="#106">106</a> <em class="jxr_javadoccomment">	 * file, if any was created.</em>
+<a name="107" href="#107">107</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="108" href="#108">108</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> afterUpload();
+<a name="109" href="#109">109</a> 
+<a name="110" href="#110">110</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="111" href="#111">111</a> <em class="jxr_javadoccomment">	 * This function creates an InputStream from this file. The</em>
+<a name="112" href="#112">112</a> <em class="jxr_javadoccomment">	 * {@link FileUploadThread} class then reads bytes from it and transfers</em>
+<a name="113" href="#113">113</a> <em class="jxr_javadoccomment">	 * them to the webserver. The caller is responsible for closing this stream.&lt;BR&gt;</em>
+<a name="114" href="#114">114</a> <em class="jxr_javadoccomment">	 * This method may only be called when {@link #isPreparedForUpload()}</em>
+<a name="115" href="#115">115</a> <em class="jxr_javadoccomment">	 * returns true.</em>
+<a name="116" href="#116">116</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="117" href="#117">117</a> <em class="jxr_javadoccomment">	 * @throws JUploadException</em>
+<a name="118" href="#118">118</a> <em class="jxr_javadoccomment">	 *             Encapsulation of the Exception, if any would occurs.</em>
+<a name="119" href="#119">119</a> <em class="jxr_javadoccomment">	 * @throws IllegalStateException</em>
+<a name="120" href="#120">120</a> <em class="jxr_javadoccomment">	 *             When the upload is not prepared (before a call to</em>
+<a name="121" href="#121">121</a> <em class="jxr_javadoccomment">	 *             {@link #beforeUpload()} or after a call to</em>
+<a name="122" href="#122">122</a> <em class="jxr_javadoccomment">	 *             {@link #afterUpload()}</em>
+<a name="123" href="#123">123</a> <em class="jxr_javadoccomment">	 * @return An InputStream, representing this instance.</em>
+<a name="124" href="#124">124</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="125" href="#125">125</a> 	<strong class="jxr_keyword">public</strong> InputStream getInputStream() <strong class="jxr_keyword">throws</strong> JUploadException;
+<a name="126" href="#126">126</a> 
+<a name="127" href="#127">127</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="128" href="#128">128</a> <em class="jxr_javadoccomment">	 * Get the original filename. This is the name of the file, into the local</em>
+<a name="129" href="#129">129</a> <em class="jxr_javadoccomment">	 * hardrive</em>
+<a name="130" href="#130">130</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="131" href="#131">131</a> <em class="jxr_javadoccomment">	 * @return The original filename</em>
+<a name="132" href="#132">132</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="133" href="#133">133</a> 	<strong class="jxr_keyword">public</strong> String getFileName();
+<a name="134" href="#134">134</a> 
+<a name="135" href="#135">135</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="136" href="#136">136</a> <em class="jxr_javadoccomment">	 * @return The extension for the original file.</em>
+<a name="137" href="#137">137</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="138" href="#138">138</a> 	<strong class="jxr_keyword">public</strong> String getFileExtension();
+<a name="139" href="#139">139</a> 
+<a name="140" href="#140">140</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="141" href="#141">141</a> <em class="jxr_javadoccomment">	 * @return The length of the original file.</em>
+<a name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="143" href="#143">143</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getFileLength();
+<a name="144" href="#144">144</a> 
+<a name="145" href="#145">145</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="146" href="#146">146</a> <em class="jxr_javadoccomment">	 * @return The original file date.</em>
+<a name="147" href="#147">147</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="148" href="#148">148</a> 	<strong class="jxr_keyword">public</strong> Date getLastModified();
+<a name="149" href="#149">149</a> 
+<a name="150" href="#150">150</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="151" href="#151">151</a> <em class="jxr_javadoccomment">	 * Get the directory of the file.</em>
+<a name="152" href="#152">152</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="153" href="#153">153</a> <em class="jxr_javadoccomment">	 * @return The directory where this file is stored.</em>
+<a name="154" href="#154">154</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="155" href="#155">155</a> 	<strong class="jxr_keyword">public</strong> String getDirectory();
+<a name="156" href="#156">156</a> 
+<a name="157" href="#157">157</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="158" href="#158">158</a> <em class="jxr_javadoccomment">	 * Retrieves the MD5 sum of the file.&lt;BR&gt;</em>
+<a name="159" href="#159">159</a> <em class="jxr_javadoccomment">	 * Since 5.0.0, this method is is in DefaultFileData, and is calculated</em>
+<a name="160" href="#160">160</a> <em class="jxr_javadoccomment">	 * depending on the sendMD5Sum applet parameter, during the file preparation</em>
+<a name="161" href="#161">161</a> <em class="jxr_javadoccomment">	 * file.</em>
+<a name="162" href="#162">162</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="163" href="#163">163</a> <em class="jxr_javadoccomment">	 * @return The corresponding MD5 sum.</em>
+<a name="164" href="#164">164</a> <em class="jxr_javadoccomment">	 * @throws JUploadException </em>
+<a name="165" href="#165">165</a> <em class="jxr_javadoccomment">	 * @see #beforeUpload()</em>
+<a name="166" href="#166">166</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="167" href="#167">167</a> 	<strong class="jxr_keyword">public</strong> String getMD5() <strong class="jxr_keyword">throws</strong> JUploadException;
+<a name="168" href="#168">168</a> 
+<a name="169" href="#169">169</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 * This function return the FileData content type.</em>
+<a name="171" href="#171">171</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="172" href="#172">172</a> <em class="jxr_javadoccomment">	 * @return The mimeType for the file.</em>
+<a name="173" href="#173">173</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="174" href="#174">174</a> 	<strong class="jxr_keyword">public</strong> String getMimeType();
+<a name="175" href="#175">175</a> 
+<a name="176" href="#176">176</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="177" href="#177">177</a> <em class="jxr_javadoccomment">	 * Indicate if this file can be read. Take care of the File.canRead()</em>
+<a name="178" href="#178">178</a> <em class="jxr_javadoccomment">	 * methods, that seems to be wrong from time to time.</em>
+<a name="179" href="#179">179</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="180" href="#180">180</a> <em class="jxr_javadoccomment">	 * @return indicates whether the file can be read or not.</em>
+<a name="181" href="#181">181</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="182" href="#182">182</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> canRead();
+<a name="183" href="#183">183</a> 
+<a name="184" href="#184">184</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="185" href="#185">185</a> <em class="jxr_javadoccomment">	 * Standard getter, for the file described by the FileData instance.</em>
+<a name="186" href="#186">186</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="187" href="#187">187</a> <em class="jxr_javadoccomment">	 * @return the File instance associated with this row.</em>
+<a name="188" href="#188">188</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="189" href="#189">189</a> 	<strong class="jxr_keyword">public</strong> File getFile();
+<a name="190" href="#190">190</a> 
+<a name="191" href="#191">191</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="192" href="#192">192</a> <em class="jxr_javadoccomment">	 * Retrieves the path of this file relative to it's root dir</em>
+<a name="193" href="#193">193</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="194" href="#194">194</a> <em class="jxr_javadoccomment">	 * @return This instance's relative path or an empty string if it was not</em>
+<a name="195" href="#195">195</a> <em class="jxr_javadoccomment">	 *         created using a root parameter.</em>
+<a name="196" href="#196">196</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="197" href="#197">197</a> 	<strong class="jxr_keyword">public</strong> String getRelativeDir();
+<a name="198" href="#198">198</a> 
+<a name="199" href="#199">199</a> 	<em class="jxr_javadoccomment">/**</em>
+<a name="200" href="#200">200</a> <em class="jxr_javadoccomment">	 * Indicates whether the file can be uploaded or not. This boolean should be</em>
+<a name="201" href="#201">201</a> <em class="jxr_javadoccomment">	 * set to true in the call to {@link #beforeUpload()}, and the to false in</em>
+<a name="202" href="#202">202</a> <em class="jxr_javadoccomment">	 * the call to {@link #afterUpload()}.</em>
+<a name="203" href="#203">203</a> <em class="jxr_javadoccomment">	 * </em>
+<a name="204" href="#204">204</a> <em class="jxr_javadoccomment">	 * @return True if the file is ready for upload.</em>
+<a name="205" href="#205">205</a> <em class="jxr_javadoccomment">	 * @throws IllegalStateException</em>
+<a name="206" href="#206">206</a> <em class="jxr_javadoccomment">	 *             When the upload is not prepared (before a call to</em>
+<a name="207" href="#207">207</a> <em class="jxr_javadoccomment">	 *             {@link #beforeUpload()} or after a call to</em>
+<a name="208" href="#208">208</a> <em class="jxr_javadoccomment">	 *             {@link #afterUpload()}</em>
+<a name="209" href="#209">209</a> <em class="jxr_javadoccomment">	 */</em>
+<a name="210" href="#210">210</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isPreparedForUpload();
+<a name="211" href="#211">211</a> }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+

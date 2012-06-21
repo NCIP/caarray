@@ -1,0 +1,49 @@
+# This section contains the top-level information for your experiment.			
+Investigation Title	Gene expression profiling of gliomas strongly predicts survival?		
+Experiment Description	"In current clinical practice, histology-based grading of diffuse infiltrative gliomas is the best predictor of patient survival time. Yet histology provides little insight into the underlying biology of gliomas and is limited in its ability to identify and guide new molecularly targeted therapies. We have performed large-scale gene expression analysis using the Affymetrix HG U133 oligonucleotide arrays on 85 diffuse infiltrating gliomas of all histologic types to assess whether a gene expression-based, histology-independent classifier is predictive of survival and to determine whether gene expression signatures provide insight into the biology of gliomas. We found that gene expression-based grouping of tumors is a more powerful survival predictor than histologic grade or age. The poor prognosis samples could be grouped into three different poor prognosis groups, each with distinct molecular signatures. We further describe a list of 44 genes whose expression patterns reliably classify gliomas into previously unrecognized biological and prognostic groups: these genes are outstanding candidates for use in histology-independent classification of high-grade gliomas. The ability of the large scale and 44 gene set expression signatures to group tumors into strong survival groups was validated with an additional external and independent data set from another institution composed of 50 additional gliomas. This demonstrates that large-scale gene expression analysis and subset analysis of gliomas reveals unrecognized heterogeneity of tumors and is efficient at selecting prognosis-related gene expression differences which are able to be applied across institutions. ?"		
+Experimental Design	development_or_differentiation_design	sex_design	disease_state_design
+
+# Please create as many Experimental Factors here as you need to			
+# describe the variables investigated by your experiment.			
+Experimental Factor Name	PatientSex	TumorGrade	DiseaseState
+Experimental Factor Type	sex	tumor_grading	disease_state
+Experimental Factor Term Source REF	MO	NCI_Thesaurus	NCI_Thesaurus
+
+"# Quality Control Type examples: dye_swap_quality_control, biological_replicate, technical_replicate"			
+Quality Control Type			
+Comment[Quality Control Description]			
+Quality Control Term Source REF	MO		
+
+"# Please list contact details in columns, below:"	
+Person Last Name	Nelson
+Person First Name	Stanley
+Person Mid Initials	 
+Person Email	email@email.com
+Person Phone	1234567890 
+Person Address	USA
+Person Affiliation	Crainiotomy UCLA
+Person Roles	PI
+
+"# Please list all publications associated with this submission, in columns:"	
+PubMed ID	15374961
+Publication Author List	"Freije WA, Castro-Vargas FE, Fang Z, Horvath S, Cloughesy T, Liau LM, Mischel PS, Nelson SF."
+Publication Title	Gene expression profiling of gliomas strongly predicts survival.
+Publication Status	Published
+
+# The next section describes the protocols used in your							
+"# experiment. Please select your own Protocol Names (e.g. 'GROWTH',"							
+"# 'TREATMENT') for use within this spreadsheet, or re-use ArrayExpress"							
+# protocols by using the assigned ArrayExpress protocol accession							
+# numbers in your SDRF. If you have already submitted protocols to							
+"# ArrayExpress, you can retrieve these using this web page:"							
+#    http://www.ebi.ac.uk/aerep/							
+Protocol Name	EXTRACTION	Reverse Transcription	LABELING	HYBRIDIZATION	SCANNING	NORMALIZATION	TRANSFORMATION
+Protocol Type	nucleic_acid_extraction	reverse_transcription	labeling	hybridization	image_acquisition	bioassay_data_transformation	bioassay_data_transformation
+Protocol Description	See the paper for detail	See Paper	See Paper for Labeling detail	Paper for Hyb detail	Paper has it	In Paper	Detail in Paper
+Protocol Term Source REF	MO	MO	MO	MO	MO	MO	MO
+
+SDRF File	GEDP_Nelson_2007-10-17T20_34_21Z.sdrf						
+
+Term Source Name	MO	caArray	NCI_Thesaurus	 			
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	https://caarraydb.nci.nih.gov/	http://nciterms.nci.nih.gov/NCIBrowser/Connect.do?dictionary=NCI_Thesaurus&bookmarktag=1	 			
+Term Source Version	1.3.0.1

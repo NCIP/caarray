@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+<duplication lines="23" tokens="128">
+<file line="550" path="D:\Documents and Settings\egauthie\Mes documents\Java\eclipse-3.7\jupload\target\checkout\src\main\java\wjhk\jupload2\filedata\helper\ImageHelper.java"/>
+<file line="604" path="D:\Documents and Settings\egauthie\Mes documents\Java\eclipse-3.7\jupload\target\checkout\src\main\java\wjhk\jupload2\filedata\helper\ImageHelper.java"/>
+<codefragment>
+<![CDATA[
+            switch (this.quarterRotation) {
+                case 0:
+                case 2:
+                    maxWidthBeforeRotation = this.uploadPolicy.getMaxWidth();
+                    maxHeigthBeforeRotation = this.uploadPolicy.getMaxHeight();
+                    widthBeforeRotation = sourceBufferedImage.getWidth();
+                    heigthBeforeRotation = sourceBufferedImage.getHeight();
+                    widthAfterRotation = sourceBufferedImage.getWidth();
+                    heigthAfterRotation = sourceBufferedImage.getHeight();
+                    break;
+                case 1:
+                case 3:
+                    maxWidthBeforeRotation = this.uploadPolicy.getMaxHeight();
+                    maxHeigthBeforeRotation = this.uploadPolicy.getMaxWidth();
+                    widthBeforeRotation = sourceBufferedImage.getHeight();
+                    heigthBeforeRotation = sourceBufferedImage.getWidth();
+                    widthAfterRotation = sourceBufferedImage.getHeight();
+                    heigthAfterRotation = sourceBufferedImage.getWidth();
+                    break;
+                default:
+                    throw new JUploadException("Invalid quarter rotation: <"
+                            + this.quarterRotation + ">");
+            }
+]]>
+</codefragment>
+</duplication>
+</pmd-cpd>

@@ -1,0 +1,7 @@
+#Service Deployment Properties
+#Thu Nov 20 01:44:38 EST 2008
+index.service.index.refresh_milliseconds=300000
+perform.index.service.registration=true
+index.service.url=@grid.index.url@
+service.deployment.prefix=cagrid
+index.service.registration.refresh_seconds=600

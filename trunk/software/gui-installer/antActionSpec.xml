@@ -1,0 +1,46 @@
+<antactions>
+    <pack name="download_install">
+        <antcall buildfile="$SYSTEM_user_home/${installer.dir}/build.xml"
+            order="afterpack"
+            verbose="no"
+            logfile="$SYSTEM_user_home/${installer.dir}/antlog_installer.txt"
+            inheritall="false"
+            messageid="AntAction.download-install"
+            >
+            <target name="install"/>
+            <property name="install.path" value="$SYSTEM_user_home/${installer.dir}"/>
+        </antcall>
+    </pack>
+
+    <pack name="convert-install-path">
+        <antcall buildfile="$SYSTEM_user_home/${installer.dir}/build.xml"
+            order="afterpack"
+            verbose="no"
+            logfile="$SYSTEM_user_home/${installer.dir}/antlog_installer.txt"
+            inheritall="false"
+            messageid="AntAction.convert-install-path"
+            >
+            <target name="convert-install-path"/>
+            <property name="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.baseDir}"/>
+            <property name="application.base.path.target" value="${application.base.path.target}"/>
+            <property name="install.path" value="$SYSTEM_user_home/${installer.dir}"/>
+        </antcall>
+    </pack>
+
+    <pack name="install-application">
+        <antcall buildfile="$SYSTEM_user_home/${installer.dir}/build.xml"
+            order="afterpacks"
+            verbose="no"
+            logfile="$SYSTEM_user_home/${installer.dir}/antlog_installer.txt"
+            inheritall="false"
+            messageid="AntAction.install-application"
+            >
+            <target name="install-application"/>
+            <property name="install.path" value="$SYSTEM_user_home/${installer.dir}"/> 
+            <property name="build.file.target" value="${build.file.target}"/>
+            <property name="properties.file.target" value="${properties.file.target}"/>
+        </antcall>
+    </pack>
+
+
+</antactions>

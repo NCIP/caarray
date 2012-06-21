@@ -1,0 +1,17 @@
+
+<decorators defaultdir="/decorators">
+    <excludes>
+        <pattern>/ajax/*</pattern>
+        <pattern>/protected/ajax/*</pattern>
+        <pattern>/struts/dojo/*</pattern>
+        <pattern>/resources/*</pattern>
+        <pattern>/help/*</pattern>
+        <pattern>/login.action*</pattern>
+        <pattern>/heatmap/*</pattern>
+    </excludes>
+    <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
+        <pattern>/*</pattern>
+    </decorator>
+    <decorator name="popup" page="/WEB-INF/pages/decorators/popup.jsp"/>
+    <decorator name="upload" page="/WEB-INF/pages/decorators/upload.jsp"/>
+</decorators>

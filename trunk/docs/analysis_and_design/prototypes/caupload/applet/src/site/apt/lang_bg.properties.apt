@@ -1,0 +1,255 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (Bulgarian)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in Bulgarian)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = true
+language = Bulgarian
+contributor = Илиан Христодоров (zulix@zulix.net)
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = bulgarian
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Преглед ...
+buttonRemoveSelected = Изтрий избраното
+buttonRemoveAll = Изрий всичко
+buttonRotateLeft = Завърти на ляво
+buttonRotateRight = Завърти на дясно
+buttonUpload = Качване
+buttonStop = СТОП
+messageLogWindowCopiedToClipboard = Debugging messages have been copied to the clipboard.
+#JUploadPanel, The components of the status line
+speedunit_gb_per_second = Гб/с
+speedunit_mb_per_second = Мб/с
+speedunit_kb_per_second = Кб/с
+speedunit_b_per_second = б/с
+timefmt_hms = %1$dч, %2$d мин. и %3$d сек.
+timefmt_ms = %1$d мин. и %2$d сек.
+timefmt_s = %1$d секунди
+timefmt_unknown = неопределено
+status_msg = Качването %1$d%% приключи, Трансфер статус: %2$s, ETA: %3$s
+#MISSING  menuitem_paste = Paste
+
+#JUploadExceptionTooBigFile
+errFileTooBig = Големината на хайла '%1$s' е много голяма (%2$s)
+
+#FileUploadThread
+preparingFile = Подготовка на файла %1$d/%2$d
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Качване на файлове %1$s
+infoUploaded = %1$s файл(а) качване. Чакане отговор от сървара ...
+infoAborted = Качването прекратено след %1$d Файл(а).
+nbUploadedFiles = %1$d файл(а) качени
+errDuringUpload = Качването спря заради грешки
+errHttpResponse = Качването пропадна: неочаквани HTTP отговори
+questionSendMailOnError = Възникна грешка по време на качването. Искате ли да изпратите цялата необходима информация за уебмастъра?
+
+#DialogUploadRetry
+#MISSING  dialogUploadRetryText = An error occurs occured during the upload of the files to the server. Do you want to retry uploading these files?\n\nThe upload will automatically be re-executed in %1$d seconds.
+#MISSING  dialogUploadRetryTitle = Retry the upload?
+#MISSING  buttonDetails = Details
+#MISSING  buttonYes = Yes
+#MISSING  buttonNo = No
+
+#FileUploadManagerThread
+#MISSING  errorDuringUpload = The following error occured during upload:\n%1$s\n\nDo you want to go on with the current upload?
+
+#FilePanelDataModel
+colName = Име
+colSize = Размер
+colDirectory = Директория
+colModified = Променено
+colReadable = Четливо?
+errForbiddenExtension = Забранено файлово разширение.
+
+#DefaultUploadPolicy
+errDuringLogManagement = Възникна грешка по време на управлението
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Моля, изберете албум.
+coppermineUploadOk = Снимките са заредени правилно на сървъра, в избрания албум. .\n\nКликнета на Ok сега за да се асоциират имената и коментарите на тези снимки.\n\nНе забравяйте да кликнете върху'Apply modification button' , за да запазите изменения на сървъра!
+
+#SuperSimpleUploadPolicy
+#MISSING  dragDirectoriesAndFilesToHere = Drag directories an files to here
+
+#PictureFileData
+tooBigPicture = Снимката '%1$s' е прекалено голяма. Тч ще бъде качена непроменена (няма въртене, преоразмеряване ...).
+notAPicture = Иметона файла '%1$s' не е снимка. Това не е добавено към списъка на подържаните файлове.
+
+#PictureDialog
+buttonClose = Затвори
+
+#DateRenderer
+dateformat = yyyy-MM-dd hh:mm aaa
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = b
+unitGigabytes = GiB
+unitMegabytes = MiB
+unitKilobytes = KiB
+
+#sendDebugInformation
+Confirm = Потвърди
+
+#InteractiveTrustManager
+itm_title_pass = Напиши %1$s парола
+itm_prompt_pass = %1$s парола:
+itm_cert_alert = SSL Сертификат предопреждение
+itm_cert_details = Детаили на сертификата:
+itm_cert_subject = Тема:
+itm_cert_issuer = Емитент:
+itm_cert_nbefore = Не, преди да:
+itm_cert_nafter = Не след:
+itm_cert_serial = Сериен:
+itm_cert_fprint = %1$s Отпечатък:
+itm_cert_C = Държава:
+itm_cert_CN = Общоприето наименование:
+itm_cert_L = Местност:
+itm_cert_ST = Щат или провинция:
+itm_cert_O = Организация:
+itm_cert_OU = Организационно звено:
+itm_reasons = Причина(и):
+itm_reason_cnmatch = Сертификатът общото име не съвпада с името на хоста (%1$s).
+itm_reason_itrust = Сертификат издателят не е надежден.
+itm_reason_expired = Сертификатът е с изтекъл срок.
+itm_reason_notyet = Сертификатът все още не е валиден.
+itm_fail_verify = Сертификатът, представен от сървъра не може да бъде проверен.
+itm_accept_prompt = Искате ли да приемете този сертификат?
+itm_accept_always = Винаги
+itm_accept_now = Само за тази сесия
+itm_accept_no = Не
+itm_new_tstore = Нова TrustStore
+itm_tstore = TrustStore
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in Bulgarian)
+
+   Content of the <bulgarian.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+// ------------------------------------------------------------------------- //
+// File jupload.php
+// ------------------------------------------------------------------------- //
+
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+		  'link_title' => 'Бързо качване',
+		  'link_comment' => 'Качете файлове лесно и бързо',
+		  'perm_denied' => 'Нямате права за тази операция.<BR><BR>Проверете дали сте влезли, ако не натиснете:<a href="$1">Вход</a> first',
+		  'select_album' => 'Моля изберете албум където изкате да качите файловете',
+		  'button_update_album' => 'Обнови албума',
+		  'button_create_album' => 'Създай албум',
+		  'success' => 'Операцията успешна !',
+		  'error_select_album' => 'Моля изберете албум',
+		  'error_album_name' => 'Моля дайте име на албума.',
+		  'error_album_already_exists' => 'Вече има албум с това име.<BR><BR>кликнета на <I>Back</I> бутон в браузара, да изберете друго име за албума ви.',
+		  'album_name' => 'Име на албума',
+		  'album_presentation' => 'Вие трябва да изберете албум. Снимките които сте изпратили към сървара ще се съхраняват в този албум. <BR>Ако нямате никакви албуми, листа с албуми ви е празен. Използвайте \'Създай албум\' бутона за да създадете вашият първи албум.',
+		  'album_description' => 'Описание на албума',
+		  'add_pictures' => 'Добавете снимки в избрания албум',
+		  'max_upload_size' => 'Максималния размер на снимките е $1 KB',
+		  'upload_presentation' => 'Ако не ви се появява аплета за качване или има някакви грешки в страницата е добра идея да проверите дали имате инсталиран java runtime plugin.<BR>Качванетто е лесно! Кликнета на <B>Browse</B> изберете файл или издърпайте файла от експлорера, след това кликнета на <B>Upload</B> да изпратите снимката към сървара.'
+		. "<BR>За да ползвате  <U>другия вариант</U>, <a href='upload.php'>кликнете тук</a>.",
+		  'album' => 'Албум',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Вашия браузер не подържа Java. За да работи аплета ви трябва Java. Мовете лесно да я свалите от: <a href="http:\\java.sun.com\jre\">java web site</a>',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Кликнете на този линк, и въведете данни в полетата по-долу, ако искате те да се прилагат към всички снимки в следващото качване.',
+		  'quota_used' => 'В момента ползвате $1 MB ($2%) от  $3 MB дисково пространство.',
+		  'quota_about_full' => 'изтрийте някоя снимка, или пишете на администратора да ви вдигне квотата.',
+		  //Since 3.2.0
+		  'need_approval' => 'Администратора трябва да одобри качените снимки, преди да ги видите в галерията.'
+		)
+	);
+}
+
+
+--------------
+

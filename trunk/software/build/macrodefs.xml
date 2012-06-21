@@ -1,0 +1,420 @@
+<project name="macrodefs">
+    <!-- Common properties being re-used in /software/build/build.xml and /master_build/install.xml-->
+    <property name="plugins.deploy.baseDir" value="${caarray.resources.baseDir}/osgi" />
+    <property name="caarray-plugins.deploy.dir" value="${plugins.deploy.baseDir}/plugins" />
+    <property name="caarray-plugins.deploy.cache.dir" value="${plugins.deploy.baseDir}/cache" />
+    <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
+    <property name="caarray-plugins.bundledPlugins.zip.name" value="caarray-bundled-plugins.zip" />
+    <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/${caarray-plugins.bundledPlugins.zip.name}" />
+
+    <filterset id="embedded.filterset">
+        <filter token="application.base.path" value="${application.base.path}"/>
+        <filter token="application.url" value="${application.url}"/>
+        <filter token="database.url" value="${database.url}"/>
+        <filter token="database.user" value="${database.user}"/>
+        <filter token="database.password" value="${database.password}"/>
+        <filter token="database.system.url" value="${database.system.url}"/>
+        <!-- added internal properties that may be used in a filtered copy -->
+        <filter token="database.driver" value="${database.driver}"/>
+        <!-- added for liquibase -->
+        <filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
+        <filter token="jboss.home" value="${jboss.home}"/>
+        <filter token="tomcat.home" value="${tomcat.home}" />
+        <filter token="database.dialect" value="${database.dialect}"/>
+        <filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
+        <filter token="env.LOGNAME" value="${env.LOGNAME}"/>
+        <filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
+        <filter token="project.name" value="${project.name}" />
+        <filter token="grid.dorian.name" value="${grid.target}-Dorian" />
+        <filter token="grid.dorian.url" value="${cagrid.master.dorian.service.url}" />
+        <filter token="grid.auth.service.url" value="${grid.auth.service.url}" />
+        <filter token="grid.auth.service.name" value="${grid.auth.service.name}" />
+        <filter token="" value=""/>
+    </filterset>
+
+    <macrodef name="caarray-run-junit-tests">
+        <attribute name="test.src.dir" />
+        <attribute name="xml.output.dir" />
+        <attribute name="classpath" default="" />
+        <attribute name="instrumented.classes" default="" />
+        <attribute name="classpathref.id" default="no.dependencies.path" />
+        <attribute name="source.include" default="${test.source.include}" />
+        <attribute name="source.exclude" default="${test.source.exclude}" />
+        <attribute name="forkmode" default="once" />
+        <element name="extentions" optional="yes"/>
+        <sequential>
+            <mkdir dir="@{xml.output.dir}" />
+            <!-- property name="jdwp.port" value="8000"/ -->
+            <!-- property name="should.suspend.vm.for.debugging" value="n"/> -->
+            <property name="test.browser" value="*firefox"/>
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="@{forkmode}" maxmemory="1024m" outputtoformatters="${junit.outputtoformatters}">
+                <jvmarg value="-Xdebug"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${junit.jdwp.port},server=y,suspend=${junit.should.suspend.vm.for.debugging}"/>
+                <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />
+                <sysproperty key="server.hostname" value="${jboss.server.hostname}" />
+                <sysproperty key="server.port" value="${jboss.server.port}" />
+                <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}" />
+                <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+                <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+                <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
+                <sysproperty key="test.browser" value="${test.browser}" />
+
+                <classpath>
+                    <pathelement path="@{instrumented.classes}" />
+                    <pathelement path="@{classpath}" />
+                </classpath>
+                <classpath refid="@{classpathref.id}" />
+                <classpath refid="cobertura.dependencies.path" />
+                <formatter type="${junit.formatter.type}" usefile="${junit.formatter.usefile}"/>
+                <batchtest todir="@{xml.output.dir}">
+                    <fileset dir="@{test.src.dir}" includes="@{source.include}" excludes="@{source.exclude}" />
+                </batchtest>
+
+                <extentions/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="display-properties">
+        <attribute name="v" default="NOT SET" />
+        <element name="some-tasks" optional="yes" />
+        <sequential>
+            <echo>database.url=${database.url}</echo>
+            <echo>database.user=${database.user}</echo>
+            <echo>database.password=${database.password}</echo>
+            <some-tasks />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="process-plugins" description="Prepare directories for plugin deployment">
+        <attribute name="pluginJarsRootDir" />
+        <sequential>
+            <echo message="caarray.resources.baseDir=${caarray.resources.baseDir}" />
+            <check-required-property name="plugins.deploy.baseDir" />
+            <mkdir dir="${plugins.deploy.baseDir}" />
+            <mkdir dir="${caarray-plugins.deploy.dir}" />
+            <mkdir dir="${caarray-plugins.deploy.cache.dir}" />
+            <mkdir dir="${caarray-plugins.deploy.bundleCache.dir}" />
+            <!-- Copy the bundled plugin zip file over  -->
+            <copy file="@{pluginJarsRootDir}/${caarray-plugins.bundledPlugins.zip.name}" todir="${plugins.deploy.baseDir}" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="process-filestorage" description="Prepare directory for file storage">
+        <sequential>
+            <property name="dataStorageFileSystemLiteral" value="file-system" />
+            <if>
+                <or>
+                    <equals arg1="${dataStorage.fileDataEngine}" arg2="${dataStorageFileSystemLiteral}"/>
+                    <equals arg1="${dataStorage.parsedDataEngine}" arg2="${dataStorageFileSystemLiteral}"/>
+                </or>
+                <then>
+                    <check-required-property name="dataStorage.fileSystem.baseDir" />
+                    <mkdir dir="${dataStorage.fileSystem.baseDir}" />
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-required-property" description="Check that the property is set and not blank">
+        <attribute name="name" />
+        <sequential>
+            <property name="caarray.property.notDefined" value="must be defined." />
+            <fail message="The property '@{name}' ${caarray.property.notDefined}">
+                <condition>
+                    <or>
+                        <equals arg1="${@{name}}" arg2="" />
+                        <not>
+                            <isset property="@{name}"/>
+                        </not>
+                    </or>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="configure-caarray-ear" description="configures the caarray.ear file for deployment">
+        <attribute name="project.properties"/>
+        <attribute name="temp.dir" />
+        <attribute name="template.ear.path" />
+        <attribute name="properties.file" />
+        <sequential>
+            <mkdir dir="@{temp.dir}/caarray.ear.to_deploy" />
+            <mkdir dir="@{temp.dir}/caarray.ear" />
+            <mkdir dir="@{temp.dir}/caarray-common.jar" />
+            <unzip src="@{template.ear.path}" dest="@{temp.dir}/caarray.ear/" />
+            <unjar src="@{temp.dir}/caarray.ear/caarray-common.jar" dest="@{temp.dir}/caarray-common.jar"/>
+            <unjar src="@{temp.dir}/caarray.ear/caarray.war" dest="@{temp.dir}/caarray.war"/>
+            <unjar src="@{temp.dir}/caarray.ear/caarray-ejb.jar" dest="@{temp.dir}/caarray-ejb.jar"/>
+
+            <!-- update the filestorage property values in ejb jar's dataStorage.properties file -->
+            <replaceregexp file="@{temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileSystem.baseDir=(.*)" replace="dataStorage.fileSystem.baseDir=${dataStorage.fileSystem.baseDir}" byline="true"/>
+            <replaceregexp file="@{temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileDataEngine=(.*)" replace="dataStorage.fileDataEngine=${dataStorage.fileDataEngine}" byline="true"/>
+            <replaceregexp file="@{temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.parsedDataEngine=(.*)" replace="dataStorage.parsedDataEngine=${dataStorage.parsedDataEngine}" byline="true"/>
+
+            <jar destfile="@{temp.dir}/caarray.ear/caarray-ejb.jar" basedir="@{temp.dir}/caarray-ejb.jar" update="false" manifest="@{temp.dir}/caarray-ejb.jar/META-INF/MANIFEST.MF"/>
+
+            <move todir="@{temp.dir}/caarray-common.jar/csm">
+                <fileset dir="@{temp.dir}/caarray-common.jar/csm">
+                    <include name="*.csm.new.hibernate.cfg.xml" />
+                </fileset>
+                <mapper type="regexp" from="^.*.csm.new.hibernate.cfg.xml" to="${csm.application.name}.csm.new.hibernate.cfg.xml" />
+            </move>
+            <apply-filters-to-dir filters.target.dir="@{temp.dir}/caarray-common.jar" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
+            <jar destfile="@{temp.dir}/caarray.ear/caarray-common.jar" basedir="@{temp.dir}/caarray-common.jar" update="false" manifest="@{temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
+
+        	<get-jboss-protocol/>
+            <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${database.url}"/>
+            <copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+            	<filterset>
+                    <!-- Single Sign On Support -->
+                    <filter token="jboss.protocol" value="${jboss.protocol}" />
+                    <filter token="jboss.server.hostname" value="${jboss.server.hostname}" />
+                    <filter token="jboss.server.port" value="${jboss.server.port}" />
+                    <filter token="cas.server.hostname" value="${cas.server.hostname}" />
+                    <filter token="cas.server.port" value="${cas.server.port}" />
+                </filterset>
+            </copy>
+            <replaceregexp file="@{temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
+            <if>
+                <equals arg1="${single.sign.on.install}" arg2="true" />
+                <then>
+                    <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+                        <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
+                    	<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+                    </xmltask>
+                </then>
+                <else>
+                    <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+                        <xmlcatalog refid="bda.xml.catalog"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+                    </xmltask>
+                    <if>
+                        <equals arg1="${ldap.authentication.enabled}" arg2="true" />
+                        <then>
+                            <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+                                <xmlcatalog refid="bda.xml.catalog"/>
+                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
+                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
+                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                            </xmltask>
+                        </then>
+                        <else>
+                            <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+                                <xmlcatalog refid="bda.xml.catalog"/>
+                                <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
+                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
+                            </xmltask>
+                        </else>
+                    </if>
+                </else>
+            </if>
+
+            <!-- set the UptUrl value -->
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
+
+            <!-- set the nodeName -->
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/web.xml" match="nodeName&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="nodeName&lt;/param-name&gt;&lt;param-value&gt;${grid.poc.tech.researchCenter.shortname}&lt;/param-value&gt;" byline="false"/>
+
+            <!-- set the ldap.url value -->
+            <xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
+                <xmlcatalog refid="bda.xml.catalog"/>
+                <replace path="//*[local-name()='param-name'][text()='ldapHost']/following-sibling::*/text()" withText="${ldap.url}"/>
+                <replace path="//*[local-name()='param-name'][text()='ldapSearchableBase']/following-sibling::*/text()" withText="${ldap.searchbase}"/>
+                <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
+            </xmltask>
+
+        	<get-jboss-protocol/>
+
+            <!-- set CAS values in- or remove CAS blocks from web.xml -->
+            <if>
+                <equals arg1="${single.sign.on.install}" arg2="true" />
+                <then>
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.protocol@" value="${jboss.protocol}"/>
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.hostname@" value="${jboss.server.hostname}"/>
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.port@" value="${jboss.server.port}"/>
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@cas.server.hostname@" value="${cas.server.hostname}"/>
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@cas.server.port@" value="${cas.server.port}"/>
+                	<xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
+                        <xmlcatalog refid="bda.xml.catalog"/>
+            		    <remove path="//:security-constraint[:web-resource-collection/:web-resource-name/text()='Non-SSO Protection']"/>
+            		</xmltask>
+                </then>
+                <else>
+                    <xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
+                        <xmlcatalog refid="bda.xml.catalog"/>
+                        <remove path="//:context-param[:param-name/text()='service']"/>
+                        <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
+                        <remove path="//:context-param[:param-name/text()='casServerLogoutUrl']"/>
+                        <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>
+                        <remove path="//:filter[:filter-name/text()='CASWebAuthenticationFilter']"/>
+                        <remove path="//:filter[:filter-name/text()='CASAuthenticationFilter']"/>
+                        <remove path="//:filter-mapping[:filter-name/text()='CASWebAuthenticationFilter']"/>
+                        <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilter']"/>
+                    	<remove path="//:filter[:filter-name/text()='CASAuthenticationFilterGateway']"/>
+                        <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilterGateway']"/>
+                    </xmltask>
+                </else>
+            </if>
+
+
+            <!-- replace the plugin property values -->
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.deploy.dir=(.*)" replace="plugins.deploy.dir=${caarray-plugins.deploy.dir}" byline="true"/>
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.cache.dir=(.*)" replace="plugins.cache.dir=${caarray-plugins.deploy.cache.dir}" byline="true"/>
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundle.zip=(.*)" replace="plugins.bundle.zip=${caarray-plugins.bundledPlugins.zip}" byline="true"/>
+            <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundleCache.dir=(.*)" replace="plugins.bundleCache.dir=${caarray-plugins.deploy.bundleCache.dir}" byline="true"/>
+
+            <apply-filters-to-dir filters.target.dir="@{temp.dir}/caarray.war" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
+            <war destfile="@{temp.dir}/caarray.ear/caarray.war">
+                <fileset dir="@{temp.dir}/caarray.war"/>
+            </war>
+
+            <apply-filters-to-dir filters.target.dir="@{temp.dir}/caarray.ear" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
+            <ear destfile="@{temp.dir}/caarray.ear.to_deploy/caarray.ear" appxml="@{temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
+                <metainf dir="@{temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
+                <fileset dir="@{temp.dir}/caarray.ear">
+                    <include name="**/*" />
+                </fileset>
+            </ear>
+        </sequential>
+    </macrodef>
+
+   <macrodef name="get-jboss-protocol">
+        <sequential>
+            <if>
+                <equals arg1="${jboss.ssl.enable}" arg2="true"/>
+                <then>
+                    <property name="jboss.protocol" value="https"/>
+                </then>
+                <else>
+                    <property name="jboss.protocol" value="http"/>
+                </else>
+            </if>
+
+        </sequential>
+    </macrodef>
+
+    <macrodef name="configure-caarray-grid-services" description="configures the caArray grid services">
+        <attribute name="project.properties"/>
+        <attribute name="properties.file"/>
+        <attribute name="temp.dir" />
+        <attribute name="grid.template.basedir" />
+        <attribute name="grid.target.basedir" />
+        <attribute name="grid.svczip.dir" />
+        <sequential>
+            <for param="version" list="${caarray-grid-svc.versions}">
+                <sequential>
+                    <if>
+                        <equals arg1="legacy" arg2="@{version}" />
+                        <then>
+                            <var name="version.label" value=""/>
+                        </then>
+                        <else>
+                            <var name="version.label" value="_@{version}"/>
+                        </else>
+                    </if>
+
+                    <unzip dest="@{temp.dir}/grid${version.label}" src="@{grid.svczip.dir}/cagrid_CaArraySvc${version.label}.zip"/>
+                    <unzip src="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" dest="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
+
+                    <for param="service.metadata.xml.file">
+                        <path>
+                            <fileset dir="@{temp.dir}">
+                                <include name="**/cagrid_CaArraySvc*/serviceMetadata.xml"/>
+                            </fileset>
+                        </path>
+                        <sequential>
+                            <xmltask source="@{service.metadata.xml.file}" dest="@{service.metadata.xml.file}">
+                                <xmlcatalog refid="bda.xml.catalog"/>
+                                <!-- set service POC info -->
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="affiliation" value="${grid.poc.science.affiliation}"/>
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="email" value="${grid.poc.science.email}"/>
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="firstName" value="${grid.poc.science.name.first}"/>
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="lastName" value="${grid.poc.science.name.last}"/>
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="phoneNumber" value="${grid.poc.science.phone}"/>
+                                <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="role" value="${grid.poc.science.role}"/>
+
+                                <!-- set research center POC info -->
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="affiliation" value="${grid.poc.tech.affiliation}"/>
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="email" value="${grid.poc.tech.email}"/>
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="firstName" value="${grid.poc.tech.name.first}"/>
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="lastName" value="${grid.poc.tech.name.last}"/>
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="phoneNumber" value="${grid.poc.tech.phone}"/>
+                                <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="role" value="${grid.poc.tech.role}"/>
+
+                                <!-- set reseach center info -->
+                                <attr path="//*[local-name()='ResearchCenter']" attr="displayName" value="${grid.poc.tech.researchCenter.displayname}"/>
+                                <attr path="//*[local-name()='ResearchCenter']" attr="shortName" value="${grid.poc.tech.researchCenter.shortname}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="country" value="${grid.poc.tech.addr.country}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="locality" value="${grid.poc.tech.addr.locality}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="postalCode" value="${grid.poc.tech.addr.postalCode}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="stateProvince" value="${grid.poc.tech.addr.stateProvince}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="street1" value="${grid.poc.tech.addr.street1}"/>
+                                <attr path="//*[local-name()='ResearchCenter']/*[local-name()='Address']" attr="street2" value="${grid.poc.tech.addr.street2}"/>
+                            </xmltask>
+                        </sequential>
+                    </for>
+
+                    <replaceregexp byline="true" match="^(java.naming.provider.url)=(.*)" replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}">
+                        <fileset dir="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
+                            <include name="**/jndi.properties"/>
+                        </fileset>
+                    </replaceregexp>
+
+                    <replace dir="@{temp.dir}" token="http://index.training.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
+                        <include name="**/*.xml"/>
+                    </replace>
+
+                    <delete file="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" />
+
+                    <apply-filters-to-dir filters.target.dir="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
+                    <jar jarfile="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" compress="false" manifest="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common/META-INF/MANIFEST.MF">
+                        <fileset dir="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
+                            <include name="*/**" />
+                        </fileset>
+                    </jar>
+
+                    <delete dir="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
+
+                    <apply-filters-to-dir filters.target.dir="@{temp.dir}/grid${version.label}" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
+                    <zip destfile="@{grid.svczip.dir}/cagrid_CaArraySvc${version.label}.zip">
+                        <zipfileset dir="@{temp.dir}/grid${version.label}" />
+                    </zip>
+                </sequential>
+            </for>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="apply-filters-to-dir">
+        <attribute name="filters.target.dir"/>
+        <attribute name="properties.file"/>
+        <attribute name="project.properties"/>
+        <sequential>
+            <delete dir="@{filters.target.dir}.filters.temp"/>
+            <copy todir="@{filters.target.dir}.filters.temp" overwrite="true">
+                <fileset dir="@{filters.target.dir}">
+                    <include name="**/*.properties"/>
+                    <include name="**/*.sql"/>
+                    <include name="**/*.xml"/>
+                </fileset>
+                <filterset refid="embedded.filterset"/>
+                <filterset>
+                    <filtersfile file="@{properties.file}"/>
+                    <filtersfile file="@{project.properties}"/>
+                </filterset>
+            </copy>
+            <move todir="@{filters.target.dir}">
+                <fileset dir="@{filters.target.dir}.filters.temp">
+                   <different targetdir="@{filters.target.dir}" ignoreFileTimes="true"/>
+                </fileset>
+            </move>
+        </sequential>
+    </macrodef>
+
+</project>

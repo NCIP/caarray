@@ -1,0 +1,610 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Create/Propose Experiment</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>		
+		<script type="text/javascript" src="common/scripts/checklist.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Manufacturer</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm" class="selected">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->		
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>Experiment Details</h1>
+							
+							<div class="pagehelp">
+								<a href="#" class="help">Help</a>
+								<a href="#" class="print">Print</a>
+							</div>							
+								
+							<div class="padme">
+							
+								<h2><span class="dark">Experiment:</span></h2>
+													
+								<!--Primary Tabs -->
+								
+								<ul id="tabs" class="tabs2">
+									<li><a href="experiment_edit.htm" class="active">Overview</a></li>
+									<li><a href="experiment_contacts.htm">Contacts</a></li>
+									<li><a href="experiment_annotations.htm">Annotations</a></li>
+									<li><a href="experiment_data.htm">Data</a></li>
+									<li><a href="experiment_supplemental.htm">Supplemental</a></li>
+									<li><a href="experiment_publications.htm">Publications</a></li>
+								</ul>
+								
+								<!--/Primary Tabs -->								
+								
+								<!--Tab box-->
+									
+								<div id="tabboxwrapper">
+									
+									<h3>Overall Experiment Characteristics</h3>
+										
+									<div class="boxpad">
+										
+										<p class="instructions">The Overall Experiment Characteristics represent the minimum set of attributes required to submit an experiment for review. Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
+										
+										<form name="editform" id="idform" action="experimentedit_error.htm">
+										
+											<table class="form">
+												<tr>
+													<td class="label"><span class="required">Experiment Title:<span class="asterisk">*</span></span></td>
+													<td class="value"><input type="text" name="title" id="exptitle" value="" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label">Status:</td>
+													<td class="value">Draft </td>
+												</tr>
+												<tr>
+													<td class="label">Experiment Identifier:</td>
+													<td class="value">kletzl-89564</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Service Type:<span class="asterisk">*</span></span></td>
+													<td class="value">
+														<select name="select" id="servtyp" style="width:50%;">
+															<option>-- Please select an Service Type --</option>
+															<option>Analysis</option>
+															<option>Full</option>
+															<option>Partial</option>
+															<option>Publish</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Assay Type:<span class="asterisk">*</span></span></td>
+													<td class="value">
+														<select name="select" id="assaytp" style="width:50%;">
+															<option>-- Please select an Assay Type --</option>
+															<option>Gene Expression</option>
+															<option>SNP</option>
+															<option>DNA</option>
+															<option>aCGH</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label"><span class="required">Manufacturer:<span class="asterisk">*</span></span></td>
+													<td class="value">
+														<select name="select" id="manu" style="width:50%;">
+															<option>-- Please select a Manufacturer --</option>
+															<option>Affymetrix</option>
+															<option>Agilent (not fully supported)</option>
+															<option>GenePix (not fully supported)</option>
+															<option>Illumina</option>
+															<option>Imagene (not fully supported)</option>
+															<option>UCSF Spot (not fully supported)</option>
+															<option>Other</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Array Design:</td>
+													<td class="value">
+														<select name="select" id="arraydes" style="width:50%;">
+															<option>-- Please select an Array Design --</option>
+															<option>Sentrix</option>
+														</select>
+													</td>
+												</tr>
+												
+												<tr>
+													<td class="label">Organism(s):</td>
+													<td class="value">													
+														<div class="checklistwrapper">															
+															<div class="checklistside">														
+																<ul class="checklist">
+																	<li><a name="org_a"></a><label for="org_1"><input id="org_1" name="org_1" type="checkbox" /> Arabidopsis</label></li>
+																	<li><a name="org_b"></a><label for="org_2"><input id="org_2" name="org_2" type="checkbox" /> Bovine</label></li>
+																	<li><a name="org_c"></a><label for="org_3"><input id="org_3" name="org_3" type="checkbox" /> C. Elegans</label></li>
+																	<li><a name="org_c"></a><label for="org_4"><input id="org_4" name="org_4" type="checkbox" /> Canine</label></li>
+																	<li><a name="org_c"></a><label for="org_5"><input id="org_5" name="org_5" type="checkbox" /> Cat</label></li>
+																	<li><a name="org_c"></a><label for="org_6"><input id="org_6" name="org_6" type="checkbox" /> Chicken</label></li>
+																	<li><a name="org_d"></a><label for="org_7"><input id="org_7" name="org_7" type="checkbox" /> Drosophila</label></li>
+																	<li><a name="org_e"></a><label for="org_8"><input id="org_8" name="org_8" type="checkbox" /> E-coli</label></li>
+																	<li><a name="org_h"></a><label for="org_9"><input id="org_9" name="org_9" type="checkbox" /> Human</label></li>
+																	<li><a name="org_m"></a><label for="org_10"><input id="org_10" name="org_10" type="checkbox" /> Mouse</label></li>
+																	<li><a name="org_p"></a><label for="org_11"><input id="org_11" name="org_11" type="checkbox" /> Plasmodium/Anopheles</label></li>
+																	<li><a name="org_r"></a><label for="org_12"><input id="org_12" name="org_12" type="checkbox" /> Rat</label></li>
+																	<li><a name="org_s"></a><label for="org_13"><input id="org_13" name="org_13" type="checkbox" /> S. Aureous</label></li>
+																	<li><a name="org_s"></a><label for="org_14"><input id="org_14" name="org_14" type="checkbox" /> Songbird</label></li>
+																	<li><a name="org_x"></a><label for="org_15"><input id="org_15" name="org_15" type="checkbox" /> Xenopus</label></li>
+																	<li><a name="org_y"></a><label for="org_16"><input id="org_16" name="org_16" type="checkbox" /> Yeast</label></li>
+																	<li><a name="org_z"></a><label for="org_17"><input id="org_17" name="org_17" type="checkbox" /> Zebra Finch</label></li>
+																	<li><a name="org_z"></a><label for="org_18"><input id="org_18" name="org_18" type="checkbox" /> Zebrafish</label></li>
+																</ul>
+																<div class="alphanav">
+																	<a href="#org_a">A</a>
+																	<a href="#org_b">B</a>
+																	<a href="#org_c">C</a>
+																	<a href="#org_d">D</a>
+																	<a href="#org_e">E</a>
+																	<a href="#org_f">F</a>
+																	<a href="#org_g">G</a>
+																	<a href="#org_h">H</a>
+																	<a href="#org_i">I</a>
+																	<a href="#org_j">J</a>
+																	<a href="#org_k">K</a>
+																	<a href="#org_l">L</a>
+																	<a href="#org_m">M</a>
+																	<a href="#org_n">N</a>
+																	<a href="#org_o">O</a>
+																	<a href="#org_p">P</a>
+																	<a href="#org_q">Q</a>
+																	<a href="#org_r">R</a>
+																	<a href="#org_s">S</a>
+																	<a href="#org_t">T</a>
+																	<a href="#org_u">U</a>
+																	<a href="#org_v">V</a>
+																	<a href="#org_w">W</a>
+																	<a href="#org_x">X</a>
+																	<a href="#org_y">Y</a>
+																	<a href="#org_z">Z</a>
+																</div>															
+															</div>															
+															<div class="selectionside">															
+																<h4>You Selected</h4>
+																<div class="scrolltable2">
+																	<ul>
+																		<li>Please select an item on the left.</li>
+																	</ul>
+																</div>															
+															</div>															
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Tissue Sites(s):</td>
+													<td class="value">													
+														<div class="checklistwrapper">															
+															<div class="checklistside">														
+																<ul class="checklist">
+																	<li><a name="tiss_a"></a><label for="tiss_1"><input id="tiss_1" name="tiss_1" type="checkbox" /> adrenal medulla</label></li>
+																	<li><a name="tiss_a"></a><label for="tiss_2"><input id="tiss_2" name="tiss_2" type="checkbox" /> amygdala</label></li>
+																	<li><a name="tiss_a"></a><label for="tiss_3"><input id="tiss_3" name="tiss_3" type="checkbox" /> autonomic ganglia</label></li>
+																	<li><a name="tiss_b"></a><label for="tiss_4"><input id="tiss_4" name="tiss_4" type="checkbox" /> blood</label></li>
+																	<li><a name="tiss_b"></a><label for="tiss_5"><input id="tiss_5" name="tiss_5" type="checkbox" /> blood vessels, choroid plexus and ependyma</label></li>
+																	<li><a name="tiss_b"></a><label for="tiss_6"><input id="tiss_6" name="tiss_6" type="checkbox" /> blood, mammary gland and breast</label></li>
+																	<li><a name="tiss_b"></a><label for="tiss_7"><input id="tiss_7" name="tiss_7" type="checkbox" /> brainstem</label></li>
+																	<li><a name="tiss_c"></a><label for="tiss_8"><input id="tiss_8" name="tiss_8" type="checkbox" /> cerebellum</label></li>
+																	<li><a name="tiss_c"></a><label for="tiss_9"><input id="tiss_9" name="tiss_9" type="checkbox" /> cerebral cortex</label></li>
+																</ul>
+																<div class="alphanav">
+																	<a href="#tiss_a">A</a>
+																	<a href="#tiss_b">B</a>
+																	<a href="#tiss_c">C</a>
+																	<a href="#tiss_d">D</a>
+																	<a href="#tiss_e">E</a>
+																	<a href="#tiss_f">F</a>
+																	<a href="#tiss_g">G</a>
+																	<a href="#tiss_h">H</a>
+																	<a href="#tiss_i">I</a>
+																	<a href="#tiss_j">J</a>
+																	<a href="#tiss_k">K</a>
+																	<a href="#tiss_l">L</a>
+																	<a href="#tiss_m">M</a>
+																	<a href="#tiss_n">N</a>
+																	<a href="#tiss_o">O</a>
+																	<a href="#tiss_p">P</a>
+																	<a href="#tiss_q">Q</a>
+																	<a href="#tiss_r">R</a>
+																	<a href="#tiss_s">S</a>
+																	<a href="#tiss_t">T</a>
+																	<a href="#tiss_u">U</a>
+																	<a href="#tiss_v">V</a>
+																	<a href="#tiss_w">W</a>
+																	<a href="#tiss_x">X</a>
+																	<a href="#tiss_y">Y</a>
+																	<a href="#tiss_z">Z</a>
+																</div>															
+															</div>															
+															<div class="selectionside">															
+																<h4>You Selected</h4>
+																<div class="scrolltable2">
+																	<ul>
+																		<li>Please select an item on the left.</li>
+																	</ul>
+																</div>															
+															</div>															
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Tissue Type(s):</td>
+													<td class="value">													
+														<div class="checklistwrapper">															
+															<div class="checklistside">														
+																<ul class="checklist">
+																	<li><a name="tist_a"></a><label for="tist_1"><input id="tist_1" name="tist_1" type="checkbox" /> frozen_tissue_cells</label></li>
+																	<li><a name="tist_m"></a><label for="tist_2"><input id="tist_2" name="tist_2" type="checkbox" /> mRNA</label></li>
+																	<li><a name="tist_t"></a><label for="tist_3"><input id="tist_3" name="tist_3" type="checkbox" /> total RNA</label></li>
+																</ul>
+																<div class="alphanav">
+																	<a href="#tist_a">A</a>
+																	<a href="#tist_b">B</a>
+																	<a href="#tist_c">C</a>
+																	<a href="#tist_d">D</a>
+																	<a href="#tist_e">E</a>
+																	<a href="#tist_f">F</a>
+																	<a href="#tist_g">G</a>
+																	<a href="#tist_h">H</a>
+																	<a href="#tist_i">I</a>
+																	<a href="#tist_j">J</a>
+																	<a href="#tist_k">K</a>
+																	<a href="#tist_l">L</a>
+																	<a href="#tist_m">M</a>
+																	<a href="#tist_n">N</a>
+																	<a href="#tist_o">O</a>
+																	<a href="#tist_p">P</a>
+																	<a href="#tist_q">Q</a>
+																	<a href="#tist_r">R</a>
+																	<a href="#tist_s">S</a>
+																	<a href="#tist_t">T</a>
+																	<a href="#tist_u">U</a>
+																	<a href="#tist_v">V</a>
+																	<a href="#tist_w">W</a>
+																	<a href="#tist_x">X</a>
+																	<a href="#tist_y">Y</a>
+																	<a href="#tist_z">Z</a>
+																</div>															
+															</div>															
+															<div class="selectionside">															
+																<h4>You Selected</h4>
+																<div class="scrolltable2">
+																	<ul>
+																		<li>Please select an item on the left.</li>
+																	</ul>
+																</div>															
+															</div>															
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Cell Type(s):</td>
+													<td class="value">													
+														<div class="checklistwrapper">															
+															<div class="checklistside">														
+																<ul class="checklist">
+																	<li><a name="cellt_b"></a><label for="cellt_1"><input id="cellt_1" name="cellt_1" type="checkbox" /> brain neurons, glia, vasculature</label></li>
+																	<li><a name="cellt_b"></a><label for="cellt_2"><input id="cellt_2" name="cellt_2" type="checkbox" /> brain tissue</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_3"><input id="cellt_3" name="cellt_3" type="checkbox" /> cells of visual cortex (primarily neurons and glia)</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_4"><input id="cellt_4" name="cellt_4" type="checkbox" /> chromaphine cells</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_5"><input id="cellt_5" name="cellt_5" type="checkbox" /> control tet-off line</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_6"><input id="cellt_6" name="cellt_6" type="checkbox" /> cornea</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_7"><input id="cellt_7" name="cellt_7" type="checkbox" /> cortical astrocytes</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_8"><input id="cellt_8" name="cellt_8" type="checkbox" /> cranial neural crest cells</label></li>
+																	<li><a name="cellt_c"></a><label for="cellt_9"><input id="cellt_9" name="cellt_9" type="checkbox" /> D3 ES cells</label></li>
+																	<li><a name="cellt_d"></a><label for="cellt_10"><input id="cellt_10" name="cellt_10" type="checkbox" /> DAOY cells</label></li>
+																</ul>
+																<div class="alphanav">
+																	<a href="#cellt_a">A</a>
+																	<a href="#cellt_b">B</a>
+																	<a href="#cellt_c">C</a>
+																	<a href="#cellt_d">D</a>
+																	<a href="#cellt_e">E</a>
+																	<a href="#cellt_f">F</a>
+																	<a href="#cellt_g">G</a>
+																	<a href="#cellt_h">H</a>
+																	<a href="#cellt_i">I</a>
+																	<a href="#cellt_j">J</a>
+																	<a href="#cellt_k">K</a>
+																	<a href="#cellt_l">L</a>
+																	<a href="#cellt_m">M</a>
+																	<a href="#cellt_n">N</a>
+																	<a href="#cellt_o">O</a>
+																	<a href="#cellt_p">P</a>
+																	<a href="#cellt_q">Q</a>
+																	<a href="#cellt_r">R</a>
+																	<a href="#cellt_s">S</a>
+																	<a href="#cellt_t">T</a>
+																	<a href="#cellt_u">U</a>
+																	<a href="#cellt_v">V</a>
+																	<a href="#cellt_w">W</a>
+																	<a href="#cellt_x">X</a>
+																	<a href="#cellt_y">Y</a>
+																	<a href="#cellt_z">Z</a>
+																</div>															
+															</div>															
+															<div class="selectionside">															
+																<h4>You Selected</h4>
+																<div class="scrolltable2">
+																	<ul>
+																		<li>Please select an item on the left.</li>
+																	</ul>
+																</div>															
+															</div>															
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Disease/Condition(s):</td>
+													<td class="value">													
+														<div class="checklistwrapper">															
+															<div class="checklistside">														
+																<ul class="checklist">
+																	<li><a name="dise_b"></a><label for="dise_1"><input id="dise_1" name="dise_1" type="checkbox" /> Acute Lymphoblastic Leukemia, Adult</label></li>
+																	<li><a name="dise_b"></a><label for="dise_2"><input id="dise_2" name="dise_2" type="checkbox" /> Acute Lymphoblastic Leukemia, Childhood</label></li>
+																	<li><a name="dise_c"></a><label for="dise_3"><input id="dise_3" name="dise_3" type="checkbox" /> Acute Myeloid Leukemia, Adult</label></li>
+																	<li><a name="dise_c"></a><label for="dise_4"><input id="dise_4" name="dise_4" type="checkbox" /> Acute Myeloid Leukemia, Childhood</label></li>
+																	<li><a name="dise_c"></a><label for="dise_5"><input id="dise_5" name="dise_5" type="checkbox" /> Adrenocortical Carcinoma</label></li>
+																	<li><a name="dise_c"></a><label for="dise_6"><input id="dise_6" name="dise_6" type="checkbox" /> Adrenocortical Carcinoma, Childhood</label></li>
+																	<li><a name="dise_c"></a><label for="dise_7"><input id="dise_7" name="dise_7" type="checkbox" /> AIDS-Related Cancers</label></li>
+																	<li><a name="dise_c"></a><label for="dise_8"><input id="dise_8" name="dise_8" type="checkbox" /> AIDS-Related Lymphoma</label></li>
+																	<li><a name="dise_c"></a><label for="dise_9"><input id="dise_9" name="dise_9" type="checkbox" /> Anal Cancer</label></li>
+																	<li><a name="dise_d"></a><label for="dise_10"><input id="dise_10" name="dise_10" type="checkbox" /> Appendix Cancer</label></li>
+																</ul>
+																<div class="alphanav">
+																	<a href="#dise_a">A</a>
+																	<a href="#dise_b">B</a>
+																	<a href="#dise_c">C</a>
+																	<a href="#dise_d">D</a>
+																	<a href="#dise_e">E</a>
+																	<a href="#dise_f">F</a>
+																	<a href="#dise_g">G</a>
+																	<a href="#dise_h">H</a>
+																	<a href="#dise_i">I</a>
+																	<a href="#dise_j">J</a>
+																	<a href="#dise_k">K</a>
+																	<a href="#dise_l">L</a>
+																	<a href="#dise_m">M</a>
+																	<a href="#dise_n">N</a>
+																	<a href="#dise_o">O</a>
+																	<a href="#dise_p">P</a>
+																	<a href="#dise_q">Q</a>
+																	<a href="#dise_r">R</a>
+																	<a href="#dise_s">S</a>
+																	<a href="#dise_t">T</a>
+																	<a href="#dise_u">U</a>
+																	<a href="#dise_v">V</a>
+																	<a href="#dise_w">W</a>
+																	<a href="#dise_x">X</a>
+																	<a href="#dise_y">Y</a>
+																	<a href="#dise_z">Z</a>
+																</div>															
+															</div>															
+															<div class="selectionside">															
+																<h4>You Selected</h4>
+																<div class="scrolltable2">
+																	<ul>
+																		<li>Please select an item on the left.</li>
+																	</ul>
+																</div>															
+															</div>															
+														</div>
+													</td>
+												</tr>
+											</table>
+											
+											<div class="actions">												
+												
+												<del class="btnwrapper">
+													<ul id="btnrow">
+														<li><a href="experiment_workspace.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
+														<li><a href="experiment_edit.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="save">Save</span></span></a></li>
+														<li><a href="experiment_submit_confirm.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="submit_experiment">Submit Experiment for Review</span></span></a></li>
+													</ul>
+												</del>												
+												
+											</div>
+											
+										</form>
+										
+									</div>
+								
+								</div>
+										
+								<!--/Tab Box-->								
+								
+							</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+					
+			</div>
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

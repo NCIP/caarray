@@ -1,0 +1,20 @@
+Investigation Title	Rembrandt SNP data	
+Experimental Design	disease_state_design	
+Experimental Design Term Source REF	MO	
+Experimental Factor Name	Tumor type	
+Experimental Factor Type	disease_state	
+Experimental Factor Type Term Source REF	MO	
+Person Last Name	Fine	Kotliarov
+Person First Name	Howard	Yuri
+Person Email	hfine@mail.nih.gov	kotliary@mail.nih.gov
+Person Phone	301-402-6383	301-451-5983
+Person Fax	301-480-2246	301-480-4743
+Person Address	"82/Room 235, 9030 Old Georgetown Rd. Bethesda, MD 20892"	"37/Room 1142, 37 Convent Dr., Bethesda, MD 20892"
+Person Affiliation	"Neuro-Oncology Branch (NOB), NCI"	"Neuro-Oncology Branch (NOB), NCI"
+Person Roles	investigator	submitter
+Person Roles Term Source REF	MO	MO
+Experiment Description	This is Rembrandt SNP data (Affymetrix Mapping 100K and 10K). 	
+SDRF File	rembrandt_snp_NOB_batch5.sdrf		
+Term Source Name	DB:NCI_Thesaurus	NCICB	MO
+Term Source File	http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do	http://ncicb.nci.nih.gov/	http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml
+Term Source Version			1.1.8

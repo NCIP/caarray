@@ -1,0 +1,190 @@
+Release Notes
+=============
+ 
+  #Product:#	caArray
+  #Version:#	2.1.1
+  #Date:#	October 2008
+
+Contents
+--------
+
+   1. Introduction
+   2. Release History
+   3. Anticipated Releases
+   4. Defects and Feature Addressed in This Release
+   5. Known Issues/Defects
+   6. Bug Reports, Feature Requests, and Support
+   7. Documentation and Files
+   8. NCICB Web Pages
+
+Introduction
+---------------------------
+ 
+caArray is an open-source, web and programmatically
+ accessible array data management system. caArray guides the 
+annotation and exchange of array data using a federated
+model of local installations whose results are shareable 
+across the cancer Biomedical Informatics Grid (caBIG™). 
+caArray furthers translational cancer research through 
+acquisition, dissemination and aggregation of semantically 
+interoperable array data to support subsequent analysis by 
+tools and services on and off the Grid. As array technology 
+advances and matures, caArray will extend its logical 
+library of assay management.
+
+* https://array.nci.nih.gov/
+
+Release History
+------------------------
+    * caArray v2.1.1		-- October  2008    
+    * caArray v2.1.0		-- August   2008    
+    * caArray v2.0.2		-- May      2008    
+    * caArray v2.0.1		-- April    2008
+    * caArray v2.0.0		-- February 2008
+    * caArray v1.6		-- November 2007
+    * caArray v1.5.0.2		-- August   2007
+    * caArray v1.5.0.1		-- July     2007
+    * caArray v1.5		-- June     2007
+    * caArray v1.4		-- October  2006
+    * caArray v1.3.1		-- March    2006
+
+Anticipated Releases
+------------------------
+ 
+    * caArray v2.2.0		-- December 2008 (new features)
+
+Defects and Feature Addressed in This Release
+-----------------------------------------------
+This release represents a minor release of the caArray 2.1 software. 
+
+The highlight of caArray 2.1.1 is the support of PGF and CLF files for Affymetrix array design import.
+
+Defects and Features Addressed in This Release
+----------------------------------------------
+* 15164 Disallow Import of Extra Data Files not in MAGE-TAB
+* 15416 Intermittent failure to import large sets of data files after successful validation
+* 16243 CSS Vulnerability exists in many places in the application
+* 16316 Experiment does not save array design
+* 16464 Unexpected error: Search All categories from upper right search box
+* 11925 Support PGF and CLF files for Affymetrix array design import
+* 13809 Allow csm_application name for caArray to be configurable
+* 15398 Error - Request-URI Too Large - encountered when trying to sort by file type
+* 16026 validated cel files can not pass import
+* 16190 Allow release note link to be controlled from the properties file
+* 16431 Delete array design - causes a database lock and unexpected error in UI
+* 16471 Unexpected error while deleting an experiment with large set of data
+* 16472 Unexpected error when adding an Array design 
+* 13145 Upgrade Installer caArray 2.0.1 : Interactive installer message defect
+* 13234 Allow deletion of array designs to which no experiments are associated
+* 15165 Make Manage Data page more usable by sorting  filtering and providing counts.
+* 15317 Grid registration needs to be configurable
+* 15580 Reorder search category 
+* 15828 Bugs in the management of protocols associated with an annotation
+* 16257 Don't allow the user to edit a file for an imported array design
+* 16367 Add more robust user error propagation
+* 16378 "release notes URL config should come from default.properties not tier-specific property files"
+* 16396 Display confirmation message before deleting an Array Design.
+* 16447 Manage Array Design: delete array design
+* 16463 caArray installer should configure serviceMetadata.xml for grid service.
+* 16474 Message shown when an attempt to delete an array design is unsuccessful persists on subsequent pages
+* 16510 Adding a Array design cause unexpected error on UI 
+* 16592 Local Installer:  Grid index server property should default to PROD
+* 16966 Upgrade installer - csm property required in the upgrade.properties file
+* 16990 XSS Vulnerability in manage vocabulary pages
+
+Known Issues/Defects
+------------------------
+ 
+See the GForge tracker for the latest use cases (implemented 
+and deferred), existing open defects, community requests, 
+resolutions and feature requests. The following issues are 
+highlighted. 
+
+https://gforge.nci.nih.gov/tracker/?group_id=305
+-----
+* 17417 If a user tries to Register with LDAP credentials, the LDAP configuration properties
+  specified during the install are not used. Note that the right LDAP server settings are
+  used for authenticating a user who tries to log in. It is only the Register functionality
+  that is affected. Possible workarounds:
+  a. User can ask the administrator of the caArray local installation to create an account
+     for him/her instead of clicking on the Register link.
+  b. After installation, the administrator can manually enter the configuration settings. To do so:
+     1. Stop the caArray JBoss instance.
+     2. Unpack the ${jboss.home}/server/default/deploy/caarray.ear file into a temporary directory. 
+     3. Unpack the caarray.war file found in this temporary directory into another temporary directory.
+     4. Edit the file WEB-INF/web.xml within this new temporary directory. Look for the following sections
+        <context-param>
+            <param-name>ldapHost</param-name>
+            <param-value>ldaps://cbioweb-stage-ldap.nci.nih.gov:636/</param-value>
+        </context-param>
+        <context-param>
+            <param-name>ldapSearchableBase</param-name>
+            <param-value>ou=nci,o=nih</param-value>
+        </context-param>
+        <context-param>
+            <param-name>ldapUserIdLabel</param-name>
+            <param-value>cn</param-value>
+        </context-param>
+        <context-param>
+            <param-name>ldap.install</param-name>
+            <param-value>true</param-value>
+        </context-param>
+
+        Replace the contents of the <param-value> elements with the desired values of the LDAP
+        configuration properties. They correspond to the properties from install.properties as follows:
+        * ldapHost - ldap.host
+        * ldapSearchableBase - ldap.searchbase
+        * ldapUserIdLabel - ldap.searchprefix
+        * ldap.install - inverse of ldap.authentication.disabled (e.g. if you wanted ldap.authentication.disabled = false, enter true here, and vice versa)
+        Please refer to the installation guide for more detail on these configuration properties.
+     5. Repack the caarray.war file, overriding the older one.
+     6. Repack the caarray.ear file, and copy it back to ${jboss.home}/server/default/deploy
+     7. Start the caArray JBoss instance.
+-----
+* 17438 When you import multiple Genepix GPR data files into an experiment, the system creates
+  multiple samples for the same wavelength, instead of creating one sample.
+-----
+* 15421 Trying to import an Illumina data file with an SDRF where the sample names in the data file
+  and the SDRF don't match: This will result in a failed import with no cause specified, instead of
+  generating a validation error.
+-----
+* 17426 If the total import job size (defined as sum of uncompressed file sizes) is greater than 3GB, the import or validate job will fail.
+-----
+* 16398 Any attempt to edit an experiment while uploading files to it will result in an error.
+-----
+* 15409 The Experiment Permissions UI performs poorly when sample-selective access is selected and the number of samples is large.
+-----
+* 14630 A collaborator who uploads files cannot see them on the Manage Data page.
+-----
+* 16594 The local installer ignores the value of the upt.url parameter.
+-----
+
+
+Bug Reports, Feature Requests, And Support
+------------------------------------------
+
+Send email to ncicb@pop.nci.nih.gov to request technical support.  To 
+report a bug or request a new feature, please visit the Molecular Analysis Tools 
+Knowledge Center resources at:
+
+https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
+
+Existing requests and resolution may be viewed at the caArray GForge URL:
+
+    * https://gforge.nci.nih.gov/tracker/?group_id=305
+
+
+Documentation And Files
+-----------------------
+
+Links to all documentation and files can be found at: 
+
+http://caarray.nci.nih.gov/
+
+
+NCICB Web Pages
+---------------
+
+    * The NCI Center for Bioinformatics, http://ncicb.nci.nih.gov/
+    * NCICB Application Support, http://ncicb.nci.nih.gov/NCICB/support
+    * NCICB Download Center, http://ncicb.nci.nih.gov/download/

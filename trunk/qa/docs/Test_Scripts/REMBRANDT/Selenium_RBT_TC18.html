@@ -1,0 +1,119 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Selenium_RBT_TC18</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Selenium_RBT_TC18</td></tr>
+</thead><tbody>
+<!-- Login handled by a separate script
+     Start the script on a known tab on the application -->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Manage Lists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Simple Search</td>
+	<td></td>
+</tr>
+<!-- Begin test case -->
+<!--
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>method</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>queryName</td>
+	<td>QA_GE_Chr_cytoband</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>chromosomeNumber</td>
+	<td>label=1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>region</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>cytobandRegionStart</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>cytobandRegionStart</td>
+	<td>label=p11.1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//option[@value='p11.1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>cytobandRegionEnd</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>cytobandRegionEnd</td>
+	<td>label=p11.2</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//select[2]/option[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submittalButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Finalize Query']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>selectedQueries[0].queryName</td>
+	<td>label=QA_GE_Chr_cytoband</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>validateButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>runReportButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPopUp</td>
+	<td>_report4620071356</td>
+	<td>30000</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

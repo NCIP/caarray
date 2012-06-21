@@ -1,0 +1,19 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (list of available translations)
+           --------------------
+           --------------------
+           --------------------
+
+   This page contains the list of available translation, with the relevant contributors (thanks to them). Each line contains 
+   a link to the page which contains this translation. Each page contains both the applet translation (for this package), and a 
+   translation for the JUPload plugin for Coppermine. This second translation is not used, if you directly use the applet. But, 
+   as it is a free and open source project, it would be nice that translators also translate it...
+
+   Please read all details in the {{{../howto-translate.html}howto-translate}} page.
+
+*--------------------*--------------------*
+| Language | Contributor |
+#foreach ($translation in $translations)
+| {{{./${translation.filename}.html}${translation.language}}} | ${translation.contributor} |
+#end
+*--------------------*--------------------*

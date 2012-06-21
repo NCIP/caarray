@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<!--
+    A sample installation file.
+    Use it as a base for your own installers :-)
+
+    To compile it :
+    - go in the bin directory where you installed IzPack
+    - call "compile ../sample/install.xml -b ../sample"
+-->
+<project name="ctods-installer" default="build:installer" basedir=".">
+
+    <property name="this.dir" value="${basedir}" />
+    <property name="application_installer" value="caarray_installer" />
+    <property file="../project.properties" />
+    <property name="software.location" value="${this.dir}/.." />
+    <property name="dist.location" value="${software.location}/dist" />
+    <property name="installer.dir" value=".installer-caarray"/>
+    <property name="bda-utils.dir" value="${software.location}/bda-utils"/>
+    <property name="caarray.gui-distribution.name" value="caarray_gui_distribution"/>
+    <property name="gui-installer.dist.base.name" value="${caarray.gui-distribution.name}_${caarray.version}"/>
+    <property name="install.zip.file" value="${caarray.install.zip.file}"/>
+    <property name="upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
+    <property name="installer.properties.wiki.page" value="https://wiki.nci.nih.gov/x/sgO8AQ"/>
+    <property name="upgrade.properties.wiki.page" value="https://wiki.nci.nih.gov/x/wQO8AQ"/>
+
+    <taskdef name="IzPack" classpath="${compile.jar.dir}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
+
+    <target name="prepare:installer">
+                <replaceregexp file="${this.dir}/build.xml" byline="true"
+                                match="^(.*property name=.*application_installer_zip.*value=&quot;)[^&quot;]+(&quot;.*)"
+                                replace="\1${install.zip.file}\2"/>
+                <replaceregexp file="${this.dir}/build.xml" byline="true"
+                                match="^(.*property name=.*application_upgrader_.*value=&quot;)[^&quot;]+(&quot;.*)"
+                                replace="\1${upgrade.zip.file}\2"/>
+    </target>
+
+    <target name="build:installer" depends="prepare:installer">
+        <delete>
+            <fileset dir="${dist.location}">
+                <include name="${gui-installer.dist.base.name}*.jar"/>
+            </fileset>
+        </delete>
+        <tstamp>
+            <format property="build.time" pattern="yyyyMMddHHmm" />
+        </tstamp>
+
+        <IzPack output="${dist.location}/${gui-installer.dist.base.name}.jar"
+            installerType="standard"
+            basedir="."
+            IzPackDir="${compile.jar.dir}/">
+            <config><![CDATA[
+
+            <installation version="1.0">
+
+                <!--
+                The info section.
+                The meaning of the tags should be natural ...
+                -->
+                <info>
+                    <appname>caArray</appname>
+                    <appversion>@{caarray.version}</appversion>
+                    <authors>
+                        <author name="NCI" email=""/>
+                    </authors>
+                    <url>http://www.cancer.org/</url>
+                    <javaversion>1.5</javaversion>
+                    <uninstaller write="no"/>
+                    <writeinstallationinformation>no</writeinstallationinformation>
+                </info>
+
+                <!--
+                The gui preferences indication.
+                Sets the installer window to 640x480. It will not be able to change the size.
+                -->
+                <guiprefs width="1028" height="768" resizable="yes">
+                    <modifier key="useButtonIcons" value="no"/>
+                    <modifier key="useLabelIcons" value="no"/>
+                    <modifier key="allYGap" value="3"/>
+                    <modifier key="layoutAnchor" value="NORTHWEST"/>
+                    <modifier key="useHeadingPanel" value="yes"/>
+                    <modifier key="headingLineCount" value="1"/>
+                    <modifier key="headingFontSize" value="1.5"/>
+                    <modifier key="headingBackgroundColor" value="0x00ffffff"/>
+                    <modifier key="headingPanelCounter" value="text"/>
+                    <modifier key="headingPanelCounterPos" value="inHeading"/>
+                </guiprefs>
+
+                <!-- Need to define ant properties we want to use during install as variables -->
+                <variables>
+                    <variable name="installer.dir" value="@{installer.dir}"/>
+                    <variable name="installer.properties.wiki.page" value="@{installer.properties.wiki.page}"/>
+                    <variable name="upgrade.properties.wiki.page" value="@{upgrade.properties.wiki.page}"/>
+                    <variable name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value=""/>
+                </variables>
+                
+                <!-- dynamic variables to determine which target to call -->
+                <dynamicvariables>
+                    <variable name="build.file.target" value="install" condition="install" />
+                    <variable name="properties.file.target" value="$SYSTEM_user_home/${installer.dir}/caarray_installer/install.properties" condition="install" />
+                    <variable name="application.base.path.target" value="$UserPathPanelVariable" condition="install" />
+                    <variable name="build.file.target" value="upgrade" condition="upgrade" />
+                    <variable name="properties.file.target" value="$SYSTEM_user_home/${installer.dir}/caarray_installer/upgrade.properties" condition="upgrade" />
+                    <variable name="application.base.path.target" value="${existing.installation.home}" condition="upgrade" />
+                </dynamicvariables>
+
+                <!--
+                The locale section.
+                Asks here to include the English and French langpacks.
+                -->
+                <locale>
+                    <langpack iso3="eng">
+                        <str id="AntAction.core" txt="Proceeding of ANT-activities"/>
+                        <str id="AntAction.install" txt="Revision of archives"/>
+                    </langpack>
+                </locale>
+
+                <conditions>
+                    <condition type="variable" id="install">
+                        <name>setup.type</name>
+                        <value>install</value>
+                    </condition>
+                    <condition type="variable" id="upgrade">
+                        <name>setup.type</name>
+                        <value>upgrade</value>
+                    </condition>
+                    <condition type="variable" id="should.show.duplicate.hybridization.details.panel.condition">
+                        <name>should.show.duplicate.hybridization.details.panel.variable.name</name>
+                        <value>true</value>
+                    </condition>
+                    <condition type="java" id="installonwindows">
+                        <java>
+                            <class>com.izforge.izpack.util.OsVersion</class>
+                            <field>IS_WINDOWS</field>
+                        </java>
+                        <returnvalue type="boolean">true</returnvalue>
+                    </condition>
+                    <condition type="java" id="installonlinux">
+                        <java>
+                            <class>com.izforge.izpack.util.OsVersion</class>
+                            <field>IS_LINUX</field>
+                        </java>
+                        <returnvalue type="boolean">true</returnvalue>
+                    </condition>
+                    <condition type="and" id="install.onwindows">
+                        <condition type="ref" refid="install"/>
+                        <condition type="ref" refid="installonwindows" />
+                    </condition>
+                    <condition type="and" id="upgrade.onwindows">
+                        <condition type="ref" refid="upgrade"/>
+                        <condition type="ref" refid="installonwindows" />
+                    </condition>
+                    <condition type="variable" id="cas.install">
+                        <name>single.sign.on.install</name>
+                        <value>true</value>
+                    </condition>
+                    <condition type="variable" id="non.cas.install">
+                        <name>single.sign.on.install</name>
+                        <value>false</value>
+                    </condition>
+                    <condition type="variable" id="ldap.setup">
+                        <name>ldap.authentication.enabled</name>
+                        <value>true</value>
+                    </condition>
+                    <condition type="variable" id="custom.installation.type">
+                        <name>install.type</name>
+                        <value>custom</value>
+                    </condition>
+                    <condition type="and" id="custom.installation">
+                        <condition type="ref" refid="install"/>
+                        <condition type="ref" refid="custom.installation.type" />
+                    </condition>
+                    <condition type="variable" id="typical.installation.type">
+                        <name>install.type</name>
+                        <value>typical</value>
+                    </condition>
+                    <condition type="and" id="typical.installation">
+                        <condition type="ref" refid="install"/>
+                        <condition type="ref" refid="typical.installation.type" />
+                    </condition>
+                    <condition type="or" id="custom_installation_or_upgrade">
+                        <condition type="ref" refid="custom.installation"/>
+                        <condition type="ref" refid="upgrade" />
+                    </condition>
+                    <condition type="variable" id="fileDataEngine.file-system">
+                        <name>dataStorage.fileDataEngine</name>
+                        <value>file-system</value>
+                    </condition>
+                    <condition type="variable" id="parsedDataEngine.file-system">
+                        <name>dataStorage.parsedDataEngine</name>
+                        <value>file-system</value>
+                    </condition>
+                    <condition type="or" id="dataEngine.file-system">
+                        <condition type="ref" refid="fileDataEngine.file-system"/>
+                        <condition type="ref" refid="parsedDataEngine.file-system" />
+                    </condition>
+                    <condition type="and" id="cas_settings.panel">
+                        <condition type="ref" refid="custom_installation_or_upgrade"/>
+                        <condition type="ref" refid="cas.install" />
+                    </condition>
+                    <condition type="and" id="db_or_ldap.panel">
+                        <condition type="ref" refid="custom_installation_or_upgrade"/>
+                        <condition type="ref" refid="non.cas.install" />
+                    </condition>
+                    <condition type="and" id="ldap_configuration.panel">
+                        <condition type="ref" refid="ldap.setup"/>
+                        <condition type="ref" refid="non.cas.install" />
+                    </condition>
+                </conditions>
+
+                <!--
+                The resources section.
+                The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+                -->
+                <resources>
+                    <res id="Installer.image"  src="@{this.dir}/logotype.png"/>
+                    <res id="AntActionsSpec.xml" src="@{this.dir}/antActionSpec.xml" />
+                    <res id="LicencePanel.licence" src="@{this.dir}/Licence.txt"/>
+                    <res id="InfoPanel.info" src="@{this.dir}/Readme.txt"/>
+                    <res id="userInputSpec.xml" src="@{this.dir}/userInputSpec.xml" />
+                    <res id="userInputLang.xml_eng" src="@{this.dir}/custom_eng.xml"/>
+                    <res id="MySQLColumnValueAnalyzerPanel.properties" src="@{this.dir}/MySQLColumnValueAnalyzerPanel.properties" />
+                    <res id="MySQLDatabaseInfoExtractionPanel.properties" src="@{this.dir}/MySQLDatabaseInfoExtractionPanel.properties" />
+                    <res id="cleanup.xml"  src="@{this.dir}/cleanup.xml"/>
+                    <res id="filestreamingport.xml"  src="@{this.dir}/filestreamingport.xml"/>
+                </resources>
+
+                <!--
+                The panels section.
+                We indicate here which panels we want to use. The order will be respected.
+                <panel classname="PacksPanel" id="myuserinput" condition="pack2selected" />
+                -->
+                <panels>
+                    <panel classname="HelloPanel"/>
+                    <panel classname="InfoPanel"/>
+                    <panel classname="LicencePanel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.0" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.1" />
+                    <panel classname="UserPathPanel" id="UserPathPanelInstallation" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.2" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.3" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.4" condition="dataEngine.file-system" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.5" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.6" condition="typical.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.7" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="upgrade"/>
+                    <panel classname="MySQLDatabaseInfoExtractionPanel"  id="MySQLDatabaseInfoExtractionPanel.1" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="install"/>
+                    <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="should.show.duplicate.hybridization.details.panel.condition"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="cas_settings.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="db_or_ldap.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="ldap_configuration.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.19" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.20" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.21" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.22"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.23" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.24" condition="upgrade"/>
+                    <panel classname="InstallationGroupPanel"/>
+                    <panel classname="ExtendedInstallPanel"/>
+                    <panel classname="SimpleFinishPanel"/>
+                </panels>
+
+                <listeners>
+                    <listener installer="SummaryLoggerInstallerListener">
+                        <os family="windows"/>
+                    </listener>
+
+                    <listener installer="AntActionInstallerListener" uninstaller="AntActionUninstallerListener" />
+                </listeners>
+
+                <!--
+                The packs section.
+                We specify here our packs.
+                -->
+                <packs>
+                    <pack name="download_install" id="download_install" required="no" installGroups="caarray">
+                        <description>The base files</description>
+                        <file src="@{dist.location}/@{install.zip.file}" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
+                        <file src="@{this.dir}/build.xml" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
+                        <file src="@{this.dir}/property-template" defaultexcludes="yes" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
+                    </pack>
+
+                    <pack name="parse-install" required="no" preselected="no" installGroups="caarray">
+                        <description>parse the input values</description>
+                        <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />
+                    </pack>
+
+                    <pack name="parse-update" required="no" preselected="no" installGroups="caarray">
+                        <description>parse the input values</description>
+                        <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/upgrade.properties" type="plain" />
+                    </pack>
+
+                    <pack name="convert-install-path" required="no" preselected="no" installGroups="caarray">
+                        <description>installation base path</description>
+                    </pack>
+
+                    <pack name="install-application" required="no" preselected="no" installGroups="caarray">
+                        <description>install the application</description>
+                    </pack>
+
+                </packs>
+                <jar src="@{bda-utils.dir}/ant-1.7.0.jar" stage="both" />
+                <jar src="@{bda-utils.dir}/ant-contrib-1.0nci.jar" stage="both" />
+                <jar src="@{bda-utils.dir}/ant-launcher-1.7.0.jar" stage="both"/>
+                <jar src="@{bda-utils.dir}/ant-nodeps-1.7.0.jar" stage="both"/>
+                <jar src="@{bda-utils.dir}/mysql-connector-java-5.1.13.jar" stage="both"/>
+                <jar src="@{bda-utils.dir}/ojdbc14-10.2.0.3.0.jar" stage="both"/>
+                <jar src="@{bda-utils.dir}/postgresql-8.4-701.jdbc3.jar" stage="both"/>
+            </installation>
+        ]]></config>
+        </IzPack>
+    </target>
+</project>

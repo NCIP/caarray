@@ -1,0 +1,193 @@
+           --------------------
+           JUpload - File Upload Applet - HowTo translate the applet?
+           --------------------
+           --------------------
+           --------------------
+
+HowTo translate the applet?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+%{toc|fromDepth=2}
+	
+
+
+
+* {General presentation}
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+	JUpload is used by people talking/reading lots of languages. Internationalization is native in the core JUpload package. These
+	translations may be total or partial, depending on when the contributor sent his/her contribution. You are, of course, <<welcome
+	to complete the existing translations>> or <<create a new translation>>.
+	
+	In order to contribute:
+	
+	* Check the liste of translation on the {{./available_translations.html}} page.
+	
+	* If your language is there, you can check it, and complete it, if some items are marked as MISSING.
+	
+	* If your language is not there, you can start from the {{./lang.properties.html}} page.
+	
+	
+* {How to contribute?}
+~~~~~~~~~~~~~~~~~~~~~~~
+
+	<<For all translaters:>>
+	
+	<<Please also check/translate the Coppermine part>>, even if you don't use it. This part is not relative to the core applet,
+	but translating it will allow the plugin to be used by more and more people.
+
+
+	For developpers (that is if you may commit in the JUpload SVN repository), just update the relevant 
+	./src/translation/xxx file, and commit it. You'll then have to execute the translation plugin, to get the modified translation
+	be properly taken into account in the applet. See below, 
+	{{{Compile_JUpload_with_an_updated_translation}Compile JUpload with an updated translation}}.
+	
+	//TODO SVN ref to give 
+	
+	For non developper people, you should start from the files available in SVN, at this URL:  
+	{{{http://jupload.svn.sourceforge.net/viewvc/jupload/trunk/jupload2/main/translation/}translations (on SVN)}}
+	as they are more up to date than the files referenced in the project site, behind the {{./available_translations.html}} page.
+	Then, you can submit the new or updated translation by submitting a patch in the 
+	{{{http://sourceforge.net/tracker/?group_id=59144&atid=490055}Sourceforge Patch tracker}}. It's the best way. Any 
+	JUpoad developper can then commit this translation in the sf SVN. You can also mail me, at this address: etienne_sf at users.sourceforge.net.  
+	
+	Notes:
+	
+	* If the translation for your language doesn't exist, you should start by the English one, which contains all needed text.
+	
+	* Please take care to the text encoding. If you commit to SVN or your own SCM, you must keep the existing file encoding: utf-16 
+	for the applet translation, and utf-8 for the Coppermine one.
+	 
+	* If you submit a new translation or an updated one, please do it in a standard format which won't have encoding troubles. The
+	<<rtf file format>> is the best choice. 
+	
+* {Which translation is stored there?}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	JUpload is used for two main open source developpements:
+	
+	* The applet itself. It is contained in the jupload sourceforge project. \
+	  See {{http://sourceforge.net/projects/jupload/}}
+	
+	* A plugin for Coppermine, based on this applet. Coppermine is a nice picture gallery. The translation for Coppermine is
+	not useful when you only use the applet. This translation is still stored there, as there are more people using the JUpload 
+	applet, then people using the Coppermine plugin. I hope to get more translation for both, by putting also the Coppermine 
+	translation here. So, <<please, Contributors, also translate the Coppermine part>>.. 
+	
+		* For more information on Coppermine: {{http://www.coppermine-gallery.net}}
+		
+		* For more information on the JUpload plugin for Coppermine: {{http://forum.coppermine-gallery.net/index.php/board,100.0.html}}
+  
+	[] 
+		
+	So the translation part also contains two parts:
+	
+	* The text for the applet itself. The original text is encoded in UTF-16, and stored in the /src/main/translation/lang.utf-16 
+	directory. The text is then encoded in Unicode by the jupload-translation maven plugin, toward the /src/main/resources/lang 
+	folder, to be embedded into the applet. It is a java property file, filled with lines like:
+
+---------------------------------------------
+	  property = the translated text
+---------------------------------------------
+
+	* The text for the PHP part, specific to the JUpload Coppermine plugin. It's a PHP file, that fills an array. 
+	  It contains an array initialization, like this:
+
+---------------------------------------------
+		$lang_jupload_php = array_merge (
+			$lang_jupload_php,
+			array(
+			  'link_comment' => 'Upload files to the gallery, with the help of an applet',
+			  ...
+			)
+		);
+---------------------------------------------
+
+	
+
+* {Where to find translation files}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	
+	The translation files are stored in these folders :
+	
+	* [Code, useless for contributors] <./maven-translation-plugin> contains the translation maven plugin, which manages 
+	the translation files. Please read the 
+	{{{Compile_JUpload_with_an_updated_translation}Compile JUpload with an updated translation}} section, for a doc about it.
+	
+	* [The translations themself, for contributors] <./src/main/translation> contains the translation sources. The translation contributor should 
+	work in this folder. It contains these items:
+	
+		* <./src/main/translation/applet.utf-16> This folder contains one translation file for each available language, formatted
+		as a java ResourceBundle. The file is lang_ll_CC_vv, where: ll is the code for the language, CC is the code for the
+		country and vv is the code for the variant. CC and vv are optional. So valid filenames are: lang_ll.properties, 
+		lang_ll_CC.properties and lang_ll_CC_vv.properties. In order to use a given translation, the CC[_ll[_vv]] string 
+		should be given to the applet in the <lang> applet parameter. 
+		
+		* <./src/main/translation/coppermine.utf-8> This folder contains one translation file for each language, available in
+		the Coppermine plugin. Contributor, please also translate the Coppermine file for your language...
+		
+		* [template, useless for contributors] <./src/main/translation/available_translations.template> This file is the template, which is used to generate
+		the list of available translations, in the JUpload site.
+		
+		* [template, useless for contributors] <./src/main/translation/one_translation.template> This file is the template, which is used to generate
+		the page for each available translation, on the JUpload site. This page will contain both the applet and
+		the Coppermine translation, if the <coppermineFolder> parameter is given in the <maven-translation-plugin> plugin
+		configuration in the JUpload pom.xml file (which is the core JUpload configuration).
+		
+	* [The generated resource file] <./src/main/resources/lang> This folder contains the translations, with non-ascii characters
+	properly encoded with unicode values. This folder contains the resource files used by the java code of the applet.
+	
+	* [The site documentation] <./src/site/apt> This folder contains the 'real' site content. The translation documentation 
+	is generated by the maven-translation-plugin, that is: available_translation.apt and each lang_xx.apt file.
+	
+	[]	
+		
+	
+* {Compile JUpload with an updated translation}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   This part is useless for translation contributors. It explains how to compile the applet with modified translation file(s).
+   This is done by using the maven-translation-plugin, given in the JUpload package.
+   
+** {Compile the maven-translation-plugin}
+
+   There are to ways to do this:
+   
+   * From a release package, you'll have to:
+   
+      * Open a terminal window
+      
+      * <<Go to the maven-translation-plugin folder>>, behind the root of the package. This expects that the release package
+      is already uncompressed... Something like <cd maven-translation-plugin folder> should do the trick...
+      
+      * Type the command: <mvn install>
+      
+      * That's all. This will compile the plugin, and install it in your local maven repository.
+      
+      []
+      
+   * From a SVN checkout. You can either use the previous method, or (better only if you want to update the plugin itself):
+   
+      * Checkout the <trunk/jupload2/maven-translation-plugin> folder as a separate maven project.
+      
+      * Execute the following command from within your favorite IDE: <mvn install>
+      
+      []
+
+** {Build the JUpload applet, with the maven-translation-plugin activated}
+
+   Once the plugin is installed, you can use it. To do this, you'll have to build the JUpload applet, with the <jupload.translation> 
+   property defined as <true>. For instance, you can type one of the following commands, in the jupload folder: 
+   
+   * <mvn install -Djupload.translation=true> to test the compiled applet. 
+   
+   * <mvn site -Djupload.translation=true> to test the generated site. 
+   
+   * <mvn install site -Djupload.translation=true> to do both in one step. 
+   
+   [] 
+   
+   Once you typed one of the two above commands, all translations file are generated, and you don't need any more to 
+   use the <-Djupload.translation=true> parameter in maven build ... until you change again your translation.      

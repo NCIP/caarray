@@ -1,0 +1,256 @@
+           --------------------
+           JUpload - File Upload Applet - Applet translation (Norwegian)
+           --------------------
+           --------------------
+           --------------------
+
+
+
+Translation for the applet part (in Norwegian)
+
+--------------
+
+#
+#
+# HOW TO ADD PROPERTIES:
+#     If you want to add new properties, either create your own lang files, or add this property first to the 
+#		lang.properties file, which is the reference for all existing properties. 
+#		Each property missing in lang.properties, will be removed from all other properties file in the next execution 
+#		of build_translation.xml 
+#
+#
+# HOW TO UPDATE TRANSLATIONS:
+# All information for contributors is available here:
+# 
+# http://jupload.sourceforge.net/howto-translation.html
+#
+#
+# QUICK DESCRIPTION:
+# Please update the files in the /src/main/lang.utf-16/ directory.
+# As the directory is named, they are all in UTF-16 format. Then execute the build_translation.xml file, to 
+# report these modifications to the wjhk/jupload/lang pacakge, for use in the applet.
+#
+# Doing this, allows: 
+# - To have all translation in Human readable text, instead of unicode text. 
+# - To mark all missing text, in other languages (important note: the lang.properties file is the reference for all properties).
+#
+#
+# The %1$d (and similar) code sequences are placeholders for variable substitution,
+# The sequence %% represents a single percent-character. 
+
+##########################################################################################################################
+#First section: general information about this translation.
+##########################################################################################################################
+#These parameters are used by the translation maven plugin.
+#They are used to generate the transation part of JUpload web site, to display existing translations to translators. They
+#can then check translation, and submit updated or new translations.
+generateHtmlFileForTranslators = true
+language = Norwegian
+contributor = Unkown
+#A link to the Coppermine plugin language file. No link with the applet itself. This plugin
+#uses the applet, and I linked both translations this way.
+coppermine.language = norwegian
+##########################################################################################################################
+
+
+##########################################################################################################################
+#Second section: the translation itself.
+##########################################################################################################################
+
+#JUploadPanel
+buttonBrowse = Bla gjennom ...
+buttonRemoveSelected = Fjern valgte
+buttonRemoveAll = Fjern alle
+buttonRotateLeft = Roter venstre
+buttonRotateRight = Roter høyre
+buttonUpload = Last opp
+buttonStop = STOPP
+#MISSING  messageLogWindowCopiedToClipboard = Debugging messages have been copied to the clipboard.
+#JUploadPanel, The components of the status line
+speedunit_gb_per_second = Gb/s
+speedunit_mb_per_second = Mb/s
+speedunit_kb_per_second = Kb/s
+speedunit_b_per_second = b/s
+timefmt_hms = %1$d tim., %2$d min. and %3$d sek.
+timefmt_ms = %1$d min. and %2$d sek.
+timefmt_s = %1$d sekunder
+timefmt_unknown = ukjent
+status_msg = JUpload %1$d%% ferdig, overføringshastighet: %2$s, ETA: %3$s
+#MISSING  menuitem_paste = Paste
+
+#JUploadExceptionTooBigFile
+errFileTooBig = Filen '%1$s' er for stor (%2$s)
+
+#FileUploadThread
+preparingFile = Forbereder fil %1$d/%2$d
+#MISSING  filesPrepared = %1$d files prepared
+infoUploading = Laster opp filer %1$s
+infoUploaded = %1$s fil(er) lastet opp. Venter på serverrespons ...
+infoAborted = Opplasting avbrutt etter %1$d fil(er).
+nbUploadedFiles = %1$d fil(er) lastet opp
+errDuringUpload = Opplastingen stoppet med feil
+errHttpResponse = Opplastingen feilet: uventet HTTP respons
+questionSendMailOnError = Det skjedde en feil under opplasting. Ønsker du å sende all relevant informasjon til webmaster?
+
+#DialogUploadRetry
+#MISSING  dialogUploadRetryText = An error occurs occured during the upload of the files to the server. Do you want to retry uploading these files?\n\nThe upload will automatically be re-executed in %1$d seconds.
+#MISSING  dialogUploadRetryTitle = Retry the upload?
+#MISSING  buttonDetails = Details
+#MISSING  buttonYes = Yes
+#MISSING  buttonNo = No
+
+#FileUploadManagerThread
+#MISSING  errorDuringUpload = The following error occured during upload:\n%1$s\n\nDo you want to go on with the current upload?
+
+#FilePanelDataModel
+colName = Navn
+colSize = Størrelse
+colDirectory = Katalog
+colModified = Endret
+colReadable = Lesbar?
+errForbiddenExtension = Ugyldig filetternavn.
+
+#DefaultUploadPolicy
+errDuringLogManagement = Det skjedde en feil under loggbehandlingen
+
+#CoppermineFileUploadPolicy
+chooseAlbumFirst = Vær vennlig og velg et album først
+coppermineUploadOk = Bildene har blitt korrekt lastet opp til serveren, i det valgte albumet.\n\nKlikk OK nå for å fullføre opplastingen.\n\nIkke glem å lagre eventuelle endringer du har gjort.
+
+#SuperSimpleUploadPolicy
+dragDirectoriesAndFilesToHere = Flytt filer og mapper over her
+
+#PictureFileData
+tooBigPicture = Bilde '%1$s' er for stort. Bildet vil bli lastet opp uten endringer (ingen rotering eller endring av størrelse ...).
+notAPicture = Filen '%1$s' er ikke en gyldig bildefil. Den er ikke lagt til i listen over filer som skal lastes opp.
+
+#PictureDialog
+buttonClose = Lukk
+
+#DateRenderer
+dateformat = dd.MM.yyyy HH:mm
+
+#SizeRenderer. See http://en.wikipedia.org/wiki/KiB
+unitBytes = b
+unitGigabytes = GiB
+unitMegabytes = MiB
+unitKilobytes = KiB
+
+#sendDebugInformation
+Confirm = Bekreft
+
+#InteractiveTrustManager
+itm_title_pass = Enter %1$s password
+itm_prompt_pass = %1$s password:
+itm_cert_alert = SSL Certificate Alert
+itm_cert_details = Certificate details:
+itm_cert_subject = Subject:
+itm_cert_issuer = Issuer:
+itm_cert_nbefore = Not before:
+itm_cert_nafter = Not after:
+itm_cert_serial = Serial:
+itm_cert_fprint = %1$s Fingerprint:
+itm_cert_C = Country:
+itm_cert_CN = Common name:
+itm_cert_L = Locality:
+itm_cert_ST = State or province:
+itm_cert_O = Organization:
+itm_cert_OU = Organizational unit:
+itm_reasons = Reason(s):
+itm_reason_cnmatch = The certificate common name does not match the hostname (%1$s).
+itm_reason_itrust = Certificate issuer is not trusted.
+itm_reason_expired = The certificate is expired.
+itm_reason_notyet = The certificate is not yet valid.
+itm_fail_verify = The certificate, presented by the server could not be verified.
+itm_accept_prompt = Do you want to accept this certificate?
+itm_accept_always = Always
+itm_accept_now = Only for this session
+itm_accept_no = No
+itm_new_tstore = New TrustStore
+itm_tstore = TrustStore
+
+
+--------------
+
+
+Translation for the CopperminePlugin part (in Norwegian)
+
+   Content of the <norwegian.php> file.
+
+--------------
+
+<?php
+/*
+ *******************************************
+ plugin JUpload for Coppermine Photo Gallery
+ *******************************************
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ ********************************************
+ $Revision: 185 $
+ $Author: etienne_sf $
+ $Date: 2008-03-12 20:26:16 +0100 (mer., 12 mars 2008) $
+ ********************************************
+ *
+ * Allows easy upload to the gallery, through a java applet. 
+ * 
+ * Up to date version of this script can be retrieved with the full JUpload package, here:
+ * 
+ * http://etienne.sf.free.fr/wiki
+ * 
+ * Directly here:
+ * http://forum.coppermine-gallery.net/index.php/board,100.0.html
+ * 
+ * Support is available on this forum:
+ * http://coppermine-gallery.net/forum/index.php?topic=43432
+ * 
+ * The applet is published on sourceforge:
+ * http://jupload.sourceforge.net
+ * 
+ */
+
+
+// ------------------------------------------------------------------------- //
+// File jupload.php
+// ------------------------------------------------------------------------- //
+
+if (defined('JUPLOAD_PHP')) {
+	$lang_jupload_php = array_merge (
+		$lang_jupload_php,
+		array(
+	      'link_title' => 'JUpload',
+	      'link_comment' => 'Last opp filer til galleriet, ved hjelp av en applet',    
+	      'perm_denied' => 'Du har ikke tillatelse til å utføre den opprasjonen.<BR><BR>Hvis du ikke er innlogget, vær vennlig og <a href="$1">logg inn</a> først',
+	      'select_album' => 'Du må velge et album du ønsker å laste opp bilder til',
+	      'button_update_album' => 'Oppdater album',
+	      'button_create_album' => 'Lag album',
+	      'success' => 'Handling utført !',
+	      'error_select_album' => 'Du må velge et album først',
+	      'error_album_name' => 'Du må gi albumet et navn',
+	      'error_album_already_exists' => 'Det fines allerede et album med dette navnet.<BR><BR>Vær vennlig å klikke <I>Tilbake</I> knappen på nettleseren for å skrive inn en nytt navn på ditt album.',
+	      'album_name' => 'Album navn',
+	      'album_presentation' => 'Du må velge et album her. Bildene du laster opp vil bli lagret I dette albumet. <BR>Hvis du ikke har et album, er albumlisten tom. Bruk "Lage" knappen til å lage ditt første album.',
+	      'album_description' => 'Album beskrivelse',
+	      'add_pictures' => 'Legg til bilder i valgte album',
+	      'max_upload_size' => 'Maksimum størrelse for et bilde er $1 kB',
+	      'upload_presentation' => 'Hvis rammen nedenfor ikke kan vises, og nettleseren indikerer at det er feil på siden, må du installere Java plugin.<BR>Etter dette er opplasting veldig enkelt! Klikk på <B>Bla gjennom</B> for å velge filer eller bruk dra og slipp fra filutforskeren, velg så <B>Last opp</B> for å sende bildene til nettsiden.'
+	    . "<BR>For å bruke <U>den vanlige filopplastingen</U>, <a href='upload.php'>klikk her</a>.",
+		  'album' => 'Album',
+		  //Since 2.1.0
+		  'java_not_enabled' => 'Din nettleser tillater ikke Java. Opplastingsprogrammet krever Java. Du kan enkelt laste det ned fra <a href="http:\\java.sun.com\jre\">Java nettsidene</a>',
+		  //Since 3.0.0
+		  'picture_data_explanation' => 'Klikk på denne lenken og fyll inn informasjon i feltene nedenfor, dersom du ønkser at denne skal legges til alle bildene i neste opplasting.',
+		  'quota_used' => 'Du bruker nå $1 MB ($2%) av din $3 MB store lagringsplass.',
+		  'quota_about_full' => 'Fjern noen bilder, eller be administrator om å gjøre kontoen din større.',
+		  //Since 3.2.0
+		  'need_approval' => 'The gallery admin must approve these uploaded pictures, before you can see them on the gallery.'  	
+		  )
+	);
+}
+
+
+--------------
+

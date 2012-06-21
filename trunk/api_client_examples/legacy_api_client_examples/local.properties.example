@@ -1,0 +1,8 @@
+# Example properties file.  Copy this file to local.properties and set values to the correct server.
+# Typical overrides are given below.  See build.xml for other possible properties.
+
+#server.hostname=array-stage.nci.nih.gov
+#server.jndi.port=8080
+#globoss.server.hostname=array-stage.nci.nih.gov
+#globoss.server.http.port=80
+#client-zip.unpacked.dir=${user.home}/caarray_client_legacy_2_5_0_0

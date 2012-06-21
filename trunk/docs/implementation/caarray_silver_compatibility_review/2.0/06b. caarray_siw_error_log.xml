@@ -1,0 +1,83 @@
+<File name="Approved_annotated_caArray_v2_0_rv6.xmi">
+  <Package name="Classes">
+    <Class name="Integer">
+      <ValidationError>Class java.lang.Integer has no description.</ValidationError>
+    </Class>
+    <Class name="Class">
+      <ValidationError>Class java.lang.Class has no description.</ValidationError>
+    </Class>
+    <Class name="String">
+      <ValidationError>Class java.lang.String has no description.</ValidationError>
+    </Class>
+    <Class name="Long">
+      <ValidationError>Class java.lang.Long has no description.</ValidationError>
+    </Class>
+    <Class name="Boolean">
+      <ValidationError>Class java.lang.Boolean has no description.</ValidationError>
+    </Class>
+  </Package>
+  <Package name="Value Domains">
+    <ValueDomain name="AssayType">
+      <ValidationWarning>Value AssayType has no concept</ValidationWarning>
+    </ValueDomain>
+    <ValueDomain name="DesignElementType">
+      <ValidationWarning>Value DesignElementType has no concept</ValidationWarning>
+    </ValueDomain>
+  </Package>
+  <Package name="Associations">
+    <Association name="designFile(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.file.CaArrayFile. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="annotationFile(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.file.CaArrayFile. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="surfaceType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="substrateType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="polymerType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="technologyType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.array.ArrayDesign has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="replicateTypes(0..*)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.project.Experiment has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="normalizationTypes(0..*)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.project.Experiment has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="qualityControlTypes(0..*)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.project.Experiment has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="experimentDesignTypes(0..*)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.project.Experiment has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="defaultValue(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.protocol.Parameter has more than one association with Class gov.nih.nci.caarray.domain.protocol.ParameterValue. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="parameter(1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.protocol.ParameterValue has more than one association with Class gov.nih.nci.caarray.domain.protocol.Parameter. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="type(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.publication.Publication has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="status(1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.publication.Publication has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="diseaseState(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.sample.AbstractBioMaterial has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="materialType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.sample.AbstractBioMaterial has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="tissueSite(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.sample.AbstractBioMaterial has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+    <Association name="cellType(0..1)">
+      <ValidationWarning>Class gov.nih.nci.caarray.domain.sample.AbstractBioMaterial has more than one association with Class gov.nih.nci.caarray.domain.vocabulary.Term. Please consider adding semantics to these associations.</ValidationWarning>
+    </Association>
+  </Package>
+</File>
