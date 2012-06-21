@@ -53,6 +53,9 @@
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
                 <interceptor-ref name="maliciousInput" />
+                <interceptor-ref name="tokenSession">
+                    <param name="excludeMethods">*</param>
+                </interceptor-ref>
                 <interceptor-ref name="parameterTrim">
                   <param name="trimToNull">true</param>
                 </interceptor-ref>
@@ -120,10 +123,13 @@
         <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
             <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>
-        <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
+        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction" method="logout">
             <result name="success" type="redirectAction">
                 <param name="namespace">/</param>
                 <param name="actionName">home</param>
+            </result>
+            <result name="casLogout" type="redirect">
+                <param name="location">${casServerLogoutUrl}</param>
             </result>
         </action>
         <action name="login">
@@ -171,6 +177,9 @@
                 <param name="bufferSize">4096</param>
             </result>
             <result name="protocolAutoCompleterValues">/WEB-INF/pages/protocol/protocolAutoCompleterValues.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
         </action>
 
         <action name="ajax/project/pluginTab/*/*"
@@ -208,6 +217,9 @@
             <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
             <result name="factorValuesList">/WEB-INF/pages/project/tab{1}/factorValuesList.jsp</result>
             <result name="downloadOptions">/WEB-INF/pages/project/tabCommon/downloadOptions.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
@@ -234,6 +246,9 @@
             <result name="listImportedForm">/WEB-INF/pages/project/files/listImportedForm.jsp</result>
             <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">changeFileType</param>
+            </interceptor-ref>
         </action>
 
         <action name="ajax/project/files/upload/*" class="gov.nih.nci.caarray.web.action.project.UploadProjectFilesAction" method="{1}">
@@ -305,6 +320,9 @@
             <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
             <result name="accessProfile">/WEB-INF/pages/project/permissions/accessProfile.jsp</result>
             <result name="list">/WEB-INF/pages/project/permissions/list.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveAccessProfile</param>
+            </interceptor-ref>
         </action>
 
         <action name="collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
@@ -312,6 +330,9 @@
             <result name="success">/WEB-INF/pages/collaborators/{1}.jsp</result>
             <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
             <result name="addUsers">/WEB-INF/pages/collaborators/addUsers.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">name</param>
+            </interceptor-ref>
         </action>
 
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
@@ -326,6 +347,9 @@
             <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
             <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
             <result name="success" type="redirectAction">arrayDesign/list</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveMeta</param>
+            </interceptor-ref>
         </action>
 
         <action name="ajax/arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
@@ -334,6 +358,9 @@
             <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
             <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
             <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">saveMeta,save</param>
+            </interceptor-ref>
         </action>
 
         <action name="vocabulary/manage">
@@ -345,6 +372,9 @@
             <result name="success">/WEB-INF/pages/vocabulary/list.jsp</result>
             <result name="termAutoCompleterValues">/WEB-INF/pages/vocabulary/termAutoCompleterValues.jsp</result>
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
         </action>
 
         <action name="protocol/manage" class="gov.nih.nci.caarray.web.action.protocol.ProtocolManagementAction" method="manage">
@@ -355,12 +385,18 @@
             <result name="input">/WEB-INF/pages/protocol/edit.jsp</result>
             <result name="success">/WEB-INF/pages/protocol/list.jsp</result>
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">save</param>
+            </interceptor-ref>
         </action>
         <action name="ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
             <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
             <result name="listOwners" type="redirectAction">ownership/listOwners</result>
             <result name="assets">/WEB-INF/pages/ownership/assets.jsp</result>
             <result name="newOwner">/WEB-INF/pages/ownership/newOwner.jsp</result>
+            <interceptor-ref name="caarrayParamsPrepareParamsStack">
+                <param name="tokenSession.includeMethods">newOwner,reassign</param>
+            </interceptor-ref>
         </action>
         <action name="ajax/ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
             <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>

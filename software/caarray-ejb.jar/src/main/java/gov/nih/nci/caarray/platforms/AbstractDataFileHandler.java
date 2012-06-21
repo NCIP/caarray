@@ -155,7 +155,7 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
      */
     @Override
     public List<String> getHybridizationNames() {
-        return Collections.singletonList(FilenameUtils.getBaseName(this.file.getName()));
+        return Collections.singletonList(FilenameUtils.getBaseName(this.caArrayFile.getName()));
     }
 
     /**

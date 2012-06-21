@@ -232,6 +232,14 @@ public class ArrayDaoUnsupportedOperationImpl implements ArrayDao {
     public List<PhysicalProbe> getPhysicalProbeByNames(ArrayDesign design, List<String> names) {
         throw new UnsupportedOperationException();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getPhysicalProbeNames(ArrayDesign design) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * {@inheritDoc}

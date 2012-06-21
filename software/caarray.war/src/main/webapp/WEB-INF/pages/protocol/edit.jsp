@@ -23,6 +23,7 @@
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
         <s:form action="ajax/protocol/save" cssClass="form" id="protocolForm" onsubmit="submitTermForm(); return false;">
+            <s:token/>
             <tr><th colspan="2">Protocol</th></tr>
             <s:textfield key="protocol.name" required="true" size="80" tabindex="1" maxlength="254"/>
             <s:textfield key="protocol.description" size="80" tabindex="2"/>

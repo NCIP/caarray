@@ -411,17 +411,14 @@ public class MageTabParserTest extends AbstractCaarrayTest {
 
     @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
+        // Result should have a warning message, but should still pass validation.
         MageTabFileSet inputFileSet = new MageTabFileSet();
         inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
         inputFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
         ValidationResult result = validate(inputFileSet);
         assertNotNull(result);
-        assertFalse(result.isValid());
+        assertTrue(result.isValid());
         inputFileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET;
-        result = validate(inputFileSet);
-        assertNotNull(result);
-        assertFalse(result.isValid());
-        inputFileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         result = validate(inputFileSet);
         assertNotNull(result);
         assertTrue(result.isValid());

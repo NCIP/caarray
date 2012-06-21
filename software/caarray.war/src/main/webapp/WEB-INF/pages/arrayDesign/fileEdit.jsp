@@ -190,6 +190,7 @@
 
                 <div id="arrayFileDiv">
                     <s:form action="/protected/ajax/arrayDesign/save" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
+                        <s:token/>
                         <tbody>
                             <tr><th colspan="2">Upload Array Design File</th></tr>
                             <c:if test="${!empty arrayDesign.designFiles}">

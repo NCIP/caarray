@@ -163,7 +163,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
     private final class Helper {
         private final CaArrayFile caArrayFile;
         private AbstractArrayData arrayData;
-        private final DataImportOptions dataImportOptions;
+        private DataImportOptions dataImportOptions;
         private final DataFileHandler handler;
 
         Helper(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, DataFileHandler handler) {
@@ -242,6 +242,10 @@ class DataSetImporter extends AbstractArrayDataUtility {
             this.arrayData.setDataFile(this.caArrayFile);
 
             List<Hybridization> hybs = null;
+            if (dataImportOptions.getTargetAnnotationOption() == null) {
+                // Default import option is autocreate per file.
+                this.dataImportOptions = DataImportOptions.getAutoCreatePerFileOptions();
+            }
             switch (this.dataImportOptions.getTargetAnnotationOption()) {
             case ASSOCIATE_TO_NODES:
                 if (this.dataImportOptions.getTargetNodeType() == ExperimentDesignNodeType.HYBRIDIZATION) {

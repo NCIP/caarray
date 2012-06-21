@@ -1,19 +1,15 @@
 Java clients to test the caArray Remote Java API and GRID API:
 --------------------------------------------------------------
-1. The clients connect to array-stage.nci.nih.gov which is running caArray 2.3.0.
-   * NOTE: If using a different installation of caArray, please set
-     the right SERVER CONNECTION PROPERTIES in build.xml.
-     For the GRID API, you must set the right grid server name and
-     grid service port (globoss.*).
-     For the Remote Java API, you must set the right server name and
-     jndi port (server.*). The jndi port is usually 1099 for a default
-     Jboss installation; but check your Jboss installation's
-     server/default/conf/jboss-service.xml for the Port corresponding to
-     org.jboss.naming.NamingService.
-2. The jar dependencies are copied from an unpacked distribution of the caarray-client-legacy.zip,
+1. The jar dependencies are copied from an unpacked distribution of the caarray_client_legacy_2_5_0_0.zip,
     which is available from Gforge under the caArray 2 project under the "Files" tab.
-    By default this is expected to be in ${user.home}/caarray-client-legacy. If you unpacked this to a 
-    different directory, set the client-zip.unpacked.dir property accordingly in build.xml
+    By default this is expected to be in ${user.home}/caarray-client-legacy_2_5_0_0.
+2. Create a local.properties file from local.properties.example.  Uncomment any values that different from 
+   the defaults.
+      
+   For the GRID API, you must set the right grid server name and grid service port (globoss.*).
+   For the Remote Java API, you must set the right server name and jndi port (server.*). The jndi port is usually 
+   1099 for a default Jboss installation; but check your Jboss installation's
+   server/default/conf/jboss-service.xml for the Port corresponding to org.jboss.naming.NamingService.
      
 3. ant targets:
    * TO BUILD:

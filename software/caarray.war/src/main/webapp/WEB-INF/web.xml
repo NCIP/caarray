@@ -13,6 +13,10 @@
 		<param-name>casServerLoginUrl</param-name>
 		<param-value>https://@cas.server.hostname@:@cas.server.port@/cas/login</param-value>
 	</context-param>
+    <context-param>
+        <param-name>casServerLogoutUrl</param-name>
+        <param-value>https://@cas.server.hostname@:@cas.server.port@/cas/logout</param-value>
+    </context-param>
 	<context-param>
 	    <description>This parameter indicates to the application that single sign on is enabled and it should not show login fields.</description>
 		<param-name>ssoEnabled</param-name>

@@ -61,6 +61,7 @@
                 </c:if>
                 <div id="theForm">
                     <s:form action="%{#attr.actionUrl}" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
+                        <s:token/>
                         <tbody>
                             <tr><th colspan="2">Array Design Details</th></tr>
                             <c:if test="${!empty arrayDesign.id}">

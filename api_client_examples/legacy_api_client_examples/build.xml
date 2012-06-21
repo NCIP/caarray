@@ -3,6 +3,9 @@
 <!-- *********************************************************************** -->
 
 <project name="caarrayRemoteClientExamples" default="build" basedir=".">
+	
+	<property file="local.properties"/>
+
     <!-- ******************************************************************* -->
     <!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
     <!-- ******************************************************************* -->
@@ -11,7 +14,7 @@
     <property name="server.jndi.port" value="8080" />
     <property name="globoss.server.hostname" value="array-stage.nci.nih.gov" />
     <property name="globoss.server.http.port" value="80" />
-	<property name="client-zip.unpacked.dir" value="${user.home}/caarray-client-legacy" />
+	<property name="client-zip.unpacked.dir" value="${user.home}/caarray_client_legacy_2_5_0_0" />
 	
     <!-- ******************************************************************* -->
     <!-- ** PROPERTIES NEEDED FOR BUILD                                   ** -->

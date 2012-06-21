@@ -26,6 +26,7 @@
     <p class="instructions"><c:out value="${instructions}" escapeXml="false"/></p>
     <s:form action="ajax/project/listTab/%{#attr.plural}/save" cssClass="form" id="projectForm"
             onsubmit="TabUtils.submitTabForm('projectForm', '%{@attr.tabAnchor}'); return false;">
+        <s:token/>
         <jsp:doBody/>
     </s:form>
     <caarray:focusFirstElement formId="projectForm"/>

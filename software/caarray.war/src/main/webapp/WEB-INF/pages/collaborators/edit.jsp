@@ -29,6 +29,7 @@
           <p class="instructions" style="margin-bottom: 10px;">Choose a name for the group.</p>
         </c:if>
         <s:form action="/protected/collaborators/name.action" cssClass="form" id="newGroupForm">
+          <s:token/>
           <s:textfield required="true" name="groupName" key="collaboration.group.name" size="50" maxlength="254" tabindex="1" value="%{targetGroup.group.groupName}"/>
           <s:hidden name="targetGroup" value="%{targetGroup.id}"/>
           <input type="submit" class="enableEnterSubmit"/>

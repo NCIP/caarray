@@ -1,0 +1,6 @@
+# Example properties file.  Copy this file to local.properties and set values to the correct server.
+# Typical overrides are given below.  See build.xml for other possible properties.
+
+#client-zip.unpacked.dir=${user.home}/caarray_client_external_v1_0
+#grid.server.hostname=array-stage.nci.nih.gov
+#grid.server.http.port=80

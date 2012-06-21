@@ -916,10 +916,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleArrayDataFile(SdrfColumn column, String value, boolean derived) {
         handleNode(column, value, getNodeToLinkToForArrayData(derived));
         AbstractNativeFileReference adf = (AbstractNativeFileReference) currentNode;
-        adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
-        if (adf.getNativeDataFile() == null) {
-            addErrorMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
+        if (getDocumentSet().getNativeDataFile(value) == null) {
+            // Warning instead of error, because the data file might be coming in a different import later.
+            addWarningMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
                     + " was not found in the document set");
+        } else {
+            adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         }
         if (derived && currentFile != null) {
             adf.link(currentFile);
@@ -931,10 +933,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleArrayDataMatrixFile(SdrfColumn column, String value, boolean derived) {
         handleNode(column, value, getNodeToLinkToForArrayData(derived));
         AbstractDataMatrixReference admf = (AbstractDataMatrixReference) currentNode;
-        admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
-        if (admf.getDataMatrix() == null) {
-            addErrorMessage("Referenced " + (derived ? "Derived " : "") + "Array Data Matrix File " + value
+        if (getDocumentSet().getArrayDataMatrix(value) == null) {
+            // Warning instead of error, because the data file might be coming in a different import later.
+            addWarningMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
                     + " was not found in the document set");
+        } else {
+            admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
         }
         if (derived && currentFile != null) {
             admf.link(currentFile);

@@ -2,8 +2,8 @@ Release Notes
 =============
  
   #Product:#	caArray
-  #Version:#	2.4.1
-  #Date:#	September  2011
+  #Version:#	2.5.0
+  #Date:#	July 2012
 
 Contents
 --------
@@ -29,12 +29,13 @@ acquisition, dissemination and aggregation of semantically interoperable array d
 tools and services on and off the Grid. As array technology advances and matures, caArray will extend its logical 
 library of assay management.
 
-* https://array.nci.nih.gov/
+    * NCI-hosted caArray: https://array.nci.nih.gov/
 
 
 Release History
 ------------------------
-    * caArray v2.4.1		-- September 2011 
+    * caArray v2.5.0		-- July      2012
+    * caArray v2.4.1		-- May       2011 
     * caArray v2.4.0.2		-- February  2011 
     * caArray v2.4.0.1		-- January   2011 
     * caArray v2.4.0		-- September 2010 
@@ -52,26 +53,35 @@ Release History
 Anticipated Releases
 ------------------------
  
-    * caArray v2.5.0	--   Q1 2012 (new features)
+    * caArray v2.5.1	--   Q1 2013 (maintenance release)
 
 
 Features and Defects Addressed in this Release
 -----------------------------------------------
 
-This release represents a feature release of the caArray 2 software. Highlights of caArray 2.4.1 are:
+This release represents a feature release of the caArray 2 software. Highlights of caArray 2.5.0 are:
 
-* Visibility into the queue of import and validation jobs, and where your job is in relation to other jobs in the system. Ability to cancel a queued job.
-  For details about this feature, please refer to the chapter "Submitting Data" in the caArray User's Guide.
+* Large data support:
+  ** Large import jobs are now transparently split up into smaller transactions, removing the need for the user to manually split large imports into smaller subsets and individually import.
+  ** Large filesets can be uploaded easily via multiple file selection, drag and drop, and chunked upload capabilities. (The IE browser does not support multiple file selection and >2GB individual file uploads; so other browsers are recommended for large upload needs.)
 
-* Search for experiments by publication author or PubMed ID.
+* Improved file storage: Uploaded files are now stored on the file system instead of in the database, thus eliminating inefficiencies.
 
-* Organisms are now restricted to terms from the NCBI Taxonomy.
+* A plugin architecture allowing the user community to develop and deploy parsers for new data types easily.
 
-* Bug fix to allow proper import of Agilent array design files where the chromosome name is not in a strictly numeric or X/Y format.
+* Major technology upgrades: Jboss 5.1, Java 6, caGrid v1.5, Struts 2.3.1.5, and NCI build-and-deploy infrastructure (NCI Nexus repository, AntHill Pro 3, BDALite).
 
-* The installer no longer depends on an internet connection.
+* Ability to restrict access to samples based on sample characteristics (e.g., Treatment Arm).
 
-* Fix to bug where experiments with multiple array designs may cause copy number data to get imported as "Imported (Not Parsed)".
+* Support for automatic refresh of experiments from caIntegrator by providing information about sample and data changes.
+
+* An audit trail of sample and data additions and deletions.
+
+* Ability to configure Single Sign-on between caArray and caIntegrator.
+
+* Section 508 compliance improvements.
+
+* Several bug fixes including ARRAY-1342 (A collaborator cannot see files in the "Uploaded" state even with read-write permissions to the experiment).
 
 
 Known Issues/Defects
@@ -81,10 +91,6 @@ See the Jira tracker for existing open defects, community requests, resolutions 
 https://tracker.nci.nih.gov/browse/ARRAY
 
 The following issues are highlighted. 
-
-* The total import job size (defined as sum of uncompressed file sizes) must be less than 3GB.
-
-* A collaborator cannot see files in the "Uploaded" state even with read-write permissions to the experiment.
 
 * If you are still using the Legacy API and your query results in >10,000 results, your transaction
   may time out. The workaround is to modify your query into multiple queries that return smaller result sets.
@@ -99,14 +105,11 @@ The following issues are highlighted.
 
 * Multiple MAGE-TAB imports can result in duplicate persons in the database.
 
-* Experiments with multiple array designs may cause copy number data to be Imported (not parsed).  For more
-  information, please go to https://tracker.nci.nih.gov/browse/ARRAY-1811.
-
-* Data import can fail if experiment is associated with multiple array designs (https://tracker.nci.nih.gov/browse/ARRAY-1837).
-
 * GUI installer suddenly quits when illegal characters present in password fields.
 
-* For Agilent GEML Array Design files for miRNA, accessions are not created. See https://tracker.nci.nih.gov/browse/ARRAY-2041
+* The Affymetrix CDF array design parser does not connect probes to features correctly. API clients should be
+  aware of this limitation.
+
 
 Bug Reports, Feature Requests, And Support
 ------------------------------------------
@@ -125,10 +128,10 @@ Documentation And Files
 -----------------------
 Wiki-based guides are available at the following locations:
 
-   caArray 2.4.0 User's Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4+User%27s+Guide
-   caArray 2.4.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+Data+Portal+Local+Installation+Guide+Wiki+Main+Page
-   caArray 2.4.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+Technical+Guide+Wiki+Main+Page
-   caArray 2.4.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+API+Guide
+   caArray 2.5.0 User's Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5+User%27s+Guide
+   caArray 2.5.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+Data+Portal+Local+Installation+Guide+Wiki+Main+Page
+   caArray 2.5.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+Technical+Guide+Wiki+Main+Page
+   caArray 2.5.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+API+Guide
 
 Links to all other documentation and files can be found at: 
 
@@ -152,8 +155,7 @@ in java_api_client_examples_v1_0.zip. Example client code for the Grid API is av
 in grid_api_client_examples_v1_0.zip. Both the example packages contain a README.txt that will get you started.
 
 Please note that applications with no authentication requirement can use the Java API or the Grid API.
-But applications needing authenticated access must use the Java API. We will add authentication support to the Grid API
-in a future release.
+But applications needing authenticated access must use the Java API.
 
 If, for some reason, you do not wish to use the new Service API yet, you can continue to use the legacy API,
 but you must upgrade to the latest version. To do this, please download the client libraries (caarray-client-legacy.zip).
@@ -163,3 +165,4 @@ FEEDBACK
 
 Please post feedback on the Molecular Analysis Tools Knowledge Center forum:
 https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
+

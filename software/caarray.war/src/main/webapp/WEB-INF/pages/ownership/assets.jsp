@@ -31,6 +31,7 @@ function toggleAll(/*boolean*/checked, /*div*/div) {
                 </p>
                 <div id="theForm">
                     <s:form action="/protected/ownership/newOwner.action" cssClass="form" method="post" id="reassignForm" theme="simple">
+                        <s:token/>
                         <s:hidden name="targetUserId" value="%{ownerId}"/>
                         <h4>Experiments</h4>
                             

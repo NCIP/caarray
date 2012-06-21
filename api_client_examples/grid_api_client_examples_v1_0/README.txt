@@ -1,12 +1,10 @@
 Java clients to test the caArray GRID API v1.0:
 -----------------------------------------------
-1. The clients connect to array-stage.nci.nih.gov which is the NCI CBIIT Stage instance of caArray.
-   If using a different installation of caArray, please set the right SERVER CONNECTION PROPERTIES in build.xml.
-   You must set the right grid.server.hostname and grid.server.http.port.
-2. The jar dependencies are copied from an unpacked distribution of the caarray-client-external-v1_0.zip,
-   which is available from Gforge under the caArray 2 project under the "Files" tab.
-   By default this is expected to be in ${user.home}/caarray-client-external-v1_0. If you unpacked this to a 
-   different directory, set the client-zip.unpacked.dir property accordingly in build.xml
+1. The jar dependencies are copied from an unpacked distribution of the caarray_client_external_v1_0.zip,
+   which is available from Gforge under the caArray 2 project under the "Files" tab.  Download and unzip this
+   file to a local directory.
+2. Create a local.properties file from local.properties.example.  Uncomment any values that different from 
+   the defaults.
 3. ant targets:
    * TO BUILD:
      clean

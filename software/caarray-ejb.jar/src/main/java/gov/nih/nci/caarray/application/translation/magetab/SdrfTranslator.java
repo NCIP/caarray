@@ -779,11 +779,15 @@ final class SdrfTranslator extends AbstractTranslator {
             gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isMatrix) {
         final String fileName = sdrfData.getName();
         final CaArrayFile dataFile = getFile(fileName);
+        if (dataFile == null) {
+            // The file could be coming in a future import, possibly due to import splitting.
+            return;
+        }
         RawArrayData caArrayData = null;
         if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
+            // this is a re-import referencing an existing data file
             caArrayData = (RawArrayData) getDaoFactory().getArrayDao().getArrayData(dataFile.getId());
         } else {
-            // this is a re-import referencing an existing data file
             caArrayData = new RawArrayData();
             caArrayData.setName(fileName);
             caArrayData.setDataFile(dataFile);
@@ -822,6 +826,10 @@ final class SdrfTranslator extends AbstractTranslator {
             gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isDataMatrix) {
         final String fileName = sdrfData.getName();
         final CaArrayFile dataFile = getFile(fileName);
+        if (dataFile == null) {
+            // The file could be coming in a future import, possibly due to import splitting.
+            return;
+        }
         DerivedArrayData caArrayData = null;
         if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
             caArrayData = (DerivedArrayData) getDaoFactory().getArrayDao().getArrayData(dataFile.getId());
@@ -846,7 +854,9 @@ final class SdrfTranslator extends AbstractTranslator {
 
         for (final AbstractSampleDataRelationshipNode sdrfArrayData : allArrayData) {
             final AbstractArrayData arrayData = (AbstractArrayData) this.nodeTranslations.get(sdrfArrayData);
-            caArrayData.getDerivedFromArrayDataCollection().add(arrayData);
+            if (arrayData != null) {
+                caArrayData.getDerivedFromArrayDataCollection().add(arrayData);
+            }
         }
     }
 
