@@ -2521,18 +2521,19 @@
                     <if>
                         <equals arg1="${single.sign.on.install}" arg2="true" />
                         <then>
-                            <property name="remove.ldap.login.config.from.ear" value="true"/>
-
+                            <property name="remove.db.login.config.from.ear" value="true"/>
+                            <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
+                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/@flag" withText="required"/>
+                            </xmltask>
                         </then>
                         <else>
                             <property name="remove.cas.login.config.from.ear" value="true"/>
                             <if>
                                 <equals arg1="${ldap.authentication.enabled}" arg2="true" />
                                 <then>
+                                    <property name="remove.db.login.config.from.ear" value="true"/>
                                     <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
-                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
-                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/@flag" withText="required"/>
                                     </xmltask>
                                 </then>
                                 <else>
@@ -2554,6 +2555,13 @@
                         <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
                     </xmltask>
                 </then>
+                <else>
+                    <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                    </xmltask>
+                </else>
             </if>
 
         	<if>

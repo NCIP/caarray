@@ -202,10 +202,6 @@
                         <condition type="ref" refid="custom_installation_or_upgrade"/>
                         <condition type="ref" refid="non.cas.install" />
                     </condition>
-                    <condition type="and" id="ldap_configuration.panel">
-                        <condition type="ref" refid="ldap.setup"/>
-                        <condition type="ref" refid="non.cas.install" />
-                    </condition>
                 </conditions>
 
                 <!--
@@ -255,7 +251,7 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="cas_settings.panel"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="db_or_ldap.panel"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="ldap_configuration.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="ldap.setup"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.19" condition="install"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.20" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.21" condition="install"/>

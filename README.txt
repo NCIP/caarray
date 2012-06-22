@@ -416,7 +416,7 @@ make sure that the application is set up correctly.
 Database Sign on:
     *Make sure that the following properties are empty or false:
         -single.sign.on.install
-        -ldap.install
+        -ldap.authentication.enabled
     *Make sure that the following properties are set (they should be for other database operations already):
         -database.url
         -database.user
@@ -426,7 +426,7 @@ LDAP Sign On:
     *Make sure that the following property are empty or false:
         -single.sign.on.install
     *Make sure that the following property is set to true:
-        -ldap.install
+        -ldap.authentication.enabled
     *Make sure that the following properties are set to the correct values:
         -ldap.url
         -ldap.searchbase
@@ -437,6 +437,9 @@ CAS Single Sign On:
     *Make sure that the following properties are set to the correct values:
         -cas.server.hostname
         -cas.server.port
+        -ldap.url
+        -ldap.searchbase
+        -ldap.searchprefix
 
 Necessary Configuration for different Login Methods post deployment
 ---------------------------------------------------------------------

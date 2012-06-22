@@ -66,7 +66,7 @@ public class CASRemoteEJBClient {
 
         /*
          * This shows that in addition to being able to authenticate with CAS the application also provides
-         * the capability to authenticate against the database in an SSO environment.
+         * the capability to authenticate against ldap in an SSO environment.
          */
         server.connect(BaseProperties.CAS_USERNAME, BaseProperties.CAS_USER_CAARRAY_PASSWORD);
         experimentSearchCriteria.doSearch(server);
