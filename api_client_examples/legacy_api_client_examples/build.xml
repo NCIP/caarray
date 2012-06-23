@@ -21,6 +21,7 @@
     <!-- ******************************************************************* -->
     <property name="src.dir" value="${basedir}/src" />
     <property name="lib.dir" value="${basedir}/lib" />
+    <property name="lib.jboss510-client.dir" value="${lib.dir}/jboss510-client" />
     <property name="classes.dir" value="${basedir}/classes" />
 
     <!-- ******************************************************************* -->
@@ -38,6 +39,9 @@
 			<fileset dir="${client-zip.unpacked.dir}/lib/grid" includes="*.jar"/>
 			<fileset dir="${client-zip.unpacked.dir}/lib/java" includes="*.jar"/>
 		</copy>
+                <copy todir="${lib.jboss510-client.dir}">
+                    <fileset dir="${client-zip.unpacked.dir}/lib/jboss510-client" includes="*.jar"/>
+                </copy>
 	</target>
 
     <target name="build" depends="-copy-libs">

@@ -2194,18 +2194,54 @@
     <target name="build:caarray-client.zip" depends="build:caarray-client-legacy.zip,build:caarray-client-external.zip"/>
 
     <target name="build:caarray-client-legacy.zip" depends="init:third-party-paths,build:caarray-client-legacy.jar,javadoc:caarray-client,build:caarray-grid-svc">
-        <zip destfile="${caarray-client.target.dir}/${caarray.client-legacy-zip.zip.file}">
-            <zipfileset dir="${caarray-client.target.dir}" includes="caarray-client-legacy.jar" prefix="${caarray.client-zip.name}_legacy_${caarray.version}"/>
-            <zipfileset dir="${caarray-client.dir}/src/distribution/resources/legacy" prefix="${caarray.client-zip.name}_legacy_${caarray.version}"/>
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/java" refid="caarray-client.legacy.java.dependencies.fileset" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/api" dir="${caarray-client.target.dir}/docs/api" includes="legacy/**" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="caarray-client.legacy.grid.dependencies.fileset" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" file="${caarray-grid-svc.common.jar}" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/schema" dir="${caarray-grid-svc.base.dir}/legacy/schema/CaArraySvc" />
-        </zip>
+        <!-- Check if jboss has been downloaded. if not, download and explode -->
+        <sequential>
+            <property name="jboss.dest.file" value="${software.dir}/tools/${jboss.binaries.file}"/>
+            <property name="jboss.exploded.dir" value="${target.dir}/jboss_exploded"/>
+            <available file="${jboss.dest.file}" property="jboss.tools.exists"/>
+
+            <mkdir dir="${jboss.exploded.dir}" />
+            <if>
+                <isset property="jboss.tools.exists" />
+                <then>
+                    <unzip src="${jboss.dest.file}" dest="${jboss.exploded.dir}"/>
+                </then>
+                <else>
+                    <get src="${jboss.src.url}" dest="${target.dir}/${jboss.binaries.file}"/>
+                    <unzip src="${target.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
+                </else>
+            </if>
+
+            <property name="jboss.exploded.client.dir" value="${jboss.exploded.dir}/jboss-5.1.0.GA-nci/client"/>
+
+            <zip destfile="${caarray-client.target.dir}/${caarray.client-legacy-zip.zip.file}">
+                <zipfileset dir="${caarray-client.target.dir}" includes="caarray-client-legacy.jar" prefix="${caarray.client-zip.name}_legacy_${caarray.version}"/>
+                <zipfileset dir="${caarray-client.dir}/src/distribution/resources/legacy" prefix="${caarray.client-zip.name}_legacy_${caarray.version}"/>
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/java" refid="caarray-client.legacy.java.dependencies.fileset" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/jboss510-client" dir="${jboss.exploded.client.dir}">
+                    <include name="concurrent.jar" />
+                    <include name="jboss-aspect-jdk50-client.jar" />
+                    <include name="jboss-ejb3-common-client.jar" />
+                    <include name="jboss-ejb3-core-client.jar" />
+                    <include name="jboss-ejb3-proxy-impl-client.jar" />
+                    <include name="jboss-ejb3-proxy-spi-client.jar" />
+                    <include name="jboss-ejb3-security-client.jar" />
+                    <include name="jboss-integration.jar" />
+                    <include name="jboss-javaee.jar" />
+                    <include name="jboss-remoting.jar" />
+                    <include name="jboss-security-spi.jar" />
+                    <include name="jbosssx-client.jar" />
+                    <include name="jnp-client.jar" />
+                </zipfileset>
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/api" dir="${caarray-client.target.dir}/docs/api" includes="legacy/**" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="caarray-client.legacy.grid.dependencies.fileset" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" file="${caarray-grid-svc.common.jar}" />
+                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/schema" dir="${caarray-grid-svc.base.dir}/legacy/schema/CaArraySvc" />
+            </zip>
+        </sequential>
     </target>
 
     <macrodef name="build-caarray-client-external.zip">
