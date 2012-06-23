@@ -267,7 +267,7 @@
 
 
         <field type="text" variable="jboss.ejbinvoker.port">
-            <spec txt="Application ejbinvoker Port Number " size="15" set="13873"/>
+            <spec txt="Application ejbinvoker Port Number " size="15" set="33873"/>
             <validator
                 class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use">
             </validator>
@@ -897,7 +897,7 @@
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
 
-        <field type="staticText" align="left" txt="JBoss Home [${UserPathPanelVariable}/jboss-5.1.0.GA-nci] - This is where JBoss is installed."/>
+        <field type="staticText" align="left" txt="JBoss Home [${UserPathPanelVariable}/app/jboss-5.1.0.GA-nci] - This is where JBoss is installed."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
@@ -905,9 +905,9 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${UserPathPanelVariable}/app/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the logs can be found."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Home [${UserPathPanelVariable}/jboss-4.0.5.GA] - This is where Grid Server is installed."/>
+        <field type="staticText" align="left" txt="Grid Home [${UserPathPanelVariable}/grid/jboss-5.1.0.GA-nci] - This is where Grid Server is installed."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
@@ -915,7 +915,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/jboss-4.0.5.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${UserPathPanelVariable}/grid/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Database URL [jdbc:mysql://${database.server}:${database.port}/${database.name}] "/>
         <field type="space"/>
@@ -931,7 +931,7 @@
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
 
-        <field type="staticText" align="left" txt="JBoss Home [${existing.installation.home}/jboss-5.1.0.GA-nci] - This is where JBoss is installed."/>
+        <field type="staticText" align="left" txt="JBoss Home [${existing.installation.home}/app/jboss-5.1.0.GA-nci] - This is where JBoss is installed."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss Server Name [${jboss.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
@@ -939,9 +939,9 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="JBoss URL [http://${jboss.server.hostname}:${jboss.server.port}/caarray] - This will be the url to reach your application when the install is finished."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the logs can be found."/>
+        <field type="staticText" align="left" txt="JBoss Log Dir [${existing.installation.home}/app/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the logs can be found."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Home [${existing.installation.home}/jboss-4.0.5.GA] - This is where Grid Server is installed."/>
+        <field type="staticText" align="left" txt="Grid Home [${existing.installation.home}/grid/jboss-5.1.0.GA-nci] - This is where Grid Server is installed."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Server Name [${grid.server.hostname}] - This is the hostname where jboss is running.  If you want to make this Application avaliable from the internet you may need to provide this to your network administrator."/>
         <field type="space"/>
@@ -949,7 +949,7 @@
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
-        <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.5.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
+        <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/grid/jboss-5.1.0.GA-nci/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="File Storage Base Directory [${dataStorage.fileSystem.baseDir}] - This is where the design and/or data files will be stored." conditionid="dataEngine.file-system"/>
     </panel>
