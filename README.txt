@@ -400,10 +400,15 @@ Setting up Local CAS SSO Server
             <artifactId>cas-server-support-ldap</artifactId>
             <version>${project.version}</version>
         </dependency>
-12.) Now we need to build the CAS webapp, this is done by executing the "mvn install" command from the cas-server-webapp directory.
-13.) Build should be successful, now copy the cas.war file from the target directory to $CATALINA_HOME/webapps
-14.) Start the CAS Tomcat server by executing $CATALINA_HOME/bin/startup, after startup you should be able to go to https://localhost:8443/cas/login and see the CAS login page and logging in should give you a "Login Successful" page.
-15.) Make sure that the following properties are set up correctly in your local.properties:
+12.) Edit cas-server-webapp/src/main/webapp/WEB-INF/spring-configuration/ticketExpirationPolicies.xml. caArray requires 2 validations for each service ticket from CAS.
+  - Find the bean with id="serviceTicketExpirationPolicy" and change the value of the first constructer-arg to "2".
+        <constructor-arg
+            index="0"
+            value="2" />
+13.) Now we need to build the CAS webapp, this is done by executing the "mvn install" command from the cas-server-webapp directory.
+14.) Build should be successful, now copy the cas.war file from the target directory to $CATALINA_HOME/webapps
+15.) Start the CAS Tomcat server by executing $CATALINA_HOME/bin/startup, after startup you should be able to go to https://localhost:8443/cas/login and see the CAS login page and logging in should give you a "Login Successful" page.
+16.) Make sure that the following properties are set up correctly in your local.properties:
     single.sign.on.install=true
     cas.server.hostname=localhost
     cas.server.port=8443

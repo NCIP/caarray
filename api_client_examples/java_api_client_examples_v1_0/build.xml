@@ -36,6 +36,9 @@
         <copy todir="${lib.dir}">
             <fileset dir="${client-zip.unpacked.dir}/lib/java" includes="*.jar"/>
         </copy>
+        <copy todir="${lib.dir}">
+            <fileset dir="${client-zip.unpacked.dir}/lib/cas" includes="*.jar"/>
+        </copy>
         <copy todir="${lib.jboss510-client.dir}">
             <fileset dir="${client-zip.unpacked.dir}/lib/jboss510-client" includes="*.jar"/>
         </copy>

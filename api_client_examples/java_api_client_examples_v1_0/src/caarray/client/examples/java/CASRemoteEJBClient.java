@@ -26,6 +26,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -55,12 +56,22 @@ public class CASRemoteEJBClient {
 
         // Emulate a login from caIntegrator through CAS
         String ticket = login();
+        
+        /*
+         * Validate the ticket.
+         */
+        try {
+            Cas20ServiceTicketValidator v = new Cas20ServiceTicketValidator(BaseProperties.CAS_URL);
+            v.validate(ticket, BaseProperties.getServiceURLforCAS());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         /*
-        * To properly authenticate users with CAS information for EJB calls the caArray application requires 2 pieces of information:
-        * + The service value that was used at authentication time when the ticket was created
-        * + The ticket value that was provided by CAS
-        */
+         * To properly authenticate users with CAS information for EJB calls the caArray application requires 2 pieces of information:
+         * + The service value that was used at authentication time when the ticket was created
+         * + The ticket value that was provided by CAS
+         */
         server.connect(BaseProperties.getServiceURLforCAS(), ticket);
         experimentSearchCriteria.doSearch(server);
 

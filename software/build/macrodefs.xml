@@ -251,6 +251,7 @@
                     <xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
                         <xmlcatalog refid="bda.xml.catalog"/>
                         <remove path="//:context-param[:param-name/text()='service']"/>
+                        <remove path="//:context-param[:param-name/text()='casServerUrl']"/>
                         <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
                         <remove path="//:context-param[:param-name/text()='casServerLogoutUrl']"/>
                         <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>

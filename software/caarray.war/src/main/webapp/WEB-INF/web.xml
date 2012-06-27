@@ -9,6 +9,10 @@
 		<param-name>serverName</param-name>
 		<param-value>@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@</param-value>
 	</context-param>
+    <context-param>
+        <param-name>casServerUrl</param-name>
+        <param-value>https://@cas.server.hostname@:@cas.server.port@/cas</param-value>
+    </context-param>
 	<context-param>
 		<param-name>casServerLoginUrl</param-name>
 		<param-value>https://@cas.server.hostname@:@cas.server.port@/cas/login</param-value>

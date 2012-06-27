@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -33,7 +34,8 @@ import javax.servlet.http.HttpSession;
 import org.jasig.cas.client.jaas.AssertionPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.util.CommonUtils;
-
+import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
+import org.jasig.cas.client.validation.TicketValidationException;
 import org.jboss.web.tomcat.security.login.WebAuthentication;
 
 /**
@@ -60,7 +62,19 @@ import org.jboss.web.tomcat.security.login.WebAuthentication;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class CasWebAuthenticationFilter extends AbstractCasFilter {
+    private String casServerUrl;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initInternal(final FilterConfig filterConfig) throws ServletException {
+        if (!isIgnoreInitConfiguration()) {
+            super.initInternal(filterConfig);
+            casServerUrl = getPropertyFromInitParams(filterConfig, "casServerUrl", null);
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -75,6 +89,8 @@ public final class CasWebAuthenticationFilter extends AbstractCasFilter {
         if (session != null && session.getAttribute(CONST_CAS_ASSERTION) == null && ticket != null) {
             try {
                 final String service = constructServiceUrl(request, response);
+                Cas20ServiceTicketValidator v = new Cas20ServiceTicketValidator(casServerUrl);
+                v.validate(ticket, service);
                 if (!new WebAuthentication().login(service, ticket)) {
                     throw new GeneralSecurityException("JBoss Web authentication failed.");
                 }
@@ -93,6 +109,8 @@ public final class CasWebAuthenticationFilter extends AbstractCasFilter {
                 }
             } catch (final GeneralSecurityException e) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            } catch (TicketValidationException tve) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, tve.getMessage());
             }
         } else if (session != null && request.getUserPrincipal() == null) {
             // There is evidence that in some cases the principal can disappear

@@ -2482,6 +2482,7 @@
     		     	<else>
             			<xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
                             <remove path="//:context-param[:param-name/text()='service']"/>
+                            <remove path="//:context-param[:param-name/text()='casServerUrl']"/>
                             <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
                             <remove path="//:context-param[:param-name/text()='casServerLogoutUrl']"/>
                             <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>
