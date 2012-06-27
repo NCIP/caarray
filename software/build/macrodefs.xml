@@ -176,11 +176,16 @@
                 </filterset>
             </copy>
             <replaceregexp file="@{temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
+            <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+            </xmltask>
             <if>
                 <equals arg1="${single.sign.on.install}" arg2="true" />
                 <then>
                     <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
-                        <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']"/>
                         <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
                         <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
                         <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
@@ -199,17 +204,12 @@
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/@flag" withText="required"/>
                             </xmltask>
                         </then>
                         <else>
                             <xmltask source="@{temp.dir}/caarray.ear/META-INF/security-config.xml" dest="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
                                 <xmlcatalog refid="bda.xml.catalog"/>
                                 <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
                             </xmltask>
                         </else>

@@ -2555,28 +2555,19 @@
                 </then>
             	<else>
                     <if>
-                        <equals arg1="${single.sign.on.install}" arg2="true" />
+                        <not><equals arg1="${single.sign.on.install}" arg2="true" /></not>
                         <then>
-                            <property name="remove.db.login.config.from.ear" value="true"/>
-                        </then>
-                        <else>
                             <property name="remove.cas.login.config.from.ear" value="true"/>
                             <if>
-                                <equals arg1="${ldap.authentication.enabled}" arg2="true" />
+                                <not><equals arg1="${ldap.authentication.enabled}" arg2="true" /></not>
                                 <then>
-                                    <property name="remove.db.login.config.from.ear" value="true"/>
-                                    <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/@flag" withText="required"/>
-                                    </xmltask>
-                                </then>
-                                <else>
                                     <property name="remove.ldap.login.config.from.ear" value="true"/>
                                     <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
                                         <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
                                     </xmltask>
-                                </else>
+                                </then>
                             </if>
-                        </else>
+                        </then>
                     </if>
         		</else>
         	</if>
