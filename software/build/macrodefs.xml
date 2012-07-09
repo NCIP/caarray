@@ -237,15 +237,15 @@
             <if>
                 <equals arg1="${single.sign.on.install}" arg2="true" />
                 <then>
-                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.protocol@" value="${jboss.protocol}"/>
-                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.hostname@" value="${jboss.server.hostname}"/>
-                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.port@" value="${jboss.server.port}"/>
-                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@cas.server.hostname@" value="${cas.server.hostname}"/>
-                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@cas.server.port@" value="${cas.server.port}"/>
-                	<xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
+                    <property name="cas.server.url" value="https://${cas.server.hostname}:${cas.server.port}/cas" />
+                    <xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
                         <xmlcatalog refid="bda.xml.catalog"/>
-            		    <remove path="//:security-constraint[:web-resource-collection/:web-resource-name/text()='Non-SSO Protection']"/>
-            		</xmltask>
+                        <remove path="//:security-constraint[:web-resource-collection/:web-resource-name/text()='Non-SSO Protection']"/>
+                        <replace path="//*[local-name()='param-name'][text()='serverName']/following-sibling::*/text()" withText="${jboss.protocol}://${jboss.server.hostname}:${jboss.server.port}"/>
+                        <replace path="//*[local-name()='param-name'][text()='casServerUrl']/following-sibling::*/text()" withText="${cas.server.url}"/>
+                        <replace path="//*[local-name()='param-name'][text()='casServerLoginUrl']/following-sibling::*/text()" withText="${cas.server.url}/login"/>
+                        <replace path="//*[local-name()='param-name'][text()='casServerLogoutUrl']/following-sibling::*/text()" withText="${cas.server.url}/logout"/>
+                    </xmltask>
                 </then>
                 <else>
                     <xmltask source="@{temp.dir}/caarray.war/WEB-INF/web.xml" dest="@{temp.dir}/caarray.war/WEB-INF/web.xml">
