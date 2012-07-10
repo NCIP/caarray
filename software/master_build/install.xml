@@ -674,6 +674,14 @@ host.flag.value="${jboss.server.hostname}"
         <chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
     </target>
 
+    <target name="-install:grid:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
+        <set-host-flag-in-start-jboss-scripts
+            jboss.bin.dir="${grid.home}/bin"
+            host.flag.value="${grid.server.hostname}"
+            />
+        <chmod dir="${grid.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
+    </target>
+
     <target name="-set:target:port:configuration:file">
         <property name="jboss.bin.dir" value="${jboss.home}/bin"/>
         <osfamily property="os.family"/>
@@ -970,7 +978,8 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         ">
     </target>
 
-    <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
+    <target name="install:carray-grid" description="Grouping of caArray Grid application targets"
+        depends="install:jboss:grid-binaries,install:grid:deploy,-install:grid:configure:update-runscripts">
         <jboss-configure
             jboss.server.bindingfile.location="${grid.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
             jboss.server.binding.template.location="${jboss.server.binding.template.location}"
@@ -1036,7 +1045,8 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </for>
     </target>
 
-    <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets" depends="install:grid:deploy">
+    <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
+        depends="install:grid:deploy,-install:grid:configure:update-runscripts">
             <for param="version" list="${caarray-grid-svc.versions}">
                 <sequential>
                     <if>
