@@ -205,6 +205,9 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 ActionHelper.saveMessage(getText("project.permissionsSaveProblem", new String[] {getProject()
                         .getExperiment().getTitle() }));
                 return INPUT;
+            } catch (Exception e) {
+                ActionHelper.saveMessage("Access profile could not be saved. Please try again after some time.");
+                return "saveError";
             }
         } else {
             return INPUT;

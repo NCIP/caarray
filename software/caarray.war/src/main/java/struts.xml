@@ -320,6 +320,7 @@
             <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
             <result name="accessProfile">/WEB-INF/pages/project/permissions/accessProfile.jsp</result>
             <result name="list">/WEB-INF/pages/project/permissions/list.jsp</result>
+            <result name="saveError">/WEB-INF/pages/project/permissions/reloadProjectPermissions.jsp</result>
             <interceptor-ref name="caarrayParamsPrepareParamsStack">
                 <param name="tokenSession.includeMethods">saveAccessProfile</param>
             </interceptor-ref>
