@@ -137,13 +137,6 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
     protected abstract void doHibernateExecute(final SingleConnectionHibernateHelper singleConnectionHibernateHelper);
     
     /**
-     * Creates a new AbstractHibernateBasedCustomChange instance.
-     */
-    public AbstractHibernateBasedCustomChange() {
-        fixClassLoader();
-    }
-    
-    /**
      * Gets the default list of Guice Modules (ArrayDataModule, ServicesModule, ApplicationModule).
      * @return the default list of Guice Modules.
      */
@@ -202,14 +195,4 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
         hibernateHelper.initialize(connection);
         return hibernateHelper;
     }
-
-    /**
-     * Running from an Ant updateDatabase task will fail due to class loader issues
-     * unless the context class loader is changed.
-     */
-    private void fixClassLoader() {
-        ClassLoader currentClassLoader = this.getClass().getClassLoader();            
-        Thread.currentThread().setContextClassLoader(currentClassLoader);
-    }
-    
 }

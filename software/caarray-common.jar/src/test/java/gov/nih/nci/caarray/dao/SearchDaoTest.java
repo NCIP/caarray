@@ -118,7 +118,6 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,19 +134,22 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 public class SearchDaoTest extends AbstractDaoTest {
     private static final Logger LOG = Logger.getLogger(SearchDaoTest.class);
 
-    private final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
     private TermSource DUMMY_TERM_SOURCE;
     private Category DUMMY_CATEGORY;
     private Term DUMMY_TERM_1;
     private Protocol DUMMY_PROTOCOL_1; 
     private Parameter DUMMY_PARAMETER_1;
-    private Parameter DUMMY_PARAMETER_2; 
+    private Parameter DUMMY_PARAMETER_2;
+    private Project DUMMY_PROJECT;
+    private Experiment DUMMY_EXPERIMENT;
+    private Source DUMMY_SOURCE_1;
+    private Source DUMMY_SOURCE_2;
 
     private SearchDao SEARCH_DAO; 
     private ProtocolDao PROTOCOL_DAO; 
 
     //why is this not initialized in setup()? Intentional? 
-    private AssayType DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
+    private AssayType DUMMY_ASSAYTYPE_1;
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -176,6 +178,31 @@ public class SearchDaoTest extends AbstractDaoTest {
         DUMMY_PARAMETER_2 = new Parameter("param 2", DUMMY_PROTOCOL_1);
         DUMMY_PARAMETER_1.setName("DummyTestParameter1");
         DUMMY_PARAMETER_2.setName("DummyTestParameter2");
+
+        DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
+        
+        Organism org = new Organism();
+        org.setScientificName("Foo");
+        org.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_PROJECT = new Project();
+        DUMMY_EXPERIMENT = DUMMY_PROJECT.getExperiment();
+        DUMMY_EXPERIMENT.setTitle("test experiment.");
+        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(DUMMY_ASSAYTYPE_1);
+        DUMMY_EXPERIMENT.setAssayTypes(assayTypes);
+        DUMMY_EXPERIMENT.setOrganism(org);
+        DUMMY_EXPERIMENT.setManufacturer(new Organization());
+        DUMMY_SOURCE_1 = new Source();
+        DUMMY_SOURCE_1.setName("Source 1 Name");
+        DUMMY_SOURCE_1.setDescription("ZZZ");
+        DUMMY_EXPERIMENT.getSources().add(DUMMY_SOURCE_1);
+        DUMMY_SOURCE_1.setExperiment(DUMMY_EXPERIMENT);
+        DUMMY_SOURCE_2 = new Source();
+        DUMMY_SOURCE_2.setName("Source 2 Name");
+        DUMMY_SOURCE_2.setDescription("AAA");
+        DUMMY_EXPERIMENT.getSources().add(DUMMY_SOURCE_2);
+        DUMMY_SOURCE_2.setExperiment(DUMMY_EXPERIMENT);
+
     }
     
     private void initializeDao() {
@@ -197,6 +224,8 @@ public class SearchDaoTest extends AbstractDaoTest {
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
         PROTOCOL_DAO.save(DUMMY_PROTOCOL_1);
+        PROTOCOL_DAO.save(DUMMY_ASSAYTYPE_1);
+        PROTOCOL_DAO.save(DUMMY_PROJECT);
         tx.commit();
     }
 
@@ -619,35 +648,9 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            // set up dummy data
             tx = hibernateHelper.beginTransaction();
-            Session s = hibernateHelper.getCurrentSession();
-            Organism org = new Organism();
-            org.setScientificName("Foo");
-            org.setTermSource(DUMMY_TERM_SOURCE);
-            Project project = new Project();
-            project.getExperiment().setTitle("test experiment.");
-            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-            assayTypes.add(DUMMY_ASSAYTYPE_1);
-            project.getExperiment().setAssayTypes(assayTypes);
-            project.getExperiment().setOrganism(org);
-            project.getExperiment().setManufacturer(new Organization());
-            Source source = new Source();
-            source.setName("Source 1 Name");
-            source.setDescription("ZZZ");
-            project.getExperiment().getSources().add(source);
-            source.setExperiment(project.getExperiment());
-            Source source2 = new Source();
-            source2.setName("Source 2 Name");
-            source2.setDescription("AAA");
-            project.getExperiment().getSources().add(source2);
-            source2.setExperiment(project.getExperiment());
-            s.save(DUMMY_ASSAYTYPE_1);
-            s.save(project);
-            s.flush();
-            s.clear();
 
-            Experiment retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            Experiment retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, DUMMY_EXPERIMENT.getId());
             List<Source> filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "");
             assertEquals(2, filteredList.size());
 
@@ -660,25 +663,21 @@ public class SearchDaoTest extends AbstractDaoTest {
             filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce 3");
             assertEquals(0, filteredList.size());
 
-            s.clear();
-            retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             int collSize = SEARCH_DAO.collectionSize(retrievedExperiment.getSources());
             assertEquals(2, collSize);
 
-            s.clear();
-            retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             PageSortParams<Source> params = new PageSortParams<Source>(1, 1, SourceSortCriterion.NAME, false);
             filteredList = SEARCH_DAO.pageCollection(retrievedExperiment.getSources(), params);
             assertEquals(1, filteredList.size());
-            assertEquals(source2, filteredList.get(0));
+            assertEquals(DUMMY_SOURCE_2, filteredList.get(0));
             params.setDesc(true);
             params.setSortCriterion(SourceSortCriterion.DESCRIPTION);
             params.setPageSize(2);
             params.setIndex(0);
             filteredList = SEARCH_DAO.pageCollection(retrievedExperiment.getSources(), params);
             assertEquals(2, filteredList.size());
-            assertEquals(source, filteredList.get(0));
-            assertEquals(source2, filteredList.get(1));
+            assertEquals(DUMMY_SOURCE_1, filteredList.get(0));
+            assertEquals(DUMMY_SOURCE_2, filteredList.get(1));
         } catch (DAOException e) {
             hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
@@ -690,56 +689,24 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            // set up dummy data
             tx = hibernateHelper.beginTransaction();
-            Session s = hibernateHelper.getCurrentSession();
-            Organism org = new Organism();
-            org.setScientificName("Foo");
-            org.setTermSource(DUMMY_TERM_SOURCE);
-            Project project = new Project();
-            project.getExperiment().setTitle("test experiment.");
-            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-            assayTypes.add(DUMMY_ASSAYTYPE_1);
-            project.getExperiment().setAssayTypes(assayTypes);
-            project.getExperiment().setOrganism(org);
-            project.getExperiment().setManufacturer(new Organization());
-            Source source = new Source();
-            source.setName("Source 1 Name");
-            source.setDescription("ZZZ");
-            project.getExperiment().getSources().add(source);
-            source.setExperiment(project.getExperiment());
-            Source source2 = new Source();
-            source2.setName("Source 2 Name");
-            source2.setDescription("AAA");
-            project.getExperiment().getSources().add(source2);
-            source2.setExperiment(project.getExperiment());
-            s.save(DUMMY_ASSAYTYPE_1);
-            s.save(project);
-            s.flush();
-            s.clear();
 
             PageSortParams<Source> params = new PageSortParams<Source>(1, 1, SourceSortCriterion.NAME, false);
-            Experiment e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            Experiment e = SEARCH_DAO.retrieve(Experiment.class, DUMMY_EXPERIMENT.getId());
             
             List<Source> filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", null, params);
             assertEquals(1, filteredList.size());
             assertEquals("Source 2 Name", filteredList.get(0).getName());    
             
-            s.clear();
-            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", Arrays.asList("Source 1 Name", "Source 2 Name"), params);
             assertEquals(1, filteredList.size());
             assertEquals("Source 2 Name", filteredList.get(0).getName());    
 
-            s.clear();
-            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             params.setIndex(0);
             filteredList = SEARCH_DAO.pageAndFilterCollection(e.getSources(), "name", Collections.singletonList("Source 1 Name"), params);
             assertEquals(1, filteredList.size());
             assertEquals("Source 1 Name", filteredList.get(0).getName());    
 
-            s.clear();
-            e = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             params.setPageSize(2);
             params.setIndex(0);
             params.setSortCriterion(SourceSortCriterion.DESCRIPTION);
