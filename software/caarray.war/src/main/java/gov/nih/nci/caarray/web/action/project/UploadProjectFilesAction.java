@@ -97,6 +97,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -140,6 +141,8 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
     static final String ZIP_UPLOAD_ERROR_KEY = "errors.uploadingErrorWithZip";
     static final String FILE_ADD_ERROR_KEY = "errors.uploadingErrorWithAdding";
     static final String PERMISSION_DENIED_ERROR_KEY = "project.permissionDenied";
+    
+    static final String FILE_UPLOADED_MSG_SUFFIX = " file(s) uploaded.";
 
     private FileUploadUtils fileUploadUtils;
     private FileDao fileDao;
@@ -176,7 +179,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
 
                 handleConflicts(uploadResult, errorString);
                 if (!uploadResult.isPartialUpload()) {
-                    ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
+                    updateUploadMessage(uploadResult);
                 }
             }
         } catch (InvalidFileException e) {
@@ -198,6 +201,23 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
         }
         writeJsonOutputToResponse(getUploadFileName(), errorString.toString());
         return NONE;
+    }
+    
+    private void updateUploadMessage(FileProcessingResult uploadResult) {
+        int totalUploadCount = uploadResult.getCount();
+        List<String> msgs = ActionHelper.getMessages();
+        if (msgs != null) {
+            Iterator<String> it = msgs.iterator();
+            while (it.hasNext()) {
+                String msg = it.next();
+                int endIndex = msg.lastIndexOf(FILE_UPLOADED_MSG_SUFFIX);
+                if (endIndex > 0) {
+                    totalUploadCount += Integer.parseInt(msg.substring(0, endIndex));
+                    it.remove();
+                }
+            }
+        }
+        ActionHelper.saveMessage(totalUploadCount + FILE_UPLOADED_MSG_SUFFIX);
     }
 
     /**

@@ -93,6 +93,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
+import gov.nih.nci.caarray.application.project.FileProcessingResult;
 import gov.nih.nci.caarray.application.project.FileUploadUtils;
 import gov.nih.nci.caarray.application.project.FileWrapper;
 import gov.nih.nci.caarray.dao.FileDao;
@@ -269,5 +270,34 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
     public void testUploadInBackground() {
         assertEquals(UploadProjectFilesAction.UPLOAD_IN_BACKGROUND, action.uploadInBackground());
         assertNull(ActionHelper.getMessages());
+    }
+    
+    @Test
+    public void testUploadMessages() throws Exception {
+        File file = File.createTempFile("tmp", NON_ZIP_EXTENSION);
+        List<File> files = new ArrayList<File>();
+        List<String> fileNames = new ArrayList<String>();
+        files.add(file);
+        fileNames.add(file.getName());
+        action.setUpload(files);
+        action.setUploadFileName(fileNames);
+
+        // Upload a file and check for success message
+        FileProcessingResult result = new FileProcessingResult();
+        result.addSuccessfulFile(file.getName());
+        when(mockUploadUtils.uploadFiles(any(Project.class), anyListOf(FileWrapper.class))).thenReturn(result);
+        assertEquals(ActionSupport.NONE, action.upload());
+        List<String> msgs = ActionHelper.getMessages();
+        assertEquals(1, msgs.size());
+        assertEquals(1 + UploadProjectFilesAction.FILE_UPLOADED_MSG_SUFFIX, msgs.get(0));
+
+        // Upload a second file and check for updated success message
+        FileProcessingResult result2 = new FileProcessingResult();
+        result2.addSuccessfulFile("file2");
+        when(mockUploadUtils.uploadFiles(any(Project.class), anyListOf(FileWrapper.class))).thenReturn(result2);
+        assertEquals(ActionSupport.NONE, action.upload());
+        msgs = ActionHelper.getMessages();
+        assertEquals(1, msgs.size());
+        assertEquals(2 + UploadProjectFilesAction.FILE_UPLOADED_MSG_SUFFIX, msgs.get(0));
     }
 }
