@@ -14,4 +14,8 @@
        <comment>ARRAY-2053 - Update tables to InnoDB.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.1/array-2053.sql"/>
     </changeSet>
+    <changeSet id="array-2053.1" author="wcheng">
+       <comment>ARRAY-2053 - Reverting back to MySAM.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.1/array-2053.1.sql"/>
+    </changeSet>
 </databaseChangeLog>
