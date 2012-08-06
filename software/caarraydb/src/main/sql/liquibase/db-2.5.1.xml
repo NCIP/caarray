@@ -15,7 +15,11 @@
        <sqlFile path="db-upgrade/mysql/2.5.1/array-2053.sql"/>
     </changeSet>
     <changeSet id="array-2053.1" author="wcheng">
-       <comment>ARRAY-2053 - Reverting back to MySAM.</comment>
+       <comment>ARRAY-2053 - Reverting back to MyISAM.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.1/array-2053.1.sql"/>
+    </changeSet>
+    <changeSet id="array-2412" author="wcheng">
+       <comment>ARRAY-2412 - Making project, name unique for caarrayfiles.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.1/array-2412.sql"/>
     </changeSet>
 </databaseChangeLog>

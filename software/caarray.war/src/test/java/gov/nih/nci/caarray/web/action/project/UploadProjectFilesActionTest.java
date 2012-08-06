@@ -206,7 +206,6 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
         assertTrue(map.get("name").toString().contains(ZIP_EXTENSION));
 
         assertTrue(map.get("error").toString(), map.get("error").toString().contains(expectedErrorKey));
-        assertTrue(map.get("error").toString(), map.get("error").toString().contains(errorUnpackingZipKey));
     }
 
     @Test
@@ -231,7 +230,7 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testUpload_UnexpectedError() throws Exception {
-        String errorUnpackingZipKey = "errors.unpackingErrorWithZip";
+        String uploadingErrorKey = UploadProjectFilesAction.UPLOADING_ERROR_KEY;
         File file = File.createTempFile("tmp", ZIP_EXTENSION);
 
         List<File> files = Lists.newArrayList(file);
@@ -252,7 +251,7 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
         assertEquals(2, map.keySet().size());
         assertTrue(map.get("name").toString().contains(ZIP_EXTENSION));
 
-        assertTrue(map.get("error").toString(), map.get("error").toString().contains(errorUnpackingZipKey));
+        assertTrue(map.get("error").toString(), map.get("error").toString().contains(uploadingErrorKey));
     }
 
     @Test

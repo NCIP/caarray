@@ -136,7 +136,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
      */
     static final String UPLOAD_IN_BACKGROUND = "uploadInBackground";
     static final String IMPORTING_FILES_KEY = "project.inconsistentState.importing_files";
-    static final String UNPACKING_ZIP_ERROR_KEY = "errors.unpackingErrorWithZip";
+    static final String UPLOADING_ERROR_KEY = "errors.uploading";
     static final String FILE_CONFLICT_ERROR_KEY = "experiment.files.upload.filename.exists";
     static final String ZIP_UPLOAD_ERROR_KEY = "errors.uploadingErrorWithZip";
     static final String FILE_ADD_ERROR_KEY = "errors.uploadingErrorWithAdding";
@@ -186,7 +186,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
             handleInvalidFileException(errorString, e, selectedFilesToUnpack);
         } catch (Exception e) {
             LOG.error("Unable to upload file: " + e.getMessage(), e);
-            addErrorMessage(errorString, UNPACKING_ZIP_ERROR_KEY);
+            addErrorMessage(errorString, UPLOADING_ERROR_KEY);
         } finally {
             /*
              * Bit of a hack. Data File Uploads do not use the Progress Monitor,
@@ -263,9 +263,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
     private void handleInvalidFileException(StringBuilder sbf, InvalidFileException e, List<String> fileNamesToUnpack) {
         Object[] messageParams = new Object[] {e.getFile(), getText(e.getResourceKey()) };
         String errorKey = fileNamesToUnpack.contains(e.getFile()) ? ZIP_UPLOAD_ERROR_KEY : FILE_ADD_ERROR_KEY;
-
         addErrorMessage(sbf, errorKey, messageParams);
-        addErrorMessage(sbf, UNPACKING_ZIP_ERROR_KEY);
     }
 
     private void writeJsonOutputToResponse(List<String> filenames, String errors) {

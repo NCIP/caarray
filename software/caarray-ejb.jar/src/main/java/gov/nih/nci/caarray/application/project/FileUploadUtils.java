@@ -102,6 +102,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.InvalidStateException;
 
 import com.google.inject.Inject;
 
@@ -178,8 +179,12 @@ public class FileUploadUtils {
             }
 
         } catch (final Exception e) {
-            throw new InvalidFileException(fileName, "errors.addingFile", result,
-                    "Unable to add file tp persistent store", e);
+            if (e.getCause() instanceof InvalidStateException) {
+                result.addConflictingFile(fileName);
+            } else {
+                throw new InvalidFileException(fileName, "errors.addingFile", result,
+                        "Unable to add file tp persistent store", e);
+            }
         }
 
     }
@@ -287,7 +292,11 @@ public class FileUploadUtils {
             pms.addFile(project, input, entryName);
             result.addSuccessfulFile(entryName);
         } catch (final Exception e) {
-            throw new InvalidFileException(entryName, ADDING_FILE_ERROR_KEY, result, ADDING_FILE_ERROR_MESSAGE, e);
+            if (e.getCause() instanceof InvalidStateException) {
+                result.addConflictingFile(entryName);
+            } else {
+                throw new InvalidFileException(entryName, ADDING_FILE_ERROR_KEY, result, ADDING_FILE_ERROR_MESSAGE, e);
+            }
         }
     }
 
@@ -299,7 +308,11 @@ public class FileUploadUtils {
                 result.addSuccessfulFile(fileName);
             }
         } catch (Exception e) {
-            throw new InvalidFileException(fileName, ADDING_FILE_ERROR_KEY, result, ADDING_FILE_ERROR_MESSAGE, e);
+            if (e.getCause() instanceof InvalidStateException) {
+                result.addConflictingFile(fileName);
+            } else {
+                throw new InvalidFileException(fileName, ADDING_FILE_ERROR_KEY, result, ADDING_FILE_ERROR_MESSAGE, e);
+            }
         }
     }
 

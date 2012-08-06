@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.net.URI;
 import java.util.Collection;
@@ -123,6 +125,8 @@ import com.google.inject.Inject;
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
+@UniqueConstraint(fields = { @UniqueConstraintField(name = "name"), @UniqueConstraintField(name = "project"),
+        @UniqueConstraintField(name = "uniqueNameProject") }, message = "{caarrayfile.uniqueConstraint}")
 @Table(name = "caarrayfile")
 @SuppressWarnings("PMD.TooManyMethods")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {
@@ -139,6 +143,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private URI dataHandle;
     private CaArrayFile parent;
     private Set<CaArrayFile> children = new HashSet<CaArrayFile>();
+    private Boolean uniqueNameProject;
 
     @Inject
     private static transient FileTypeRegistry typeRegistry;
@@ -148,6 +153,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public CaArrayFile() {
         super();
+        uniqueNameProject = true;
     }
 
     /**
@@ -157,6 +163,9 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public CaArrayFile(CaArrayFile parent) {
         super();
         this.parent = parent;
+        if (parent == null) {
+            uniqueNameProject = true;
+        }
     }
 
     /**
@@ -505,5 +514,21 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public void removeChild(CaArrayFile child) {
         getChildren().remove(child);
+    }
+
+    /**
+     * @return a non-null value if this file is unique by name and project.
+     */
+    @SuppressWarnings("unused")
+    private Boolean getUniqueNameProject() {
+        return uniqueNameProject;
+    }
+
+    /**
+     * @param uniqueNameProject set to a non-null value to make this file unique by name and project.
+     */
+    @SuppressWarnings("unused")
+    private void setUniqueNameProject(Boolean uniqueNameProject) {
+        this.uniqueNameProject = uniqueNameProject;
     }
 }
