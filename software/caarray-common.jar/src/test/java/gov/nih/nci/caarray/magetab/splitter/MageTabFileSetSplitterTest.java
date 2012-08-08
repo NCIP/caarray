@@ -54,24 +54,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * Tests for the file set splitter.
@@ -82,8 +77,6 @@ public class MageTabFileSetSplitterTest {
 
     private MageTabFileSetSplitter splitter;
     private Set<File> tmpFiles;
-    private SdrfSplitter sdrfSplitter;
-    private SdrfDataFileFinder sdrfDataFileFinder;
         
     /**
      * Set up test-specific resources.
@@ -91,9 +84,7 @@ public class MageTabFileSetSplitterTest {
     @Before
     public void setup() {
         tmpFiles = new HashSet<File>();
-        sdrfSplitter = mock(SdrfSplitter.class);
-        sdrfDataFileFinder = mock(SdrfDataFileFinder.class);
-        splitter = new MageTabFileSetSplitterImpl(sdrfSplitter, sdrfDataFileFinder);
+        splitter = new MageTabFileSetSplitterImpl();
     }
     
     @Test
@@ -129,29 +120,6 @@ public class MageTabFileSetSplitterTest {
     public void multipleSDRFs() throws IOException {
         assertSplit(2, 6);
     }
-    
-    private void useUnityDataFileFinder(final MageTabFileSet fileSet) throws IOException {
-        when(sdrfDataFileFinder.identifyReferencedDataFiles(any(FileRef.class))).thenAnswer(new Answer<Set<String>>() {
-            @Override
-            public Set<String> answer(InvocationOnMock invocation) throws Throwable {
-                Set<String> result = new HashSet<String>();
-                for (FileRef ref : fileSet.getAllFiles()) {
-                    result.add(ref.getName());
-                }
-                return result;
-            }
-        });
-    }
-
-    private void mockSplitter() {
-        FileRef fakedSplit = generateFileRef();
-        try {
-            when(sdrfSplitter.splitByDataFile(any(FileRef.class), any(FileRef.class))).thenReturn(fakedSplit);
-        } catch (IOException e) {
-            // shouldn't be able to happen
-            throw new RuntimeException(e);
-        }
-    }
 
     private MageTabFileSet setupFileSet(int numIdfs, int numSdrfs, int numDataFiles) {
         MageTabFileSet result = new MageTabFileSet();
@@ -174,12 +142,6 @@ public class MageTabFileSetSplitterTest {
         input.addIdf(generateFileRef());
         input.addSdrf(generateFileRef());
         IOException expectedException = new IOException();
-        try {
-            when(sdrfSplitter.split(any(FileRef.class))).thenThrow(expectedException);
-        } catch (IOException e) {
-            // shouldn't be able to happen
-            throw new RuntimeException(e);
-        }
         
         try {
             splitter.split(input);
@@ -202,7 +164,6 @@ public class MageTabFileSetSplitterTest {
     
     private void assertSplit(int numSdrfs, int numDataFiles) throws IOException {
         MageTabFileSet input = setupFileSet(1, numSdrfs, numDataFiles);
-        mockSplitter();
         
         Set<MageTabFileSet> result = splitter.split(input);
         // There should always be 3 files in each result fileset:
@@ -227,6 +188,7 @@ public class MageTabFileSetSplitterTest {
         try {
             f = File.createTempFile("fileRef", ".tmp");
             tmpFiles.add(f);
+            FileUtils.writeStringToFile(f, "dummy header");
         } catch (IOException e) {
             fail(e.getMessage());
         }

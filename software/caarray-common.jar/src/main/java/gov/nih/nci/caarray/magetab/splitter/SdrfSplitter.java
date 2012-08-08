@@ -50,38 +50,89 @@
  */
 package gov.nih.nci.caarray.magetab.splitter;
 
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
-import gov.nih.nci.caarray.magetab.io.FileRef;
+import org.apache.commons.io.FileUtils;
 
 /**
- * Handles the details of splitting a single SDRF file into multiple smaller files.
- * 
- * @author tparnell
+ * @author wcheng
  */
-public interface SdrfSplitter {
+public class SdrfSplitter {
+    private final FileRef file;
+    private final List<String> lines = new ArrayList<String>();
+    private final Set<String> unusedLines = new HashSet<String>();
 
+    SdrfSplitter(FileRef sdrf) throws IOException {
+        file = sdrf;
+        splitIntoLines();
+        unusedLines.addAll(lines);
+    }
+    
     /**
-     * Splits the input sdrf into smaller sdrfs.  Nulls result in empty set, not null.  The input
-     * is assumed to have passed validation.  Invalid files (e.g. no header row) will result in
-     * unchecked exceptions.
+     * Creates a small sdrf file which contains only rows that reference the given data file.
+     * This method also tracks and updates which rows of the original sdrf are still unused.
      * 
-     * @param sdrf input file to split
-     * @return split file
-     * @throws IOException if file does not exist, writing to new files fails, or any other io error
-     */
-    Set<FileRef> split(FileRef sdrf) throws IOException;
-
-    /**
-     * Splits the input sdrf into a smaller sdrf that has all rows that reference the input dataFile.
-     * The input is assumed to have passed validation. Invalid files (e.g. no header row) will result in
-     * unchecked exceptions.
-     * 
-     * @param sdrf input file to split
      * @param dataFile data file to find references to in the sdrf
      * @return small sdrf that has all rows that reference dataFile
-     * @throws IOException if file does not exist, writing to new files fails, or any other io error
+     * @throws IOException if writing to new files fails or any other io error
      */
-    FileRef splitByDataFile(FileRef sdrf, FileRef dataFile) throws IOException;
+    public FileRef splitByDataFile(FileRef dataFile) throws IOException {
+        List<String> outputLines = new ArrayList<String>();
+        String dataFileName = dataFile.getName().toLowerCase(Locale.getDefault());
+        for (String curLine : lines) {
+            if (outputLines.isEmpty() || curLine.toLowerCase(Locale.getDefault()).indexOf(dataFileName) >= 0) {
+                outputLines.add(curLine);
+                unusedLines.remove(curLine);
+            }
+        }
+        File outputFile = File.createTempFile(file.getName(), ".sdrf");
+        FileUtils.writeLines(outputFile, outputLines);
+        return new JavaIOFileRef(outputFile);
+    }
+
+    /**
+     * Creates a small sdrf file which contains only rows that have not been split out by calls to
+     * {@link #splitByDataFile(FileRef)}.
+     * Returns null if there are no unused rows.
+     * 
+     * @return small sdrf consisting of unused rows
+     * @throws IOException if writing to new files fails or any other io error
+     */
+    public FileRef splitByUnusedLines() throws IOException {
+        if (unusedLines.isEmpty()) { return null; }
+        List<String> outputLines = new ArrayList<String>();
+        outputLines.add(lines.get(0));
+        outputLines.addAll(unusedLines);
+        File outputFile = File.createTempFile(file.getName(), ".sdrf");
+        FileUtils.writeLines(outputFile, outputLines);
+        return new JavaIOFileRef(outputFile);
+    }
+    
+    private void splitIntoLines() throws IOException {
+        @SuppressWarnings("unchecked")
+        List<String> inputLines = FileUtils.readLines(file.getAsFile());
+        for (String curLine : inputLines) {
+            if (curLine != null && !isCommentLine(curLine)) {
+                lines.add(curLine);
+            }
+        }
+        if (lines.isEmpty()) {
+            throw new IllegalArgumentException("Could not find header row in sdrf file.  Was it validated?");
+        }
+    }
+    
+    private boolean isCommentLine(String line) {
+        String trimmedLine = line.trim();
+        return trimmedLine.isEmpty() || trimmedLine.startsWith(SdrfDocument.COMMENT_CHARACTER);
+    }
 }

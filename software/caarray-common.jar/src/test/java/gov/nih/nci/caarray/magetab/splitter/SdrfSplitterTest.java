@@ -51,21 +51,19 @@
 package gov.nih.nci.caarray.magetab.splitter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.base.Function;
@@ -77,15 +75,55 @@ import com.google.common.collect.Lists;
  * @author tparnell
  */
 public class SdrfSplitterTest {
-
-    private static SdrfSplitter splitter = new SdrfSplitterImpl();
+    private File sdrf;
+    private List<String> sdrfLines;
+    private FileRef dataFile1;
+    private FileRef dataFile2;
+    private int dataFile1References;
     
+    @Before
+    @SuppressWarnings("unchecked")
+    public void setUp() throws IOException {
+        sdrf = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
+        dataFile1 = new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_FILE_1);
+        dataFile2 = new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_FILE_2);
+        sdrfLines = FileUtils.readLines(sdrf);
+        dataFile1References = 0;
+        for (String curLine : sdrfLines) {
+            if (curLine.contains(dataFile1.getName())) {
+                dataFile1References++;
+            }
+        }
+    }
+
     /**
-     * Our specification sdrf.  Single header, 6 lines, no fuss.
+     * Split the specification sdrf by data file,
      */
     @Test
-    public void specificationSdrfNumSplits() throws IOException {
+    public void testSplitByDataFile() throws IOException {
         specificationSdrfWithTransform(null);
+    }
+    
+    /**
+     * Generate sdrf for unused rows after splitting by a couple data files.
+     */
+    @Test
+    public void testSplitByUnusedLines() throws IOException {
+        int numReferences = 0;
+        for (String curLine : sdrfLines) {
+            if (curLine.contains(dataFile1.getName()) || curLine.contains(dataFile2.getName())) {
+                numReferences++;
+            }
+        }
+        SdrfSplitter splitter = new SdrfSplitter(new JavaIOFileRef(sdrf));
+        splitter.splitByDataFile(dataFile1);
+        splitter.splitByDataFile(dataFile2);
+        FileRef unused = splitter.splitByUnusedLines();
+        
+        @SuppressWarnings("unchecked")
+        List<String> splitLines = FileUtils.readLines(unused.getAsFile());
+        assertEquals(sdrfLines.size() - numReferences, splitLines.size());
+        assertEquals(sdrfLines.get(0), splitLines.get(0));
     }
     
     @Test
@@ -141,7 +179,8 @@ public class SdrfSplitterTest {
         File file = File.createTempFile("test", ".sdrf");
         FileUtils.writeLines(file, content);
         FileRef fileRef = new JavaIOFileRef(file);
-        splitter.split(fileRef);
+        new SdrfSplitter(fileRef);
+        fail("Should throw IllegalArgumentException");
     }
     
     /**
@@ -171,52 +210,39 @@ public class SdrfSplitterTest {
         return transform;
     }
     
-    @SuppressWarnings("unchecked")
     private void specificationSdrfWithTransform(Function<File, File> transform) throws IOException {
-        File f = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
-        List<String> inputLines = FileUtils.readLines(f);
-        
-        File transformed = transform == null ? f : transform.apply(f);
+        File transformed = transform == null ? sdrf : transform.apply(sdrf);
         FileRef fileRef = new JavaIOFileRef(transformed);
-        Set<FileRef> split = splitter.split(fileRef);
         
-        assertNotNull(split);
-        assertEquals(inputLines.size() - 1, split.size());
+        SdrfSplitter splitter = new SdrfSplitter(fileRef);
+        FileRef splitSdrf = splitter.splitByDataFile(dataFile1);
 
-        Set<String> splitLines = new HashSet<String>();
-        for (FileRef curRef : split) {
-            List<String> curFileLines = FileUtils.readLines(curRef.getAsFile());
-            assertEquals(2, curFileLines.size());
-            assertEquals(inputLines.get(0), curFileLines.get(0));
-            splitLines.add(curFileLines.get(1));
-        }
-        splitLines.add(inputLines.get(0));
-        assertEquals(inputLines.size(), splitLines.size());
-        assertTrue(splitLines.containsAll(inputLines));
+        @SuppressWarnings("unchecked")
+        List<String> splitLines = FileUtils.readLines(splitSdrf.getAsFile());
+        assertEquals(dataFile1References+1, splitLines.size());
+        assertEquals(sdrfLines.get(0), splitLines.get(0));
     }
     
     /**
      * Null check.
      * 
-     * @throws IOException shouldn't happen
+     * @throws IOException
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void nullFileRef() throws IOException {
-        Set<FileRef> result = splitter.split(null);
-        assertNotNull(result);
-        assertEquals(0, result.size());
+        new SdrfSplitter(null);
+        fail("Should throw NullPointerException");
     }
     
     /**
      * Non-existent file, but ref itself exists.
      * 
-     * @throws IOException shouldn't happen
+     * @throws IOException
      */
     @Test(expected = IOException.class)
     public void invalidFileRef() throws IOException {
         FileRef ref = new JavaIOFileRef(new File("idontexist.anywhere"));
-        Set<FileRef> result = splitter.split(ref);
-        assertNotNull(result);
-        assertEquals(0, result.size());
+        new SdrfSplitter(ref);
+        fail("Should throw IOException");
     }
 }

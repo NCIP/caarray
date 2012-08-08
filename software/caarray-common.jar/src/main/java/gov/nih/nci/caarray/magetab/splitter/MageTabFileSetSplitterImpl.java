@@ -60,9 +60,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 /**
  * Basic implementation of the interface.
@@ -70,49 +68,8 @@ import com.google.inject.Inject;
  * @author tparnell
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
-
-    /**
-     * Predicate that matches file references based upon the names of the files.
-     *
-     * @author tparnell
-     */
-    private final class FilePredicate implements Predicate<FileRef> {
-        private final Set<String> referencedDataFiles;
-
-        /**
-         * Construct with the ilst of files to check against.
-         */
-        public FilePredicate(Set<String> referencedDataFiles) {
-            this.referencedDataFiles = referencedDataFiles;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean apply(FileRef curRef) {
-            String fileName = curRef.getName();
-            return !referencedDataFiles.contains(fileName);
-        }
-    }
-
     private static final Logger LOG = Logger.getLogger(MageTabFileSetSplitterImpl.class);
 
-    private final SdrfSplitter singleFileSplitter;
-    private final SdrfDataFileFinder dataFileFinder;
-    
-    /**
-     * Construct with injected dependencies.
-     * 
-     * @param singleFileSplitter file splitter
-     * @param dataFileFinder data file finder
-     */
-    @Inject
-    public MageTabFileSetSplitterImpl(SdrfSplitter singleFileSplitter, SdrfDataFileFinder dataFileFinder) {
-        this.singleFileSplitter = singleFileSplitter;
-        this.dataFileFinder = dataFileFinder;
-    }
-    
     /**
      * {@inheritDoc}
      */
@@ -149,38 +106,42 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         return result;
     }
 
-    private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef bigSdrf) 
+    private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef sdrfFile) 
             throws IOException {
         FileRef idfFile = largeFileSet.getIdfFiles().iterator().next();
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
+        SdrfSplitter sdrfSplitter = new SdrfSplitter(sdrfFile);
         for (FileRef singleDataFile : largeFileSet.getNativeDataFiles()) {
-            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(bigSdrf, idfFile, singleDataFile);
+            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(sdrfSplitter, idfFile, singleDataFile);
             curSet.addNativeData(singleDataFile);
             result.add(curSet);
         }
         for (FileRef singleDataFile : largeFileSet.getDataMatrixFiles()) {
-            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(bigSdrf, idfFile, singleDataFile);
+            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(sdrfSplitter, idfFile, singleDataFile);
             curSet.addDataMatrix(singleDataFile);
             result.add(curSet);
         }
+        addMageTabSetForRemainingSdrf(sdrfSplitter, idfFile, result);
         return result;
     }
 
-    private MageTabFileSet addIdfAndSdrfForThisBatch(FileRef bigSdrf, FileRef idfFile, FileRef singleDataFile)
+    private MageTabFileSet addIdfAndSdrfForThisBatch(SdrfSplitter sdrfSplitter, FileRef idfFile, FileRef singleDataFile)
             throws IOException {
         MageTabFileSet curSet = new MageTabFileSet();
         curSet.addIdf(idfFile);
-        FileRef smallSdrf = singleFileSplitter.splitByDataFile(bigSdrf, singleDataFile);
+        FileRef smallSdrf = sdrfSplitter.splitByDataFile(singleDataFile);
         curSet.addSdrf(smallSdrf);
         return curSet;
     }
 
-
-    private void filterDataFiles(MageTabFileSet largeFileSet, FileRef smallSdrf, MageTabFileSet curSet)
+    private void addMageTabSetForRemainingSdrf(SdrfSplitter sdrfSplitter, FileRef idfFile, Set<MageTabFileSet> result)
             throws IOException {
-        Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
-        FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
-        curSet.getDataMatrixFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
-        curSet.getNativeDataFiles().removeAll(Sets.filter(largeFileSet.getNativeDataFiles(), filePredicate));
+        FileRef smallSdrf = sdrfSplitter.splitByUnusedLines();
+        if (smallSdrf != null) {
+            MageTabFileSet curSet = new MageTabFileSet();
+            curSet.addIdf(idfFile);
+            curSet.addSdrf(smallSdrf);
+            result.add(curSet);
+        }
     }
 }
