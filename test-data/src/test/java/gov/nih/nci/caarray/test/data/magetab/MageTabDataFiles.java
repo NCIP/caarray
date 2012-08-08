@@ -134,6 +134,12 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_CASE_SENSITIVITY_DIRECTORY = new File(MageTabDataFiles.class.getResource(
             "/magetab/specification_case_sensitivity").getFile());
 
+    public static final File SPECIFICATION_EXAMPLE_DATA_FILE_1 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/specification/H_TK6 neo replicate 1.CEL").getFile());
+    
+    public static final File SPECIFICATION_EXAMPLE_DATA_FILE_2 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/specification/H_TK6 neo replicate 1.CEL").getFile());
+    
     public static final File UNSUPPORTED_DATA_EXAMPLE_IDF = new File(MageTabDataFiles.class.getResource(
             "/magetab/unsupported_data/e-mexp-428_v1.0-unsupported.idf").getFile());
 
