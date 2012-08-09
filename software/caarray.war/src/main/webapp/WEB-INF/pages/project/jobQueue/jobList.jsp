@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<meta http-equiv="refresh" content="30">
 
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <c:set var="privateExperiment" value="Private Experiment"/>

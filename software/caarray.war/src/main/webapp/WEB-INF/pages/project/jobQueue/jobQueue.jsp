@@ -6,12 +6,21 @@
 <body>
     <h1>View Job Queue</h1>
     <caarray:helpPrint/>
-    <c:url value="/protected/ajax/project/viewJobQueue.action" var="jobQueueUrl" />
 
-    <fmt:message key="project.workspace.tabs.myProjects" var="myProjectsTitle" />
-    <caarray:successMessages />
     <div class="padme">
-        <%@ include file="/WEB-INF/pages/project/jobQueue/jobList.jsp" %>
+        <div id="tabboxwrapper_notabs">
+            <div class="boxpad2">
+                <h3><fmt:message key="project.workspace.tabs.myProjects" var="myProjectsTitle" /></h3>
+                <div class="addlink">
+                    <c:url value="/protected/project/viewJobQueue.action" var="jobQueueUrl" />
+                    <caarray:linkButton actionClass="import" text="Refresh" url="${jobQueueUrl}" />
+                </div>
+            </div>
+            <caarray:successMessages />
+            <div class="tableboxpad">
+                <%@ include file="/WEB-INF/pages/project/jobQueue/jobList.jsp" %>
+            </div>
+        </div>
     </div>
 </body>
 </html>
