@@ -301,9 +301,9 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             tx = this.hibernateHelper.beginTransaction();
             this.daoObject.save(DUMMY_CATEGORY_1);
             final Category retrievedCategory =
-                    this.daoObject.getCategory(DUMMY_CATEGORY_1.getSource(), DUMMY_CATEGORY_1.getName());
+                    this.daoObject.getCategory(DUMMY_CATEGORY_1.getSource(), "Dummy Test CATEGORY 1");
             assertNotNull(retrievedCategory);
-            assertEquals(DUMMY_CATEGORY_1.getName(), retrievedCategory.getName());
+            assertEquals(DUMMY_CATEGORY_1.getId(), retrievedCategory.getId());
             tx.commit();
         } catch (final DAOException e) {
             this.hibernateHelper.rollbackTransaction(tx);

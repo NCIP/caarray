@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -148,7 +149,8 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     public Category getCategory(TermSource termSource, String name) {
         Criteria criteria = getCurrentSession().createCriteria(Category.class);
-        criteria.add(Restrictions.eq("name", name).ignoreCase());
+        criteria.add(Restrictions.sqlRestriction("lower(replace({alias}.name,' ','')) = lower(?)",
+                name.replaceAll(" ", ""), Hibernate.STRING));
         criteria.add(Restrictions.eq("source", termSource));
         return (Category) criteria.uniqueResult();
     }
