@@ -4,6 +4,10 @@ $(function() {
     if ($.browser.msie) {
         $("#ie_limitation_text").text("Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.");
     }
+    if (navigator.userAgent.match(/windows/i) && navigator.userAgent.match(/safari/i)) {
+        $("#upload0").removeAttr("multiple");
+    }
+
 });
 
 function beginUpload() {
