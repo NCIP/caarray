@@ -57,10 +57,8 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
@@ -68,9 +66,10 @@ import org.apache.commons.io.FileUtils;
  * @author wcheng
  */
 public class SdrfSplitter {
+    private static final int HEADER_ONLY = 1;
     private final FileRef file;
     private final List<String> lines = new ArrayList<String>();
-    private final Set<String> unusedLines = new HashSet<String>();
+    private final List<String> unusedLines = new ArrayList<String>();
 
     SdrfSplitter(FileRef sdrf) throws IOException {
         file = sdrf;
@@ -90,7 +89,12 @@ public class SdrfSplitter {
         List<String> outputLines = new ArrayList<String>();
         String dataFileName = dataFile.getName().toLowerCase(Locale.getDefault());
         for (String curLine : lines) {
-            if (outputLines.isEmpty() || curLine.toLowerCase(Locale.getDefault()).indexOf(dataFileName) >= 0) {
+            if (outputLines.isEmpty()) {
+                // Add the header line.
+                outputLines.add(curLine);
+            }
+            if (curLine.toLowerCase(Locale.getDefault()).indexOf(dataFileName) >= 0) {
+                // Add any lines that reference this data file.
                 outputLines.add(curLine);
                 unusedLines.remove(curLine);
             }
@@ -109,12 +113,9 @@ public class SdrfSplitter {
      * @throws IOException if writing to new files fails or any other io error
      */
     public FileRef splitByUnusedLines() throws IOException {
-        if (unusedLines.isEmpty()) { return null; }
-        List<String> outputLines = new ArrayList<String>();
-        outputLines.add(lines.get(0));
-        outputLines.addAll(unusedLines);
+        if (unusedLines.size() == HEADER_ONLY) { return null; }
         File outputFile = File.createTempFile(file.getName(), ".sdrf");
-        FileUtils.writeLines(outputFile, outputLines);
+        FileUtils.writeLines(outputFile, unusedLines);
         return new JavaIOFileRef(outputFile);
     }
     
