@@ -138,15 +138,6 @@
             <h2 class="tanbar">Browse caArray</h2>
             <div class="boxpad">
                 <table class="alttable" summary="layout" cellspacing="0">
-                    <tr>
-                        <th colspan="2">
-                    <label for="location"><fmt:message key="search.location"/></label>
-                    <c:set var="nodeName" value="${initParam.nodeName}"/>
-                    <s:select name="location" theme="simple"
-                              list="#{#attr.nodeName:#attr.nodeName}"
-                              headerKey="" headerValue="(All Locations)"/>
-                        </th>
-                    </tr>
                     <c:forEach items="${browseItems}" var="row" varStatus="rowStatus">
                         <tr class="${rowStatus.count % 2 == 0 ? 'even' : 'odd'}">
                             <td>
@@ -240,16 +231,6 @@
     	                        listKey="id" cssStyle="display:none;" theme="simple"/>
                         </td>
                      </tr>
-
-                    <tr>
-                        <td align="right">
-                            <s:label theme="simple"><b><fmt:message key="search.location"/>:</b></s:label>
-                        </td>
-                        <td>
-                            <s:select name="location" list="#{'NCICB':'NCICB'}"
-                                      headerKey="" headerValue="(All Locations)" theme="simple" />
-                        </td>
-                    </tr>
                     <tr>
                         <td colspan="2" class="centered">
                     <del class="btnwrapper">
