@@ -102,6 +102,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.validator.InvalidStateException;
 
 import com.google.inject.Inject;
@@ -110,6 +111,8 @@ import com.google.inject.Inject;
  * Utility class for handling a set of uploaded files.
  */
 public class FileUploadUtils {
+    private static final Logger LOG = Logger.getLogger(FileUploadUtils.class);
+
     static final String UNPACKING_ERROR_KEY = "errors.unpackingZip";
     static final String UNPACKING_ERROR_MESSAGE = "Unable to unpack file";
     static final String INVALID_ZIP_MESSAGE = "Provided file is not recognized as a ZIP file";
@@ -202,6 +205,7 @@ public class FileUploadUtils {
             throws InvalidFileException {
         if (compressed) {
             getFileAccessService().remove(caArrayFile);
+            LOG.info("opening stream for " + caArrayFile.getDataHandle());
             final InputStream is = this.dataStorageFacade.openInputStream(caArrayFile.getDataHandle(), false);
             unpackFile(project, caArrayFile.getName(), is);
         } else {
@@ -287,11 +291,13 @@ public class FileUploadUtils {
 
     private void addEntryToProject(Project project, ZipInputStream input, String entryName)
             throws InvalidFileException {
+        LOG.info("Adding entry  " + entryName + " to project " + project.getId());
         try {
             final ProjectManagementService pms = getProjectManagementService();
             pms.addFile(project, input, entryName);
             result.addSuccessfulFile(entryName);
         } catch (final Exception e) {
+            LOG.error("Error adding file", e);
             if (e.getCause() instanceof InvalidStateException) {
                 result.addConflictingFile(entryName);
             } else {

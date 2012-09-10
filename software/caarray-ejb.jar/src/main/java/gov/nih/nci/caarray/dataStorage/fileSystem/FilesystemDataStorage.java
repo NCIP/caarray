@@ -106,6 +106,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.AutoCloseInputStream;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
@@ -120,6 +121,8 @@ import com.google.inject.name.Named;
  * @author dkokotov
  */
 public class FilesystemDataStorage implements DataStorage {
+    private static final Logger LOG = Logger.getLogger(FilesystemDataStorage.class);
+
     static final String SCHEME = "file-system";
 
     private final String baseDir;
@@ -153,10 +156,12 @@ public class FilesystemDataStorage implements DataStorage {
                 uncompressAndWriteFile(fis, uncompressedFile);
                 IOUtils.closeQuietly(fis);
             } else {
+                LOG.info("Write file");
                 writeFileData(stream, new FileOutputStream(uncompressedFile));
                 final FileInputStream fis = Files.newInputStreamSupplier(uncompressedFile).getInput();
                 compressAndWriteFile(fis, compressedFile);
                 IOUtils.closeQuietly(fis);
+                LOG.info("Completed writing file");
             }
             metadata.setUncompressedSize(uncompressedFile.length());
             metadata.setCompressedSize(compressedFile.length());

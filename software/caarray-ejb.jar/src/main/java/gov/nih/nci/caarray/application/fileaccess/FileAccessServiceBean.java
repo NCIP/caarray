@@ -233,6 +233,7 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public CaArrayFile add(InputStream stream, String filename, CaArrayFile parent) {
         final CaArrayFile caArrayFile = createCaArrayFile(filename, parent, FileStatus.UPLOADED);
+        LOG.info("Created caArrayFile: " + filename);
         try {
             final StorageMetadata metadata = this.dataStorageFacade.addFile(stream, false);
             caArrayFile.setCompressedSize(metadata.getCompressedSize());
