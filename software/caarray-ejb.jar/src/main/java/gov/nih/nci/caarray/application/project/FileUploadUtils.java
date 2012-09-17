@@ -204,10 +204,10 @@ public class FileUploadUtils {
     private void handleLastChunk(Project project, CaArrayFile caArrayFile, String fileName, boolean compressed)
             throws InvalidFileException {
         if (compressed) {
-            getFileAccessService().remove(caArrayFile);
             LOG.info("opening stream for " + caArrayFile.getDataHandle());
             final InputStream is = this.dataStorageFacade.openInputStream(caArrayFile.getDataHandle(), false);
             unpackFile(project, caArrayFile.getName(), is);
+            getFileAccessService().remove(caArrayFile);
         } else {
             result.addSuccessfulFile(fileName);
         }

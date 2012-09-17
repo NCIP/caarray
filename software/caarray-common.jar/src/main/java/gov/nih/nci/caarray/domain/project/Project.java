@@ -233,7 +233,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return Collections.unmodifiableSortedSet(Sets.newTreeSet(Iterables.filter(fileSet,
                 new Predicate<CaArrayFile>() {
             public boolean apply(CaArrayFile file) {
-                return file.getParent() == null && !file.getFileStatus().equals(FileStatus.UPLOADING);
+                return file.getParent() == null;
             }
         })));
     }

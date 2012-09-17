@@ -813,9 +813,10 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         this.action.setProject(project);
 
         assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
-        assertEquals(6, this.action.getFiles().size());
+        assertEquals(7, this.action.getFiles().size());
         assertEquals(3, this.action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
         assertEquals(3, this.action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED).intValue());
+        assertEquals(1, this.action.getFileStatusCountMap().get(FileStatus.UPLOADING).intValue());
 
         this.action.setFileType(AGILENT_CSV.getName());
         assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
@@ -962,6 +963,12 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file6.setFileType(null);
         file6.setFileStatus(FileStatus.UPLOADED);
         fileSet.add(file6);
+
+        final CaArrayFile file7 = new CaArrayFile();
+        file7.setName("file7");
+        file7.setFileType(null);
+        file7.setFileStatus(FileStatus.UPLOADING);
+        fileSet.add(file7);
         return fileSet;
     }
 
