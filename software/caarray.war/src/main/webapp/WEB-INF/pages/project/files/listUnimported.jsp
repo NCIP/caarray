@@ -19,15 +19,18 @@
     fileTypeLookup = new Object();
     fileNameLookup = new Object();
     fileSizeLookup = new Object();
+    fileStatusLookup = new Object();
     jobSize = 0;
     jobNumFiles = 0;
     SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_SDRF"/>';
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_IDF"/>';
     GPR_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.plugins.genepix.GprHandler@GPR_FILE_TYPE"/>';
+    UPLOADING_FILE_STATUS = '<s:property value="@gov.nih.nci.caarray.domain.file.FileStatus@UPLOADING"/>';
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';
     fileSizeLookup['${file.id}'] = ${file.uncompressedSize};
+    fileStatusLookup['${file.id}'] = '${file.fileStatus}';
     </c:forEach>
     <c:forEach items="${selectedFileIds}" var="sid">
       <c:if test="${sid.class.name == 'java.lang.Long'}">
@@ -79,6 +82,10 @@
                   alert('Only an IDF file may be selected.');
                   return false;
                 }
+                if (fileStatusLookup[element.value] == UPLOADING_FILE_STATUS) {
+                  alert('A selected file is still uploading.');
+                  return false;
+                }
          }
     }
 
@@ -90,6 +97,20 @@
     return TabUtils.submitTabFormToUrl('selectFilesForm', findRefUrl, 'tabboxlevel2wrapper');
   }
 
+  deleteFiles = function(deleteUrl) {
+      var formElts = document.getElementById('datatable').getElementsByTagName('input');
+      var hasUploadingFile = $A(formElts).any(function(elt) {
+          return elt.checked && (elt.id.lastIndexOf('chk') > -1) && fileStatusLookup[elt.value] == UPLOADING_FILE_STATUS;
+      });
+      if (hasUploadingFile && !confirm("A file you have selected is still in the Uploading status."
+              + " Attempting to delete a file in the middle of an upload could result in a corrupted file."
+              + " Are you sure you want to delete the selected file(s)?")) {
+          return false;
+      }
+
+      return TabUtils.submitTabFormToUrl('selectFilesForm', deleteUrl, 'tabboxlevel2wrapper');
+  }
+  
   passOnSelectedFiles = function(findRefUrl) {
     var checkboxes = $('selectFilesForm').selectedFileIds || {};
     var params = new Object();
@@ -133,7 +154,7 @@
             return elt.checked && (elt.id.lastIndexOf('chk') > -1) && (fileTypeLookup[elt.value] == GPR_FILE_TYPE);
         });
     }
-
+    
     checkAnyFilesSelected = function() {
         var formElts = document.getElementById('datatable').getElementsByTagName('input');
         return $A(formElts).any(function(elt) {
@@ -481,7 +502,7 @@
         <caarray:actions divclass="actionsthin">
             <c:if test="${(!project.importingData)}">
                 <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
-                <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
+                <caarray:linkButton actionClass="delete" text="Delete" onclick="deleteFiles('${deleteUrl}');" />
                 <c:url value="/protected/ajax/project/files/unpackFiles.action" var="unpackUrl" />
                 <caarray:linkButton actionClass="import" text="Unpack Archive" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unpackUrl}', 'tabboxlevel2wrapper');" />
                 <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />

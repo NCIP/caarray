@@ -466,6 +466,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String unpackFiles() {
         final Injector injector = InjectorFactory.getInjector();
         final FileUploadUtils fileUploadUtils = injector.getInstance(FileUploadUtils.class);
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (file.getFileStatus() == FileStatus.UPLOADING) {
+                ActionHelper.saveMessage(getText("project.fileUnpack.error.uploading"));
+                return prepListUnimportedPage();
+            }
+        }
         try {
             final FileProcessingResult result = fileUploadUtils.unpackFiles(getProject(), this.getSelectedFiles());
 
@@ -804,8 +810,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public String addSupplementalFiles() {
         final CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        final ErrorCounts errors = new ErrorCounts();
         for (final CaArrayFile file : getSelectedFiles()) {
-            fileSet.add(file);
+            if (file.getFileStatus() != FileStatus.UPLOADING) {
+                fileSet.add(file);
+            } else {
+                errors.incrementCount("project.fileImport.error.invalidStatus");
+            }
+        }
+        for (final String msg : errors.getMessages()) {
+            ActionHelper.saveMessage(msg);
         }
         if (!fileSet.getFiles().isEmpty()) {
             ServiceLocatorFactory.getFileManagementService().addSupplementalFiles(getProject(), fileSet);

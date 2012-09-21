@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -192,6 +195,20 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setFileStatus(FileStatus.UPLOADED);
     }
 
+    @Test
+    public void testUnpackUploadingFile() {
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADING);
+        file.setFileType(AFFYMETRIX_CHP);
+        selectedFiles.add(file);
+        
+        assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
+        assertEquals("project.fileUnpack.error.uploading", ActionHelper.getMessages().get(0));
+    }
+    
     @Test
     public void testValidateSelectedImportFiles() {
         final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
@@ -438,6 +455,27 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
         assertEquals(LIST_UNIMPORTED, this.action.addSupplementalFiles());
         assertEquals(2, this.fileManagementServiceStub.getSupplementalFileCount());
+    }
+
+    @Test
+    public void testAddSupplementalUploadingFile() {
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.UPLOADING);
+        selectedFiles.add(file);
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.SUPPLEMENTAL);
+        selectedFiles.add(file);
+
+        assertEquals(LIST_UNIMPORTED, this.action.addSupplementalFiles());
+        assertEquals(1, this.fileManagementServiceStub.getSupplementalFileCount());
+        assertEquals(2, ActionHelper.getMessages().size());
+        assertEquals("project.fileImport.error.invalidStatus", ActionHelper.getMessages().get(0));
+        assertEquals("1 supplemental file(s) added to project.", ActionHelper.getMessages().get(1));
     }
 
     @Test
