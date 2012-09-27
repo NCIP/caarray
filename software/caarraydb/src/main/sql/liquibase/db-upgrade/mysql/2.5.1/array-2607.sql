@@ -1,0 +1,1 @@
+delete from caarrayfile where status = 'UPLOADING';

@@ -22,4 +22,8 @@
        <comment>ARRAY-2412 - Making project, name unique for caarrayfiles.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.1/array-2412.sql"/>
     </changeSet>
+    <changeSet id="array-2607" author="wcheng">
+       <comment>ARRAY-2607 - Clean up files in uploading status.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.1/array-2607.sql"/>
+    </changeSet>
 </databaseChangeLog>
