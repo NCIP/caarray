@@ -130,6 +130,10 @@ public class SdrfTestFiles {
             "/magetab/sdrf/normal_3.idf").getFile());
     public static final File NORMAL_3_SDRF = new File(SdrfTestFiles.class.getResource(
             "/magetab/sdrf/normal_3.sdrf").getFile());
+    public static final File EXTERNAL_ID_1_IDF = new File(SdrfTestFiles.class.getResource(
+            "/magetab/sdrf/external_id_1.idf").getFile());
+    public static final File EXTERNAL_ID_1_SDRF = new File(SdrfTestFiles.class.getResource(
+            "/magetab/sdrf/external_id_1.sdrf").getFile());
     public static final File TEST_1_DATA = new File(SdrfTestFiles.class.getResource(
             "/magetab/sdrf/test.data").getFile());
     public static final File TEST_2_DATA = new File(SdrfTestFiles.class.getResource(

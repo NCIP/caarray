@@ -375,6 +375,8 @@ public final class TestMageTabSets {
             SdrfTestFiles.NORMAL_2_SDRF);
     public static final MageTabFileSet NORMAL_3_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_3_IDF,
             SdrfTestFiles.NORMAL_3_SDRF);
+    public static final MageTabFileSet EXTERNAL_ID_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.EXTERNAL_ID_1_IDF,
+            SdrfTestFiles.EXTERNAL_ID_1_SDRF);
 
     /**
      * MAGE-TAB input set producing defect 27306

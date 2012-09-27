@@ -119,7 +119,6 @@ public interface VocabularyDao extends CaArrayDao {
 
     /**
      * Returns the <code>Category</code> with the given name from the given term source or null if none exists.
-     * Ignores case and spaces when matching names.
      *
      * @param termSource source the term source to look in
      * @param name the name of the <code>Category</code> to look for

@@ -268,26 +268,39 @@ final class SdrfTranslator extends AbstractTranslator {
         for (final gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
             for (final Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
                 final String category = sdrfCharacteristic.getCategory();
-                final boolean isExternalId =
-                        ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
-                                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category);
-                if (isExternalId && !StringUtils.isEmpty(sdrfCharacteristic.getValue())) {
-                    final boolean added = externalIds.add(sdrfCharacteristic.getValue());
-                    if (!added) {
-                        document.addWarningMessage("[" + category + "] value '" + sdrfCharacteristic.getValue()
-                                + "' is referenced multiple times (" + category + " must be unique). "
-                                + "Existing value will be reused.");
-                    }
+                if (category != null) {
+                    checkForDuplicateExternalIds(document, externalIds, sdrfCharacteristic, category);
+                    checkForIncorrectOrganismTermSource(document, sdrfCharacteristic, category);
                 }
-                if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
-                        && (null != sdrfCharacteristic.getTerm().getTermSource() && (!sdrfCharacteristic.getTerm()
-                                .getTermSource().getName().equals(ExperimentOntology.NCBI.getOntologyName())))) {
-                    document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
-                            + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
-                            + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be omitted"
-                            + ", so the system can then auto-assign the " + ExperimentOntology.NCBI.getOntologyName()
-                            + " Term Source.");
-                }
+            }
+        }
+    }
+    
+    private void checkForIncorrectOrganismTermSource(SdrfDocument document, final Characteristic sdrfCharacteristic,
+            final String category) {
+        if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
+                && (null != sdrfCharacteristic.getTerm().getTermSource() && (!sdrfCharacteristic.getTerm()
+                        .getTermSource().getName().equals(ExperimentOntology.NCBI.getOntologyName())))) {
+            document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
+                    + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
+                    + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be omitted"
+                    + ", so the system can then auto-assign the " + ExperimentOntology.NCBI.getOntologyName()
+                    + " Term Source.");
+        }
+    }
+    
+    private void checkForDuplicateExternalIds(SdrfDocument document, Set<String> externalIds,
+            final Characteristic sdrfCharacteristic, final String category) {
+        final boolean isExternalId = ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName()
+                .equalsIgnoreCase(category.replaceAll("\\s", ""))
+                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equalsIgnoreCase(
+                        category.replaceAll("\\s", ""));
+        if (isExternalId && !StringUtils.isEmpty(sdrfCharacteristic.getValue())) {
+            final boolean added = externalIds.add(sdrfCharacteristic.getValue());
+            if (!added) {
+                document.addWarningMessage("[" + category + "] value '" + sdrfCharacteristic.getValue()
+                        + "' is referenced multiple times (" + category + " must be unique). "
+                        + "Existing value will be reused.");
             }
         }
     }
@@ -556,8 +569,10 @@ final class SdrfTranslator extends AbstractTranslator {
                         ExperimentOntology.NCBI.getVersion()));
             }
             bioMaterial.setOrganism(organism);
-        } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
-                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {
+        } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equalsIgnoreCase(
+                category.replaceAll("\\s", ""))
+                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equalsIgnoreCase(
+                        category.replaceAll("\\s", ""))) {
             bioMaterial.setExternalId(sdrfCharacteristic.getValue());
         } else {
             for (final AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {

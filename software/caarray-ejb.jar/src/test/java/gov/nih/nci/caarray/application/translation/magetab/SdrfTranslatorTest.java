@@ -10,6 +10,8 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
@@ -27,6 +29,8 @@ import org.junit.Test;
  * @author gax
  */
 public class SdrfTranslatorTest {
+    private static final String SOURCE_1_EXTERNAL_ID = "SRC1";
+    private static final String SAMPLE_1_EXTERNAL_ID = "SMPL1";
 
     private MageTabTranslator translator;
     private MageTabTranslatorTest helper = new MageTabTranslatorTest();
@@ -231,6 +235,24 @@ dump(ds.getSdrfDocuments().iterator().next().getAllHybridizations().iterator().n
         assertTrue(hyb.getDerivedDataCollection().isEmpty());
     }
 
+    /*
+     * Tests to make sure that Characteristic categories with various forms of
+     * "external id", regardless of spaces and case, get translated into the
+     * "externalId" attribute of the biomaterial.
+     */
+    @Test
+    public void testExternalIds() {
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.EXTERNAL_ID_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
+        CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        Source src = experiment.getSources().iterator().next();
+        String sourceExternalId = src.getExternalId();
+        assertTrue(SOURCE_1_EXTERNAL_ID.equals(sourceExternalId));
+        Sample sampl = experiment.getSamples().iterator().next();
+        String sampleExternalId = sampl.getExternalId();
+        assertTrue(SAMPLE_1_EXTERNAL_ID.equals(sampleExternalId));
+    }
 
     private void dumpProtocols(Collection<ProtocolApplication> pas) {
         for (ProtocolApplication pa : pas) {
