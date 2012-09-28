@@ -10,7 +10,7 @@
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
-            requestURI="${sortUrl}" id="row" excludedParams="project.id">
+            requestURI="${sortUrl}" id="row" excludedParams="project.id currentFactor.id">
             <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
             <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
             <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
