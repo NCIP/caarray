@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -171,7 +172,11 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             DataFileHandler handler) throws PlatformFileReadException {
         final ArrayDesign design = getArrayDesign(caArrayFile, handler);
         if (design == null) {
-            if (caArrayFile.getFileType().isParseableData()) {
+            Experiment experiment = caArrayFile.getProject().getExperiment();
+            if (experiment.getArrayDesigns().size() > 1) {
+                result.addMessage(Type.ERROR, "This experiment has multiple array designs. "
+                        + "Please explicitly associate this data file with the appropriate array design in the sdrf");
+            } else if (caArrayFile.getFileType().isParseableData()) {
                 result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
             }
         } else if (!caArrayFile.getProject().getExperiment().getArrayDesigns().contains(design)) {
