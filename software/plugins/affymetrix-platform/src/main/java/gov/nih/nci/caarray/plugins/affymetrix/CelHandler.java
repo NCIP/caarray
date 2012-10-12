@@ -274,9 +274,9 @@ public final class CelHandler extends AbstractDataFileHandler {
             // This invokes a fileChannel.map call that could possibly fail due to a bug in Java
             // that causes previous memory mapped files to not be released until after GC. So
             // we force a gc here to ensure that is not the cause of our problems
-            System.gc();
             this.celData.close();
             this.celData.clear();
+            System.gc();
             success = this.celData.read();
         }
         return success;
