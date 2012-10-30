@@ -44,10 +44,6 @@
        <comment>ARRAY-1933 - Implement security for audit logs.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.sql"/>
     </changeSet>
-    <changeSet id="array-1930-cas-csm-users" author="swiftaj">
-       <comment>ARRAY-1930 - Add Users found in the CAS repository to the CSM tables.</comment>
-       <sqlFile path="db-upgrade/mysql/2.5.0/ARRAY-1930-cas-csm-user-setup.sql"/>
-    </changeSet>
     <changeSet id="array-1342" author="wcheng">
        <comment>ARRAY-1342 - Allow collaborators to see uploaded files.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/array-1342.sql"/>
