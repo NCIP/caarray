@@ -1,5 +1,9 @@
-//Created by MyEclipse Struts
-// XSL source (default): platform:/plugin/com.genuitec.eclipse.cross.easystruts.eclipse_4.0.0/xslt/JavaClass.xsl
+//============================================================================
+// Copyright 5AM Solutions Inc, Yale University
+//
+// Distributed under the OSI-approved BSD 3-Clause License.
+// See https://github.com/NCIP/caarray/blob/master/LICENSE for details.
+//============================================================================
 
 package gov.nih.nci.logging.webapp.action;
 

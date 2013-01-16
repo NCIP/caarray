@@ -1,3 +1,9 @@
+//============================================================================
+// Copyright 5AM Solutions Inc, Yale University
+//
+// Distributed under the OSI-approved BSD 3-Clause License.
+// See https://github.com/NCIP/caarray/blob/master/LICENSE for details.
+//============================================================================
 package gov.nih.nci.caarray.services.external.v1_0.grid.common;
 
 import java.rmi.RemoteException;
