@@ -42,12 +42,12 @@
         <param-value>NCICB</param-value>
     </context-param>
     <context-param>
-        <param-name>svnUrl</param-name>
-        <param-value>@svn.url@</param-value>
+        <param-name>gitUrl</param-name>
+        <param-value>@git.url@</param-value>
     </context-param>
     <context-param>
-        <param-name>svnRevision</param-name>
-        <param-value>@svn.revision@</param-value>
+        <param-name>gitRevision</param-name>
+        <param-value>@git.revision@</param-value>
     </context-param>
     <context-param>
         <param-name>buildTime</param-name>

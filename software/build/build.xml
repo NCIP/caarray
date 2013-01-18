@@ -10,7 +10,6 @@
 
     <!-- Main -->
     <property name="root.dir" location="${basedir}/.." />
-    <property name="docs.dir" value="${root.dir}/docs" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
     <property name="resource.dir" value="${build.dir}/resources" />
@@ -1971,16 +1970,23 @@
     </target>
 
     <!-- ******************************************************************* -->
-    <!-- ** SVN TARGETS                                                 ** -->
+    <!-- ** GIT TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
-    <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn" depends="init:third-party-paths">
-        <svn failonerror="true"><info path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" /></svn>
-        <!--
-          Note that if you explicitly define caarray.version it will take
-          precedence over the one obtained from SVN
-          -->
-        <propertyregex property="svn.caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false" />
-        <echo message="found svn info: ${svn.url} ${svn.revision} ${svn.caarray.version}" />
+    <target name="git:getinfo" description="obtain git revision info" unless="nogit" depends="init:third-party-paths">
+        <property name="git.url" value="https://github.com/NCIP/caarray"/>
+        <exec executable="git" outputproperty="git.tag.describe" failifexecutionfails="true" errorproperty="">
+            <arg value="describe"/>
+            <arg value="--tags"/>
+            <arg value="--always"/>
+            <arg value="HEAD"/>
+        </exec>
+        <propertyregex property="git.caarray.version" input="${git.tag.describe}" regexp="^(.*?)(-\d+-g\w+)?$" select="\1" casesensitive="false" />
+        <exec executable="git" outputproperty="git.revision" failifexecutionfails="true" errorproperty="">
+            <arg value="show"/>
+            <arg value="-s"/>
+            <arg value="--format=%h"/>
+        </exec>
+        <echo message="found git info: ${git.url} ${git.revision} ${git.caarray.version}" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -2103,10 +2109,10 @@
                 <attribute name="Main-Class" value="gov.nih.nci.copynumberconverter.CopyNumberToMageTabDataMatrixConverter"/>
                 <section name="gov/nih/nci/copynumberconverter/">
                     <attribute name="Specification-Title" value="cn2magetab" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="cn2magetab" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
@@ -2117,16 +2123,16 @@
 
     <target name="build:caarray-client.jar" depends="build:caarray-client-legacy.jar,build:caarray-client-external.jar"/>
 
-    <target name="build:caarray-client-legacy.jar" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
+    <target name="build:caarray-client-legacy.jar" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,git:getinfo">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.target.dir}/caarray-client-legacy.jar">
             <manifest>
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="caArray" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
@@ -2160,10 +2166,10 @@
                 <manifest>
                     <section name="gov/nih/nci/caarray/">
                         <attribute name="Specification-Title" value="caArray" />
-                        <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                        <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                         <attribute name="Specification-Vendor" value="5AM Solutions" />
                         <attribute name="Implementation-Title" value="caArray" />
-                        <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                        <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                         <attribute name="Implementation-Vendor" value="5AM Solutions" />
                     </section>
                 </manifest>
@@ -2183,7 +2189,7 @@
         </sequential>
     </macrodef>
 
-    <target name="build:caarray-client-external.jar" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,svn:getinfo">
+    <target name="build:caarray-client-external.jar" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,git:getinfo">
         <for param="version" list="${caarray-grid-svc.versions.external}">
             <sequential>
                 <build-caarray-client-external.jar version="@{version}"/>
@@ -2234,7 +2240,6 @@
                     <include name="jnp-client.jar" />
                 </zipfileset>
                 <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/api" dir="${caarray-client.target.dir}/docs/api" includes="legacy/**" />
-                <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
                 <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="caarray-client.legacy.grid.dependencies.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
@@ -2287,7 +2292,6 @@
                     <include name="jnp-client.jar" />
                 </zipfileset>
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/api" dir="${caarray-client.target.dir}/docs/api" includes="external/@{version}/**" />
-                <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_external_model.eap" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.@{version}.build.fileset" />
@@ -2305,7 +2309,7 @@
         </for>
     </target>
 
-    <target name="build:caarray-common.jar" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-deploy,svn:getinfo">
+    <target name="build:caarray-common.jar" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-deploy,git:getinfo">
         <mkdir dir="${caarray-common.target.dir}" />
         <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
             <flattenmapper />
@@ -2318,10 +2322,10 @@
                 <attribute name="Class-Path" value="${processed.common.dependencies.ready.for.manifest.classpath}" />
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="caArray" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
@@ -2329,7 +2333,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray-plugins" depends="init:third-party-paths,compile:caarray-plugins,svn:getinfo">
+    <target name="build:caarray-plugins" depends="init:third-party-paths,compile:caarray-plugins,git:getinfo">
         <mkdir dir="${caarray-bundled-plugins.dir}" />
         <for param="plugin" list="${caarray-plugins.pluginList}">
             <sequential>
@@ -2344,10 +2348,10 @@
                     <manifest>
                         <section name="gov/nih/nci/caarray/@{plugin}">
                             <attribute name="Specification-Title" value="caArray" />
-                            <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                            <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                             <attribute name="Specification-Vendor" value="5AM Solutions" />
                             <attribute name="Implementation-Title" value="caArray" />
-                            <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                            <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                             <attribute name="Implementation-Vendor" value="5AM Solutions" />
                         </section>
                     </manifest>
@@ -2363,7 +2367,7 @@
 
     <target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar" />
 
-    <target name="build:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-ejb.jar,svn:getinfo">
+    <target name="build:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-ejb.jar,git:getinfo">
         <mkdir dir="${caarray-ejb.target.dir}" />
         <pathconvert pathsep=" " property="flattened.ejb.dependencies" refid="ejb.compile.dependencies.path">
             <flattenmapper />
@@ -2384,10 +2388,10 @@
                 <attribute name="Class-Path" value="${processed.ejb.dependencies.ready.for.manifest.classpath}" />
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="caArray" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
@@ -2440,16 +2444,16 @@
 
     <target name="build:caarray.war:scriptsAndStyles" depends="build:caarray.war:scriptsAndStyles:copy-files,build:caarray.war:scriptsAndStyles:minify"/>
 
-    <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war,svn:getinfo,build:caarray.war:scriptsAndStyles">
+    <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war,git:getinfo,build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.dir}" />
 
     	<get-jboss-protocol/>
 
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
-                <filter token="svn.caarray.version" value="${svn.caarray.version}" />
-                <filter token="svn.url" value="${svn.url}" />
-                <filter token="svn.revision" value="${svn.revision}" />
+                <filter token="git.caarray.version" value="${git.caarray.version}" />
+                <filter token="git.url" value="${git.url}" />
+                <filter token="git.revision" value="${git.revision}" />
                 <filter token="build.time" value="${mili.time}" />
                 <filter token="upt.url" value="${upt.url}" />
                 <filter token="release-notes.url" value="${release-notes.url}" />
@@ -2514,10 +2518,10 @@
             <manifest>
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="caArray" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
@@ -2645,10 +2649,10 @@
                 <manifest>
                     <section name="gov/nih/nci/caarray/">
                         <attribute name="Specification-Title" value="caArray" />
-                        <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                        <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                         <attribute name="Specification-Vendor" value="5AM Solutions" />
                         <attribute name="Implementation-Title" value="caArray" />
-                        <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                        <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                         <attribute name="Implementation-Vendor" value="5AM Solutions" />
                     </section>
                 </manifest>
@@ -2670,7 +2674,7 @@
         </sequential>
     </macrodef>
 
-    <target name="build:caarray.ear" depends="init:third-party-paths,build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,svn:getinfo">
+    <target name="build:caarray.ear" depends="init:third-party-paths,build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,git:getinfo">
         <build-caarray.ear />
     </target>
 
@@ -2678,7 +2682,7 @@
         <build-caarray.ear />
     </target>
 
-    <target name="build:caarray-grid-svc.common.jar" depends="init:third-party-paths,compile:caarray-grid-svc.common.jar,svn:getinfo">
+    <target name="build:caarray-grid-svc.common.jar" depends="init:third-party-paths,compile:caarray-grid-svc.common.jar,git:getinfo">
         <mkdir dir="${caarray-grid-svc.common.target.dir}" />
         <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
             <flattenmapper />
@@ -2691,10 +2695,10 @@
                 <attribute name="Class-Path" value="${processed.common.dependencies.ready.for.manifest.classpath}" />
                 <section name="gov/nih/nci/caarray/">
                     <attribute name="Specification-Title" value="caArray Grid Common Library" />
-                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Specification-Vendor" value="5AM Solutions" />
                     <attribute name="Implementation-Title" value="caArray Grid Common Library" />
-                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Version" value="${git.url} ${git.revision}" />
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
