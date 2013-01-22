@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--
-$Id: build.xml $
-$HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/build.xml $
--->
 <project name="caarray-build" default="build:all" basedir="."
     xmlns:ivy="antlib:org.apache.ivy.ant"
     >
@@ -93,8 +89,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
     <property name="db.src.dir" value="${software.dir}/${db.dist.relative.dir}" />
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
 
-    <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
-    <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
 
     <!-- Used by dist:*:prep to determin list of files to use for incremental build process.
         Directory and files must be in svn to work.
@@ -116,9 +110,10 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
     <property name="jboss-conf.dist.dir" value="${dist.exploded.dir}/${jboss-conf.dist.relative.dir}" />
 
     <!-- this needs to be implemented properly later -->
-    <property name="cagrid-libs.dest.file" value="${download.dir}/${cagrid-libs.binaries.file}" />
-    <property name="cagrid-base-war.dest.file" value="${download.dir}/${cagrid-base-war.binaries.file}" />
-    <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
+    <property name="third-party.dir" location="${software.dir}/third-party" />
+    <property name="cagrid-libs.dest.file" value="${third-party.dir}/${cagrid-libs.binaries.file}" />
+    <property name="cagrid-base-war.dest.file" value="${third-party.dir}/${cagrid-base-war.binaries.file}" />
+    <property name="cagrid-console.dest.file" value="${third-party.dir}/${cagrid-console.binaries.file}" />
     <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
 
     <property name="caarray.dist.dir" value="${dist.exploded.dir}" />
@@ -232,9 +227,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
 
         <available file="${jboss.dest.file}" property="jboss.tools.exists" />
         <available file="${tomcat.dest.file}" property="tomcat.tools.exists" />
-        <available file="${cagrid-libs.dest.file}" property="cagrid-libs.tools.exists" />
-        <available file="${cagrid-base-war.dest.file}" property="cagrid-base-war.tools.exists" />
-        <available file="${cagrid-console.dest.file}" property="cagrid-console.tools.exists" />
     <!-- If jboss is required to build, then check for jboss in jboss.home, then check for in jboss in working directory, if not found then download it into this that directory.  If found at any point set local.jboss.home to where it is found.  This can be passed to sub-projects so then can compile code against distribution.  This is especially important on AntHillPro server which will not have jboss present, thus will have to use a copy in the working area.  This also makes it easier to start the project, if the developer does not yet have jboss installed, build will download it and install it so build can proceed. -->
     <if>
         <equals arg1="${require.jboss}" arg2="true" />
@@ -406,7 +398,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
             </fileset>
         </delete>
         <mkdir dir="${software.dir}/gui-installer/target"/>
-        <gui-installer-prep-caarray target.dir="${software.dir}/gui-installer/target" download.dir="${software.dir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}" izpack-custom.svn.dir="${software.dir}/gui-installer/target/custom"/>
+        <gui-installer-prep-caarray target.dir="${software.dir}/gui-installer/target" bda-utils.dir="${bda-utils.dir}"/>
         <ant inheritAll="false" inheritRefs="false"
             antfile="install.xml"
             target="build:installer"
@@ -424,13 +416,11 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
         <attribute name="bda-utils.dir" default="${bda-download.dir}" />
         <attribute name="gui-installer.dir" default="${gui-installer.dir}" />
         <attribute name="target.dir" default="${target.dir}"/>
-        <attribute name="download.dir" default="${download.dir}" />
+        <attribute name="third-party.dir" default="${third-party.dir}" />
         <attribute name="dist.dir" default="${dist.dir}"/>
         <attribute name="izpack.binary.name" default="izpack-4.3" />
         <attribute name="izpack.binary.file" default="izpack-4.3.zip" />
-        <attribute name="izpack.binary.uri" default="${izpack.binary.uri}" />
-        <attribute name="izpack-custom.svn.url" default="${izpack-custom.svn.url}"/>
-        <attribute name="izpack-custom.svn.dir" default="${target.dir}/izpack-custom"/>
+        <attribute name="izpack-custom.binary.file" default="izpack-custom.zip"/>
         <attribute name="product.name" default="caArray-installer" />
         <attribute name="product.version" default="2.1.0" />
         <sequential>
@@ -442,47 +432,22 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
           <delete dir="@{target.dir}/@{izpack.binary.name}" />
 
           <!-- Extract izpack -->
-          <get src="@{izpack.binary.uri}/@{izpack.binary.file}" dest="@{download.dir}/@{izpack.binary.file}" usetimestamp="true"/>
-          <unzip dest="@{target.dir}" src="@{download.dir}/@{izpack.binary.file}" />
+          <unzip dest="@{target.dir}" src="@{third-party.dir}/@{izpack.binary.file}" />
 
-          <!-- Check out izpack custom code and copy into extracted izpack dist -->
-          <osfamily property="os.family"/>
-          <switch value="${os.family}">
-            <case value="windows">
-              <echo message="Retreiving izpack custom code from svn task."/>
-              <svn-co
-                svn.checkout.url="@{izpack-custom.svn.url}"
-                svn.checkout.dir="@{izpack-custom.svn.dir}"
-                />
-            </case>
-            <case value="unix">
-              <echo message="Retreiving izpack custom code from svn command line."/>
-              <mkdir dir="@{izpack-custom.svn.dir}"/>
-              <exec osfamily="unix" executable="svn" spawn="true">
-                <arg line="co @{izpack-custom.svn.url} @{izpack-custom.svn.dir}" />
-              </exec>
-            </case>
-            <default>
-              <fail message="Unexpected OS type ${os.family}"/>
-            </default>
-          </switch>
-          <sleep seconds="10"/>
-
-          <copy todir="@{target.dir}/@{izpack.binary.name}/src/lib" overwrite="true">
-            <fileset dir="@{izpack-custom.svn.dir}" />
-          </copy>
+          <!-- Extract izpack custom code and copy into extracted izpack dist -->
+          <unzip dest="@{target.dir}/@{izpack.binary.name}/src/lib" src="@{third-party.dir}/@{izpack-custom.binary.file}" overwrite="true"/>
 
           <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml"
             dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
-            <insert path="//target[@name='build.listeners']" position="before" file="@{izpack-custom.svn.dir}/resources/ProgressBarInstallerListener.xml"/>
+            <insert path="//target[@name='build.listeners']" position="before" file="@{target.dir}/@{izpack.binary.name}/src/lib/resources/ProgressBarInstallerListener.xml"/>
           </xmltask>
 
           <!-- support for custom panels -->
           <xmltask failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml" dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
-            <insert path="//target[@name='build.panels']" file="@{izpack-custom.svn.dir}/resources/CustomPanels.xml"/>
+            <insert path="//target[@name='build.panels']" file="@{target.dir}/@{izpack.binary.name}/src/lib/resources/CustomPanels.xml"/>
           </xmltask>
 
-        <copy file="@{izpack-custom.svn.dir}/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
+        <copy file="@{target.dir}/@{izpack.binary.name}/src/lib/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
 
         <!-- Copy over library files -->
         <mkdir dir="@{target.dir}/@{izpack.binary.name}/lib"/>
@@ -582,33 +547,10 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
         </ant>
     </target>
 
-
-    <target name="retrieve:jboss" unless="jboss.tools.exists">
-        <get src="${jboss.src.url}"
-            dest="${jboss.dest.file}"/>
-        <get src="${jboss.src.url}.MD5"
-            dest="${jboss.dest.file}.MD5"/>
-        <checksum file="${jboss.dest.file}" verifyProperty="jboss.cksum.ok"/>
-        <if>
-            <equals arg1="${jboss.cksum.ok}" arg2="true"/>
-            <then>
-                <echo message="Downloaded jboss sucessfully"/>
-            </then>
-            <else>
-                <fail message="Failed to download jboss file sucessfully."/>
-            </else>
-        </if>
-    </target>
-
-    <target name="dist:tools:retrieve" depends="retrieve:jboss,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
+    <target name="dist:tools:retrieve" depends="dist:tools:retrieve:cagrid-console"/>
 
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
-        <get src="${jboss5-bindings.src.url}" dest="${dist.exploded.dir}/${jboss5-bindings.file}" />
-    </target>
-
-    <target name="dist:tools:retrieve:cagrid" unless="cagrid-libs.tools.exists" description="Downloads JBOSS from binary repository and verifies checksum">
-        <get src="${cagrid-libs.src.url}" dest="${cagrid-libs.dest.file}" />
-        <get src="${cagrid-base-war.src.url}" dest="${cagrid-base-war.dest.file}" />
+        <copy todir="${dist.exploded.dir}" file="${third-party.dir}/${jboss5-bindings.file}" />
     </target>
 
     <target name="run-caarray2-build" depends="
@@ -681,14 +623,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
     </target>
 
     <target name="dist:tools:retrieve:cagrid-console" description="Downloads grid console from binary repository">
-        <if>
-            <not>
-                <available file="${cagrid-console.dest.file}"/>
-            </not>
-            <then>
-                <get src="${cagrid-console.src.url}" dest="${cagrid-console.dest.file}" />
-            </then>
-        </if>
         <property name="cagrid-console.dist.dir" location="${dist.exploded.dir}/${cagrid-console.dist.relative.dir}"/>
         <unzip src="${cagrid-console.dest.file}" dest="${dist.exploded.dir}"/>
         <replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"

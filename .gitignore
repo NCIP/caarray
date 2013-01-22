@@ -16,6 +16,7 @@ software/grid/legacy/deploy.properties
 software/grid/v1_0/build/
 software/grid/v1_0/cagrid_CaArraySvc*.zip
 software/grid/v1_0/deploy.properties
+software/gui-installer/target/
 software/lib/
 software/master_build/.ivy2-caarray-cache/
 software/master_build/download/

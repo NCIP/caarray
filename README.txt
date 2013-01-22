@@ -257,14 +257,13 @@ db-*.xml file referencing the script. You can use the schema file from the previ
 Source Control
 ------------------------
 
-The base Subversion URL is https://ncisvn.nci.nih.gov/svn/caarray2. The mainline of development is under the "trunk" subdirectory,
-thus typically you would want to check out https://ncisvn.nci.nih.gov/svn/caarray2/trunk.
+The git repository URL is https://github.com/NCIP/caarray. The mainline of development is under the "master" branch.
 
-Branches are created as needed under https://ncisvn.nci.nih.gov/svn/caarray2/branches for work on previous or future versions of
+Branches are created as needed under https://github.com/NCIP/caarray/branches for work on previous or future versions of
 caArray in parallel with mainline development. Also, developers should create their own private branches here for work that spans
 more than 1-2 days.
 
-Tags are created under https://ncisvn.nci.nih.gov/svn/caarray2/tags for each milestone, release candidate and GA release.
+Tags are created under https://github.com/NCIP/caarray/tags for each milestone, release candidate and GA release.
 
 Issue Tracking
 ------------------------

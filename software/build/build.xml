@@ -144,6 +144,7 @@
     <property name="bda-utils.dir" value="${basedir}/target/bda-utils" />
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
+    <property name="third-party.dir" location="${basedir}/third-party" />
 
     <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-bda-dependencies">
         <property name="no.ivy" value="${no.ivy}"/>
@@ -2213,8 +2214,7 @@
                     <unzip src="${jboss.dest.file}" dest="${jboss.exploded.dir}"/>
                 </then>
                 <else>
-                    <get src="${jboss.src.url}" dest="${target.dir}/${jboss.binaries.file}"/>
-                    <unzip src="${target.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
+                    <unzip src="${third-party.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
                 </else>
             </if>
 
@@ -2265,8 +2265,7 @@
                     <unzip src="${jboss.dest.file}" dest="${jboss.exploded.dir}"/>
                 </then>
                 <else>
-                    <get src="${jboss.src.url}" dest="${target.dir}/${jboss.binaries.file}"/>
-                    <unzip src="${target.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
+                    <unzip src="${third-party.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
                 </else>
             </if>
 

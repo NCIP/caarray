@@ -1,8 +1,4 @@
 <project name="bda-utils" xmlns:antunit="antlib:org.apache.ant.antunit">
-<!--
-$Id: bda-build-utils.xml $
-$HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy-repo/ncicb/bda-utils/1.7.5.caarray/bda-build-utils-1.7.5.caarray.xml $
--->
 
    <!-- Properties -->
   <property name="software.dir" location="${basedir}"/>
@@ -11,6 +7,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   <property name="bda-utils.resource.dir" location="${bda-utils.dir}/resource"/>
    <property name="antunit.jar" value="antunit-1.0.jar"/>
   <property name="template.dbintegrate.file" location="${bda-utils.resource.dir}/template-db-integrate.xml"/>
+  <property name="third-party.dir" location="${software.dir}/third-party" />
 
   <!-- Supported versions -->
   <property name="jboss.version.min" value="5.1.0"/>
@@ -2107,26 +2104,9 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
 
-  <!--
-  svn-getinfo macro gets the latest revision number in the repository for the give path and will set the lsd.revision property
-    usage: <svn-getinfo />
-    my.path is the checked out location of the project
-  -->
-  <macrodef name="svn-getinfo">
-    <attribute name="my.path" default="${basedir}"/>
-    <sequential>
-      <svn javahl="false" svnkit="true">
-        <status path="@{my.path}" revisionProperty="svn.revision" urlProperty="svn.url"/>
-      </svn>
-      <var name="lsd.revision" value="${svn.revision}" />
-      <echo> in macrodef - @{my.path} </echo>
-    </sequential>
-  </macrodef>
-
   <macrodef name="validate-pre-build">
     <attribute name="application.base.path" default="${application.base.path}"/>
     <attribute name="require.build.wscore" default="${require.build.wscore}"/>
-    <attribute name="wscore.download.url" default="${wscore.download.url}"/>
     <attribute name="wscore.relative.dir" default="ws-core-4.0.3"/>
     <attribute name="cacore-sdk.required" default="${cacore-sdk.required}"/>
     <attribute name="cacore-sdk.src.url" default="${cacore-sdk.src.url}"/>
@@ -2137,7 +2117,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         <equals arg1="@{require.build.wscore}" arg2="true"/>
         <then>
           <check-wscore-exists
-            wscore.download.url="@{wscore.download.url}"
             application.base.path="@{application.base.path}"
             wscore.relative.dir="@{wscore.relative.dir}"
             />
@@ -2153,13 +2132,11 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   </macrodef>
 
   <macrodef name="check-wscore-exists">
-    <attribute name="wscore.download.url" default="${wscore.download.url}"/>
     <attribute name="wscore.relative.dir" default="ws-core-4.0.3"/>
     <attribute name="application.base.path" default="${application.base.path}"/>
-    <attribute name="download.dir" default="${download.dir}"/>
+    <attribute name="third-party.dir" default="${third-party.dir}"/>
     <sequential>
-      <basename property="wscore.file.name" file="@{wscore.download.url}"/>
-      <var name="wscore.dest.file" value="@{download.dir}/${wscore.file.name}"/>
+      <var name="wscore.dest.file" value="@{third-party.dir}/${wscore.file.name}"/>
       <echo message="Checking for existence of GLOBUS_LOCATION envrironment variable."/>
       <echo message="wscore.relative.dir = @{wscore.relative.dir}"/>
       <mkdir dir="${temp.dir}"/>
@@ -2168,28 +2145,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <isset property="env.GLOBUS_LOCATION"/>
         </not>
         <then>
-          <echo message="GLOBUS_LOCATION not set, downloading and installing @{wscore.download.url}"/>
-          <if>
-            <not>
-              <available file="${wscore.dest.file}"/>
-            </not>
-            <then>
-              <get src="@{wscore.download.url}"
-                dest="${wscore.dest.file}"/>
-              <get src="@{wscore.download.url}.MD5"
-                dest="${wscore.dest.file}.MD5"/>
-              <checksum file="${wscore.dest.file}" verifyProperty="wscore.cksum.ok"/>
-              <if>
-                <equals arg1="${wscore.cksum.ok}" arg2="true"/>
-                <then>
-                  <echo message="Downloaded wscore sucessfully"/>
-                </then>
-                <else>
-                  <fail message="Failed to download wscore file sucessfully."/>
-                </else>
-              </if>
-            </then>
-          </if>
           <var name="env.GLOBUS_LOCATION" value="@{application.base.path}/@{wscore.relative.dir}"/>
           <if>
             <not>
@@ -2203,24 +2158,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
               <echo message="${env.GLOBUS_LOCATION} already exists."/>
             </else>
           </if>
-
-          <!-- no longer needed
-          <osfamily property="os.family"/>
-          <echo message="os.family=${os.family}"/>
-          <switch value="${os.family}">
-            <case value="unix">
-              <echo message="Now you need configure the environment variable GLOBUS_LOCATION."/>
-              <echo message="For bash shell you can edit the $HOME/.bash_profile and add 'export GLOBUS_LOCATION=${application.base.path}/${wscore.relative.dir}'"/>
-              <echo message="For other shells refer to you operating system documentation (you can check your shell by 'echo $SHELL')"/>
-
-            </case>
-            <case value="windows">
-              <echo message="Now you need configure the environment variable GLOBUS_LOCATION."/>
-              <echo message="Right click on MyComputer, select Proeprties, select Advanced tab, click on Environment Variables, click on New under System Variables,  and set GLOBUS_LOCATION to ${application.base.path}/${wscore.relative.dir}"/>
-            </case>
-          </switch>
-          <fail message="Set GLOBUS_LOCATION and build again."/>
-          -->
         </then>
         <else>
           <echo message="GLOBUS_LOCATION is set to ${env.GLOBUS_LOCATION} nothing needs to be done."/>
@@ -2366,44 +2303,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
            <pathelement location="${bda-utils.dir}/groovy-all-1.6.jar"/>
        </classpath>
       </java>
-    </sequential>
-  </macrodef>
-
-  <!--
-  diffrevision macro will generate a file will names of the java files that were checked in from the last revision number till the HEAD or the current revision number
-    usage: <diffrevision envpropertyfile="project.properties" differential.file.name="diff_list.txt" />
-    old.revision.number is the old revision number when the static analysis is done
-    differential.file.name is the name of the file to which the differential list is written.
-  -->
-  <macrodef name="diffrevision">
-    <attribute name="old.revision.number" />
-    <attribute name="differential.file.name" default="diff_list.txt" />
-    <sequential>
-      <svn javahl="false" svnkit="true">
-        <status path="${basedir}"  revisionProperty="build.svn.revision" urlProperty="svn.source.url"/>
-      </svn>
-
-      <svn javahl="false" svnkit="true">
-        <diff oldUrl="${svn.source.url}" oldTargetRevision="@{old.revision.number}" newTargetRevision="${build.svn.revision}" outFile="${basedir}/patch.txt"/>
-      </svn>
-      <loadfile
-        property="diff.file.list"
-        srcFile="${basedir}/patch.txt">
-        <filterchain>
-          <linecontainsregexp>
-            <regexp pattern="Index: .*\.java"/>
-          </linecontainsregexp>
-        </filterchain>
-      </loadfile>
-      <if>
-        <isset property="diff.file.list"/>
-        <then>
-          <echo file="@{differential.file.name}" append="false" message="${diff.file.list}${line.separator}"/>
-        </then>
-      </if>
-      <replaceregexp file="@{differential.file.name}" byline="true" match="^Index: (.*)" replace="\1"/>
-      <delete file="${basedir}/patch.txt"/>
-
     </sequential>
   </macrodef>
 
@@ -3150,33 +3049,11 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
             <then>
               <echo message="temporary copy not found, installing"/>
               <if>
-                <not>
-                  <available file="${tools.dist.relative.dir}/ws-core-enum-4.0.3.zip"/>
-                </not>
+                <available file="${tools.dist.relative.dir}/ws-core-enum-4.0.3.zip"/>
                 <then>
-                  <var name="wscore.src.url.unexpanded" unset="true"/>
-                  <propertyregex property="wscore.src.url.unexpanded"
-                    input="@{wscore.src.url}"
-                    regexp="^\${.*}"
-                    select="true"
-                    />
-                  <if>
-                    <isset property="wscore.src.url.unexpanded"/>
-                    <then>
-                      <property name="tmp.wscore.src.url" value="${wscore.download.url}"/>
-                    </then>
-                    <else>
-                      <property name="tmp.wscore.src.url" value="@{wscore.src.url}"/>
-                    </else>
-                  </if>
-                  <var name="temp.file.name" usnet="true"/>
-                  <basename file="" property="temp.file.name"/>
-                  <get src="${temp.wscore.src.url}" dest="${tools.dist.relative.dir}/${temp.file.name}"/>
-                </then>
-                <else>
                   <echo message="Installing WSCORE."/>
                   <unzip dest="${working.dir}" src="${tools.dist.relative.dir}/ws-core-enum-4.0.3.zip"/>
-                </else>
+                </then>
               </if>
             </then>
           </if>
@@ -3458,14 +3335,9 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="dist.dir" default="${dist.dir}"/>
     <attribute name="izpack.binary.name" default="izpack-4.3" />
     <attribute name="izpack.binary.file" default="izpack-4.3.zip" />
-    <attribute name="izpack.binary.uri" default="https://ncisvn.nci.nih.gov/svn/commonlibrary/trunk//techstack-2008/os-independent" />
-    <attribute name="izpack-custom.svn.url" default="https://ncisvn.nci.nih.gov/svn/automation/trunk/software/bda-installer/src-custom-4.3"/>
-    <attribute name="izpack-custom.svn.dir" default="${target.dir}/izpack-custom"/>
+    <attribute name="izpack-custom.binary.file" default="izpack-custom.zip"/>
     <attribute name="product.name" default="caArray-installer" />
     <attribute name="product.version" default="2.1.0" />
-    <attribute name="ant.binary.file" default="apache-ant-1.7.0-bin.zip"/>
-    <attribute name="ant.binary.url" default="https://ncisvn.nci.nih.gov/svn/commonlibrary/trunk/techstack-2007/os-independent/apache-ant-1.7.0-bin.zip"/>
-    <attribute name="ant.binary.dir" default="${target.dir}/apache-ant-1.7.0"/>
     <sequential>
       <tstamp>
         <format property="JAR_STAMP" pattern="MMddyyyyhhmmss" unit="millisecond" />
@@ -3475,43 +3347,18 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <delete dir="@{target.dir}/@{izpack.binary.name}" />
 
       <!-- Extract izpack -->
-      <get src="@{izpack.binary.uri}/@{izpack.binary.file}" dest="@{download.dir}/@{izpack.binary.file}" usetimestamp="true"/>
-      <unzip dest="@{target.dir}" src="@{download.dir}/@{izpack.binary.file}" />
+      <unzip dest="@{target.dir}" src="@{third-party.dir}/@{izpack.binary.file}" />
 
-      <!-- Check out izpack custom code and copy into extracted izpack dist -->
-      <osfamily property="os.family"/>
-      <switch value="${os.family}">
-        <case value="windows">
-          <echo message="Retreiving izpack custom code from svn task."/>
-          <svn-co
-            svn.checkout.url="@{izpack-custom.svn.url}"
-            svn.checkout.dir="@{izpack-custom.svn.dir}"
-            />
-        </case>
-        <case value="unix">
-          <echo message="Retreiving izpack custom code from svn command line."/>
-          <mkdir dir="@{izpack-custom.svn.dir}"/>
-          <exec osfamily="unix" executable="svn" spawn="true">
-            <arg line="co @{izpack-custom.svn.url} @{izpack-custom.svn.dir}" />
-          </exec>
-        </case>
-        <default>
-          <fail message="Unexpected OS type ${os.family}"/>
-        </default>
-      </switch>
-      <sleep seconds="10"/>
-
-      <copy todir="@{target.dir}/@{izpack.binary.name}/src/lib" overwrite="true">
-        <fileset dir="@{izpack-custom.svn.dir}" />
-      </copy>
+      <!-- Extract izpack custom code and copy into extracted izpack dist -->
+      <unzip dest="@{target.dir}/@{izpack.binary.name}/src/lib" src="@{third-party.dir}/@{izpack-custom.binary.file}" overwrite="true"/>
 
       <!-- customize izpack  -->
       <xmltask preservetype="true" failWithoutMatch="true" source="@{target.dir}/@{izpack.binary.name}/src/build.xml"
         dest="@{target.dir}/@{izpack.binary.name}/src/build.xml">
         <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="//target[@name='build.listeners']" file="@{izpack-custom.svn.dir}/resources/ProgressBarInstallerListener.xml"/>
+        <insert path="//target[@name='build.listeners']" file="@{target.dir}/@{izpack.binary.name}/src/lib/resources/ProgressBarInstallerListener.xml"/>
       </xmltask>
-      <copy file="@{izpack-custom.svn.dir}/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
+      <copy file="@{target.dir}/@{izpack.binary.name}/src/lib/resources/eng.xml" todir="@{target.dir}/@{izpack.binary.name}/bin/langpacks/installer" overwrite="true" />
 
       <!-- Copy over library files -->
       <mkdir dir="@{target.dir}/@{izpack.binary.name}/lib"/>
@@ -3532,8 +3379,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <chmod dir="@{target.dir}/@{izpack.binary.name}/bin" perm="ugo+rx" includes="compile" />
         </then>
       </if>
-      <get src="@{ant.binary.url}" dest="@{download.dir}/@{ant.binary.file}" usetimestamp="true"/>
-      <unzip dest="@{target.dir}" src="@{download.dir}/@{ant.binary.file}" />
     </sequential>
   </macrodef>
   <macrodef name="jboss-read-ldapconfig" description="check if the application is installed">

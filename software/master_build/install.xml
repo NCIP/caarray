@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!--
-$Id: install.xml $
-$HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/install.xml $
--->
 <project name="caarray-installer" default="upgrade" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>
         Apache Ant-based installer for caArray2.
