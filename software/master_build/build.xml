@@ -56,7 +56,6 @@
     <property name="download.dir" location="${target.dir}/download" />
     <property name="pt.dir" location="${target.dir}/persistent-transient" />
     <property name="working.dir" location="${target.dir}/working" />
-    <property name="cacore-sdk.dir" location="${target.dir}/${cacore-sdk.binaries.relative.dir}"/>
 
     <!-- Generic build time properties -->
     <property name="project.name" value="caarray"/>
@@ -558,51 +557,6 @@
         init,
         build:caarray,
         build:init-sql">
-    </target>
-
-    <target name="dist:tools:retrieve:sync-gts"  description="Downloads synch-gts from binary repository" depends="dist:tools:retrieve:cagrid-target">
-        <if>
-            <not>
-                <available file="${download.dir}/${sync-gts.binaries.file}"/>
-            </not>
-            <then>
-                <get src="${sync-gts.src.url}" dest="${download.dir}/${sync-gts.binaries.file}" />
-            </then>
-        </if>
-        <property name="sync-gts.dist.dir" location="${dist.exploded.dir}/${sync-gts.dist.relative.dir}"/>
-        <unzip src="${download.dir}/${sync-gts.binaries.file}" dest="${sync-gts.dist.dir}"/>
-    </target>
-
-    <target name="dist:tools:retrieve:cagrid-target">
-        <mkdir dir="${cagrid.target.co.dir}"/>
-        <if>
-            <not>
-                <available file="${cagrid-target.src.url}"/>
-            </not>
-            <then>
-                <mkdir dir="${cagrid.target.co.dir}"/>
-                <svn-co
-                    svn.checkout.url="${cagrid-target.src.url}"
-                    svn.checkout.dir="${cagrid.target.co.dir}"
-                    delete="false"
-                    />
-            </then>
-        </if>
-        <copy todir="${dist.exploded.dir}/cagrid-target">
-            <fileset dir="${cagrid.target.co.dir}"/>
-        </copy>
-    </target>
-
-    <target name="dist:tools:retrieve:cgmm" if="jboss.cgmm.enable">
-        <ivy-retrieve-cgmm ivy.dir="${bda-utils.dir}/resource/ivy"
-            />
-        <copy todir="${dist.exploded.dir}/cgmm-libs">
-            <fileset dir="${lib.dir}">
-                <include name="cgmm/*"/>
-                <include name="jboss-default-lib/*"/>
-                <include name="jbossweb-tomcat55-sar-jars/*"/>
-            </fileset>
-        </copy>
     </target>
 
     <target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >

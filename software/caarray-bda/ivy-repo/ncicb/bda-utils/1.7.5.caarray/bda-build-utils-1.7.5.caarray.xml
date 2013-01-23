@@ -2108,10 +2108,7 @@
     <attribute name="application.base.path" default="${application.base.path}"/>
     <attribute name="require.build.wscore" default="${require.build.wscore}"/>
     <attribute name="wscore.relative.dir" default="ws-core-4.0.3"/>
-    <attribute name="cacore-sdk.required" default="${cacore-sdk.required}"/>
-    <attribute name="cacore-sdk.src.url" default="${cacore-sdk.src.url}"/>
     <attribute name="download.dir" default="${download.dir}"/>
-    <attribute name="cacore-sdk.dir" default="${cacore-sdk.dir}"/>
     <sequential>
       <if>
         <equals arg1="@{require.build.wscore}" arg2="true"/>
@@ -2122,12 +2119,6 @@
             />
         </then>
       </if>
-      <get-cacore-sdk
-        cacore-sdk.required="@{cacore-sdk.required}"
-        cacore-sdk.src.url="@{cacore-sdk.src.url}"
-        download.dir="@{download.dir}"
-        cacore-sdk.dir="@{cacore-sdk.dir}"
-        />
     </sequential>
   </macrodef>
 
@@ -5467,41 +5458,6 @@
     </sequential>
   </macrodef>
 
-  <macrodef name="get-cacore-sdk">
-    <attribute name="cacore-sdk.required" default="${cacore-sdk.required}"/>
-    <attribute name="cacore-sdk.src.url" default="${cacore-sdk.src.url}"/>
-    <attribute name="download.dir" default="${download.dir}"/>
-    <attribute name="cacore-sdk.dir" default="${cacore-sdk.dir}"/>
-    <sequential>
-      <basename file="@{cacore-sdk.src.url}" property="cacore-sdk.binaries.file"/>
-      <mkdir dir="@{download.dir}"/>
-      <!-- Download if not already downloaded -->
-      <if>
-        <and>
-          <equals arg1="@{cacore-sdk.required}" arg2="true"/>
-          <not>
-            <available file="@{download.dir}/${cacore-sdk.binaries.file}"/>
-          </not>
-        </and>
-        <then>
-          <get src="@{cacore-sdk.src.url}" dest="@{download.dir}/${cacore-sdk.binaries.file}" />
-        </then>
-      </if>
-      <!-- Extract if not already extracted -->
-      <if>
-        <and>
-          <equals arg1="@{cacore-sdk.required}" arg2="true"/>
-          <not>
-            <available file="@{cacore-sdk.dir}"/>
-          </not>
-        </and>
-        <then>
-          <mkdir dir="@{cacore-sdk.dir}"/>
-          <unzip src="@{download.dir}/${cacore-sdk.binaries.file}" dest="@{cacore-sdk.dir}"/>
-        </then>
-      </if>
-    </sequential>
-  </macrodef>
   <macrodef name="jboss-update-properties-service">
     <attribute name="jboss.home" default="${jboss.home}"/>
     <attribute name="jboss.server.name" default="${jboss.server.name}"/>
@@ -9384,72 +9340,6 @@
       <chmod file="@{jboss.start.file.location}" perm="ugo+rx"/>
     </sequential>
   </macrodef>
-  <macrodef name="ivy-retrieve">
-    <attribute name="software.dir" default="${software.dir}"/>
-    <attribute name="ivy.dir" default="${bda-utils.resource.dir}/ivy"/>
-    <attribute name="ivy.settings.file" default="@{ivy.dir}/cbiit-ivy-settings-with-cagrid12.xml"/>
-    <attribute name="project.name" default="${project.name}"/>
-    <attribute name="project.ivy.conf" default="rutime"/>
-    <attribute name="project.lib.dir" default="${lib.dir}/@{project.name}"/>
-    <attribute name="project.org"/>
-    <attribute name="project.version"/>
-    <attribute name="lib.dir" default="${lib.dir}"/>
-    <sequential>
-      <ant inheritAll="false" inheritRefs="false" antfile="project-download.xml" target="project-download" dir="@{ivy.dir}">
-        <property name="software.dir" location="@{software.dir}" />
-        <property name="ivy.settings.file" location="@{ivy.settings.file}"/>
-        <property name="project.ivy.conf" value="@{project.ivy.conf}"/>
-        <property name="project.lib.dir" location="@{project.lib.dir}"/>
-        <property name="project.org" value="@{project.org}"/>
-        <property name="project.name" value="@{project.name}"/>
-        <property name="project.version" value="@{project.version}"/>
-        <property name="ivy.dep.dir" value="@{ivy.dir}"/>
-        <property name="lib.dir" location="@{lib.dir}"/>
-      </ant>
-    </sequential>
-  </macrodef>
-  <macrodef name="ivy-retrieve-cgmm">
-    <attribute name="project.lib.dir.base" default="${lib.dir}"/>
-    <attribute name="project.version" default="0.7.0"/>
-    <attribute name="ivy.dir" default="${bda-utils.resource.dir}/ivy"/>
-    <attribute name="ivy.settings.file" default="@{ivy.dir}/cbiit-ivy-settings-with-cagrid13.xml"/>
-    <attribute name="lib.dir" default="${lib.dir}"/>
-    <sequential>
-      <ivy-retrieve
-        software.dir="${software.dir}"
-        ivy.dir="@{ivy.dir}"
-        ivy.settings.file="@{ivy.settings.file}"
-        project.name="cgmm"
-        project.ivy.conf="cgmm-api"
-        project.lib.dir="@{project.lib.dir.base}/cgmm"
-        project.org="gov.nih.nci.security"
-        project.version="@{project.version}"
-        lib.dir="@{lib.dir}"
-        />
-      <ivy-retrieve
-        software.dir="${software.dir}"
-        ivy.dir="@{ivy.dir}"
-        ivy.settings.file="@{ivy.settings.file}"
-        project.name="cgmm"
-        project.ivy.conf="runtime"
-        project.lib.dir="@{project.lib.dir.base}/jbossweb-tomcat55-sar-jars"
-        project.org="gov.nih.nci.security"
-        project.version="@{project.version}"
-        lib.dir="@{lib.dir}"
-        />
-      <ivy-retrieve
-        software.dir="${software.dir}"
-        ivy.dir="@{ivy.dir}"
-        ivy.settings.file="@{ivy.settings.file}"
-        project.name="cgmm"
-        project.ivy.conf="jboss-default-lib"
-        project.lib.dir="@{project.lib.dir.base}/jboss-default-lib"
-        project.org="gov.nih.nci.security"
-        project.version="@{project.version}"
-        lib.dir="@{lib.dir}"
-        />
-    </sequential>
-  </macrodef>
   <macrodef name="jboss-configure-cgmm">
     <attribute name="jboss.home" default="${jboss.home}"/>
     <attribute name="jboss.server.name" default="${jboss.server.name}"/>
@@ -9542,29 +9432,6 @@ gov.nih.nci.security.cgmm.login.config.file=@{cgmm.conf.dest.dir}/cgmm.login.con
           <fail message="grid.target=@{grid.target} is an invalid option, please use a valid name (nci_prod-1.3 nci_stage-1.3 nci_qa-1.3 training-1.3)"/>
         </default>
       </switch>
-    </sequential>
-  </macrodef>
-  <macrodef name="migrate-ivy-report">
-    <attribute name="groovy.file" default="${bda-utils.dir}/resource/groovy/migrateIvy.groovy"/>
-    <attribute name="maven.filelist.src" default="https://ncisvn.nci.nih.gov/svn/maven-mirror/trunk/file-list.txt"/>
-    <attribute name="maven.filelist.dest" default="${target.dir}/maven-filelist.txt"/>
-    <attribute name="cagrid12.filelist.dest" default="${target.dir}/cagrid12-filelist.txt"/>
-    <attribute name="cagrid12.filelist.src" default="https://ncisvn.nci.nih.gov/svn/cagrid-repo-copy/trunk/repository-1.2/file-list.txt"/>
-    <attribute name="cagrid13.filelist.dest" default="${target.dir}/cagrid13-filelist.txt"/>
-    <attribute name="cagrid13.filelist.src" default="https://ncisvn.nci.nih.gov/svn/cagrid-repo-copy/trunk/repository-1.3/file-list.txt"/>
-    <attribute name="cbiit-ivy.filelist.dest" default="${target.dir}/cbiit-ivy-filelist.txt"/>
-    <attribute name="cbiit-ivy.filelist.src" default="https://ncisvn.nci.nih.gov/svn/cbiit-ivy-repo/trunk/file-list.txt"/>
-    <attribute name="ivy.analyze.file" default="${basedir}/ivy.xml"/>
-    <attribute name="migrate.out.file" default="${target.dir}/migration-ivy.out"/>
-    <sequential>
-      <get src="@{maven.filelist.src}" dest="@{maven.filelist.dest}" usetimestamp="true"/>
-      <get src="@{cbiit-ivy.filelist.src}" dest="@{cbiit-ivy.filelist.dest}" usetimestamp="true"/>
-      <get src="@{cagrid12.filelist.src}" dest="@{cagrid12.filelist.dest}" usetimestamp="true"/>
-      <get src="@{cagrid13.filelist.src}" dest="@{cagrid13.filelist.dest}" usetimestamp="true"/>
-      <echo message="Executing @{groovy.file}"/>
-      <groovy src="@{groovy.file}">
-        <arg line="@{maven.filelist.dest} @{cagrid12.filelist.dest} @{cagrid13.filelist.dest} @{cbiit-ivy.filelist.dest} @{ivy.analyze.file} @{migrate.out.file}"/>
-      </groovy>
     </sequential>
   </macrodef>
   <macrodef name="tomcat-nci-customizations">

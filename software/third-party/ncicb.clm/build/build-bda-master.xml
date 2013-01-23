@@ -60,7 +60,6 @@ $HeadURL: https://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build
 	<property name="download.dir" location="${target.dir}/download" />
 	<property name="pt.dir" location="${target.dir}/persistent-transient" />
 	<property name="working.dir" location="${target.dir}/working" />
-	<property name="cacore-sdk.dir" location="${target.dir}/${cacore-sdk.binaries.relative.dir}"/>
 
 
 	<!-- Ivy Related props -->
