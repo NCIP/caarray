@@ -886,7 +886,7 @@
         <field type="staticText" align="left" txt="Please configure the options that will be passed to the caArray JBoss server's JVM."/>
         <field type="divider" align="top"/>
         <field type="text" variable="jboss.java.opts">
-            <spec txt="JBoss Java Opts " size="75" set="-server -Xms2048m -Xmx2048m -XX:ThreadStackSize=128 -XX:SurvivorRatio=10 -XX:PermSize=128m -XX:MaxPermSize=256m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.awt.headless=true -Dcom.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"/>
+            <spec txt="JBoss Java Opts " size="75" set="-server -Xms2048m -Xmx2048m -XX:SurvivorRatio=10 -XX:PermSize=128m -XX:MaxPermSize=256m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.awt.headless=true -Dcom.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"/>
         </field>
     </panel>
 
