@@ -546,7 +546,11 @@
         </ant>
     </target>
 
-    <target name="dist:tools:retrieve" depends="dist:tools:retrieve:cagrid-console"/>
+    <target name="retrieve:jboss" unless="jboss.tools.exists">
+        <copy todir="${tools.dist.dir}" file="${third-party.dir}/${jboss.binaries.file}" />
+    </target>
+    
+    <target name="dist:tools:retrieve" depends="retrieve:jboss,dist:tools:retrieve:cagrid-console"/>
 
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
         <copy todir="${dist.exploded.dir}" file="${third-party.dir}/${jboss5-bindings.file}" />
@@ -621,6 +625,12 @@
             <fileset dir="${tools.dist.dir}">
                 <include name="*.jar"/>
                 <include name="*.zip"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${caarray.dist.dir}/third-party" overwrite="true">
+            <fileset dir="${third-party.dir}">
+                <include name="${wscore.file.name}" />
             </fileset>
         </copy>
 
