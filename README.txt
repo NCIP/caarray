@@ -265,6 +265,10 @@ more than 1-2 days.
 
 Tags are created under https://github.com/NCIP/caarray/tags for each milestone, release candidate and GA release.
 
+Use the following to download the repository and retrieve a specific tag or branch.
+$ git clone git@github.com:NCIP/caarray.git
+$ git checkout TagOrBranchName
+
 Issue Tracking
 ------------------------
 
