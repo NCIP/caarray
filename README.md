@@ -12,13 +12,12 @@ Please see the NOTICE and LICENSE files for details.
 
 You will find more details about caArray in the following links:
 
-    *  Home Page: https://wiki.nci.nih.gov/x/nIEOAQ
-    *  NCI OSDI: https://wiki.nci.nih.gov/x/VASmAQ
-    *  Mailing List:
+    *  Home Page: https://wiki.nci.nih.gov/x/nIEOAQ    
     *  Issue Tracker: https://tracker.nci.nih.gov/browse/ARRAY
     *  Wiki Documentation: https://wiki.nci.nih.gov/x/34Kl
     *  Code Repository: http://github.com/NCIP/caarray
     *  Documentation Repository: http://github.com/NCIP/caarray-docs
+    *  Mailing List:
 
 Please join us in further developing and improving caArray.
 
