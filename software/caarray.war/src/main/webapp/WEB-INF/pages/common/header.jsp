@@ -37,7 +37,11 @@
 </div>
 <div id="infobar">
     <div id="rightinfo">
-        <span title="Subversion URL: <c:out value='${initParam["gitUrl"]}'/>, revision: <c:out value='${initParam["gitRevision"]}'/>">Build <c:out value='${initParam["caarrayVersion"]}'/></span>
+        <c:set var='repoInfo' value='Git URL: ${initParam["gitUrl"]}'/>
+        <c:if test='${not empty initParam["gitRevision"]}'>
+            <c:set var='repoInfo' value='${repoInfo}, revision: ${initParam["gitRevision"]}'/>
+        </c:if>
+        <span title="<c:out value='${repoInfo}'/>">Build <c:out value='${initParam["caarrayVersion"]}'/></span>
         <span class="headerbar">|</span>  Node: <span><c:out value='${initParam["nodeName"]}'/></span>
         <c:if test="${pageContext.request.remoteUser != null}">
             <span class="headerbar">|</span> Welcome, <c:out value='${pageContext.request.remoteUser}'/>

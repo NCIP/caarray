@@ -35,7 +35,7 @@
 
     <context-param>
         <param-name>caarrayVersion</param-name>
-        <param-value>@svn.caarray.version@</param-value>
+        <param-value>@git.caarray.version@</param-value>
     </context-param>
     <context-param>
         <param-name>nodeName</param-name>

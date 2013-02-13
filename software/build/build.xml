@@ -1971,18 +1971,20 @@
     </target>
 
     <!-- ******************************************************************* -->
-    <!-- ** GIT TARGETS                                                 ** -->
+    <!-- ** GIT TARGETS                                                   ** -->
     <!-- ******************************************************************* -->
+    <property name="git.url" value="https://github.com/NCIP/caarray"/>
+    <property name="git.revision" value=""/>
+    <property name="git.caarray.version" value="${caarray.version}"/>
     <target name="git:getinfo" description="obtain git revision info" unless="nogit" depends="init:third-party-paths">
-        <property name="git.url" value="https://github.com/NCIP/caarray"/>
-        <exec executable="git" outputproperty="git.tag.describe" failifexecutionfails="true" errorproperty="">
+        <exec executable="git" outputproperty="git.tag.describe" failifexecutionfails="true">
             <arg value="describe"/>
             <arg value="--tags"/>
             <arg value="--always"/>
             <arg value="HEAD"/>
         </exec>
-        <propertyregex property="git.caarray.version" input="${git.tag.describe}" regexp="^(.*?)(-\d+-g\w+)?$" select="\1" casesensitive="false" />
-        <exec executable="git" outputproperty="git.revision" failifexecutionfails="true" errorproperty="">
+        <propertyregex property="git.caarray.version" input="${git.tag.describe}" regexp="^(.*?)(-\d+-g\w+)?$" select="\1" override="true" />
+        <exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
             <arg value="show"/>
             <arg value="-s"/>
             <arg value="--format=%h"/>
