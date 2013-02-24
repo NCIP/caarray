@@ -35,6 +35,11 @@
 
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/bioheatmap.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/overlay.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/session_timeout.js'/>"></script>
+        <script type="text/javascript">
+	        calcOffset();
+	        checkSession();
+        </script>
             <decorator:head/>
         </head>
 
