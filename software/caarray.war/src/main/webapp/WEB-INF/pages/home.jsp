@@ -191,19 +191,23 @@
                             <s:label theme="simple"><b><fmt:message key="search.category"/>:</b></s:label>
                         </td>
                         <td>
+                            <label for="selectExpCat">
                             <s:select id="selectExpCat" name="categoryExp"
                             list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchCategories()" listValue="%{getText(label)}"
                             listKey="value" value="EXPERIMENT_ID" theme="simple" onchange="checkExpCategorySelection()" />
+                            </label>
 
+                            <label for="selectSampleCat">
                             <s:select id="selectSampleCat" name="categorySample"
                             list="@gov.nih.nci.caarray.web.action.SearchAction@getSearchBiometricCategories()" listValue="%{getText(label)}"
                             listKey="value" value="SAMPLE_NAME"  cssStyle="display:none;" theme="simple" onchange="checkSampleCategorySelection()"/>
+                            </label>
                         </td>
                     </tr>
 
                      <tr>
                         <td align="right">
-                            <div id="otherCharsLabel" style="display:none"><b>Characteristic:</b></div>
+                            <div id="otherCharsLabel" style="display:none"><b><label for="otherCharsField">Characteristic:</label></b></div>
                         </td>
                         <td>
                             <s:select id="otherCharsField" name="selectedCategory"
@@ -214,7 +218,7 @@
 
                      <tr>
                         <td align="right">
-                            <div id="keywordlabel"><b><fmt:message key="search.keyword"/>:</b></div>
+                            <div id="keywordlabel"><b><label for="keywordTxtField"><fmt:message key="search.keyword"/>:</label></b></div>
                         </td>
                         <td>
                             <s:textfield id="keywordTxtField" name="keyword" key="search.keyword" theme="simple"/>
@@ -223,7 +227,7 @@
 
                      <tr>
                         <td align="right">
-                            <div id="orgLabel" style="display:none"><b>Organism:</b></div>
+                            <div id="orgLabel" style="display:none"><b><label for="orgField">Organism:</label></b></div>
                         </td>
                         <td>
                             <s:select id="orgField" name="selectedOrganism"
