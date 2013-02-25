@@ -44,13 +44,13 @@ public class SessionTimeoutCookieFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) req;
         long currTime = System.currentTimeMillis();
         long expiryTime = currTime + httpReq.getSession().getMaxInactiveInterval() * MILLIS_PER_SEC;
-        Cookie cookie = new Cookie("serverTime", "" + currTime);
+        Cookie cookie = new Cookie("serverTime", String.valueOf(currTime));
         cookie.setPath("/");
         httpResp.addCookie(cookie);
         if (httpReq.getRemoteUser() != null) {
-            cookie = new Cookie("sessionExpiry", "" + expiryTime);
+            cookie = new Cookie("sessionExpiry", String.valueOf(expiryTime));
         } else {
-            cookie = new Cookie("sessionExpiry", "" + currTime);
+            cookie = new Cookie("sessionExpiry", String.valueOf(currTime));
         }
         cookie.setPath("/");
         httpResp.addCookie(cookie);
