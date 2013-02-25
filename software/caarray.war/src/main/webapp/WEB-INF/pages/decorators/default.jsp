@@ -35,10 +35,11 @@
 
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/bioheatmap.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/overlay.js'/>"></script>
-        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/session_timeout.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/sessionTimeout.js'/>"></script>
         <script type="text/javascript">
-	        calcOffset();
-	        checkSession();
+	        sessionTimeout.init(function() {
+	            window.location = '<c:url value="/logout.action" />';
+	        });
         </script>
             <decorator:head/>
         </head>

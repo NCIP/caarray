@@ -8,6 +8,8 @@
         <link rel="address bar icon" href="<c:url value="/images/favicon.ico"/>" />
         <link rel="icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
+        <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/ext-all.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/xtheme-gray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
 
@@ -43,11 +45,14 @@
                 emptyResult: 'Empty file upload result'
             };
          </script>
-        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/session_timeout.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-jquery-adapter.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-all-debug.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/sessionTimeout.js'/>"></script>
         <script type="text/javascript">
-            calcOffset();
-            checkSession();
-            alert('upload');
+            sessionTimeout.init(function() {
+                window.close();
+            });
         </script>
          <decorator:head/>
     </head>
