@@ -12,12 +12,17 @@ Please see the NOTICE and LICENSE files for details.
 
 You will find more details about caArray in the following links:
 
-    *  Home Page: https://wiki.nci.nih.gov/x/nIEOAQ    
-    *  Issue Tracker: https://tracker.nci.nih.gov/browse/ARRAY
-    *  Wiki Documentation: https://wiki.nci.nih.gov/x/34Kl
-    *  Code Repository: http://github.com/NCIP/caarray
-    *  Documentation Repository: http://github.com/NCIP/caarray-docs
-    *  Mailing List:
+ *  Home Page: https://wiki.nci.nih.gov/x/nIEOAQ    
+ *  Issue Tracker: https://tracker.nci.nih.gov/browse/ARRAY
+ *  Wiki Documentation: https://wiki.nci.nih.gov/x/34Kl
+ *  Code Repository: http://github.com/NCIP/caarray
+ *  Documentation Repository: http://github.com/NCIP/caarray-docs
+ *  Mailing List: caarray_users-l@list.nih.gov
+ *  Knowledge Center: https://cabig-kc.nci.nih.gov/Molecular/forums/
+
+An NCI hosted instance of caArray is publicly available at:
+
+ * https://array.nci.nih.gov/caarray
 
 Please join us in further developing and improving caArray.
 
