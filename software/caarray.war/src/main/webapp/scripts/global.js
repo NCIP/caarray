@@ -695,7 +695,9 @@ function AssociationPicker(baseId, associatedEntityName, entityName, projectId, 
 
 var AssociationPickerUtils = {
     processSelection : function(selectedItem, baseId, associatedEntityName) {
-        var id = selectedItem.firstChild.value;
+        var myInput = selectedItem.firstChild.childNodes[0];
+        var myText = selectedItem.firstChild.childNodes[1];
+        var id = myInput.value;
         if (id == null || id == '') {
             return;
         }
@@ -712,24 +714,25 @@ var AssociationPickerUtils = {
         }
 
         var newItem = document.createElement("li");
-        var newLink = document.createElement("a");
-        var newInput = selectedItem.childNodes[0].cloneNode(false);
+        var newInput = myInput.cloneNode(false);
         newInput.name = (found) ? '' : 'itemsToAssociate';
-        newItem.appendChild(newInput);
-        var newText = selectedItem.childNodes[1].cloneNode(false);
-        newLink.className="asdf";
+        var newText = myText.cloneNode(false);
+        var newLink = document.createElement("a");
         newLink.href="#";
-        newLink.onclick = function() { AssociationPickerUtils.removeSelection(this, baseId); };
+        newLink.onclick = function() { return false; };
+        newLink.appendChild(newInput);
         newLink.appendChild(newText);
         newItem.appendChild(newLink);
+        newItem.onclick = function() { AssociationPickerUtils.removeSelection(this, baseId); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
     },
 
     removeSelection : function(selectedItem, baseId) {
-        var inputName = selectedItem.firstChild.name;
-        var id = selectedItem.firstChild.value;
+        var myInput = selectedItem.firstChild.childNodes[0];
+        var inputName = myInput.name;
+        var id = myInput.value;
         if (inputName != 'itemsToAssociate') {
-            var newItem = selectedItem.firstChild.cloneNode(true);
+            var newItem = myInput.cloneNode(true);
             newItem.name = 'itemsToRemove';
             $(baseId + 'ItemsToRemove').appendChild(newItem);
         }
@@ -781,17 +784,17 @@ var ListPickerUtils = {
         }
 
         var newItem = document.createElement("li");
-        var newLink = document.createElement("a");
         var option = new Option(myInput.value, myInput.value);
         var newText = myText.cloneNode(false);
         newItem.id = baseId + '_' + id;
         option.selected = true;
         selectedItemValues.options[selectedItemValues.length] = option;
-        newLink.className="asdf";
+        var newLink = document.createElement("a");
         newLink.href="#";
-        newLink.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater, baseId); };
+        newLink.onclick = function() { return false; };
         newLink.appendChild(newText);
         newItem.appendChild(newLink);
+        newItem.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater, baseId); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
 
         fireEvent(selectedItemValues, "change", "onchange");

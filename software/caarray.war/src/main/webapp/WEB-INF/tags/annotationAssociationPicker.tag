@@ -34,10 +34,10 @@
                     <div>
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:forEach items="${initialSavedAssociations}" var="currentItem">
-                                <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}'); "><input type="hidden" value="${currentItem.id}"/>${currentItem.name}</li>
+                                <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}');"><a href="#" onclick="return false;"><input type="hidden" value="${currentItem.id}"/>${currentItem.name}</a></li>
                             </c:forEach>
                             <c:forEach items="${itemsToAssociate}" var="currentItem">
-                                <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}'); "><input type="hidden" name="itemsToAssociate" value="${currentItem.id}"/>${currentItem.name}</li>
+                                <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}');"><a href="#" onclick="return false;"><input type="hidden" name="itemsToAssociate" value="${currentItem.id}"/>${currentItem.name}</a></li>
                             </c:forEach>
                         </ul>
                     </div>
