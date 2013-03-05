@@ -712,12 +712,16 @@ var AssociationPickerUtils = {
         }
 
         var newItem = document.createElement("li");
+        var newLink = document.createElement("a");
         var newInput = selectedItem.childNodes[0].cloneNode(false);
         newInput.name = (found) ? '' : 'itemsToAssociate';
         newItem.appendChild(newInput);
         var newText = selectedItem.childNodes[1].cloneNode(false);
-        newItem.appendChild(newText);
-        newItem.onclick = function() {AssociationPickerUtils.removeSelection(this, baseId);}
+        newLink.className="asdf";
+        newLink.href="#";
+        newLink.onclick = function() { AssociationPickerUtils.removeSelection(this, baseId); };
+        newLink.appendChild(newText);
+        newItem.appendChild(newLink);
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
     },
 
@@ -746,7 +750,9 @@ var AssociationPickerUtils = {
 
 var ListPickerUtils = {
     processSelection : function(selectedItem, baseId, listLabel, listFieldName, multiple, allowReordering, autoUpdater) {
-        var id = selectedItem.firstChild.value;
+        var myInput = selectedItem.firstChild.childNodes[0];
+        var myText = selectedItem.firstChild.childNodes[1];
+        var id = myInput.value;
         var selectedItemValues = $(baseId + 'SelectedItemValues');
         var currentCounter = 0;
         var currentId = null;
@@ -775,13 +781,17 @@ var ListPickerUtils = {
         }
 
         var newItem = document.createElement("li");
-        var option = new Option(selectedItem.childNodes[0].value, selectedItem.childNodes[0].value);
-        var newText = selectedItem.childNodes[1].cloneNode(false);
+        var newLink = document.createElement("a");
+        var option = new Option(myInput.value, myInput.value);
+        var newText = myText.cloneNode(false);
         newItem.id = baseId + '_' + id;
         option.selected = true;
         selectedItemValues.options[selectedItemValues.length] = option;
-        newItem.appendChild(newText);
-        newItem.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater, baseId); };
+        newLink.className="asdf";
+        newLink.href="#";
+        newLink.onclick = function() { ListPickerUtils.removeSelection(this, autoUpdater, baseId); };
+        newLink.appendChild(newText);
+        newItem.appendChild(newLink);
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
 
         fireEvent(selectedItemValues, "change", "onchange");

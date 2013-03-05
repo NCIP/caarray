@@ -125,10 +125,14 @@
                                 <c:when test="${multiple != 'true' && !empty listField}">
                                     <c:choose>
                                         <c:when test="${displayResourceValue != 'true'}">
-                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.listField[#attr.objectValue]'/>"><s:property value="#attr.listField[#attr.objectLabel]"/></li>
+                                            <li id="${baseId}_<s:property value='#attr.listField[#attr.objectValue]'/>">
+                                                <a href="#" onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}'); return false;" class="asdf"><s:property value="#attr.listField[#attr.objectLabel]"/></a>
+                                            </li>
                                         </c:when>
                                         <c:otherwise>
-                                            <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.listField[#attr.objectValue]'/>"><s:property value="getText(#attr.listField[#attr.objectLabel])"/></li>
+                                            <li id="${baseId}_<s:property value='#attr.listField[#attr.objectValue]'/>">
+                                                <a href="#" onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}'); return false;" class="asdf"><s:property value="getText(#attr.listField[#attr.objectLabel])"/></a>
+                                            </li>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:when>
@@ -136,12 +140,16 @@
                                     <c:choose>
                                         <c:when test="${displayResourceValue != 'true'}">
                                             <c:forEach items="${listField}" var="currentItem">
-                                                <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.currentItem[#attr.objectValue]'/>"><s:property value="#attr.currentItem[#attr.objectLabel]"/></li>
+                                                <li id="${baseId}_<s:property value='#attr.currentItem[#attr.objectValue]'/>">
+                                                    <a href="#" onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}'); return false;" class="asdf"><s:property value="#attr.currentItem[#attr.objectLabel]"/></a>
+                                                </li>
                                             </c:forEach>
                                         </c:when>
                                         <c:otherwise>
                                             <c:forEach items="${listField}" var="currentItem">
-                                                <li onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}');" id="${baseId}_<s:property value='#attr.currentItem[#attr.objectValue]'/>"><s:property value="getText(#attr.currentItem[#attr.objectLabel])"/></li>
+                                                <li id="${baseId}_<s:property value='#attr.currentItem[#attr.objectValue]'/>">
+                                                    <a href="#" onclick="ListPickerUtils.removeSelection(this, ${baseId}Picker, '${baseId}'); return false;" class="asdf"><s:property value="getText(#attr.currentItem[#attr.objectLabel])"/></a>
+                                                </li>
                                             </c:forEach>
                                         </c:otherwise>
                                     </c:choose>

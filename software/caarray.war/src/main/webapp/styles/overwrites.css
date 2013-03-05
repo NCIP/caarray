@@ -120,9 +120,9 @@ UL.selectList
 { border:1px solid #999; background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; width:255px; height:100px; overflow:auto; }
 UL.selectList
 { background-attachment:scroll }
-UL.selectList LI
-{ border-bottom:1px solid #eee; background: transparent url("../images/ico_add.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
-UL.selectList LI:hover
+UL.selectList a.asdf
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_add.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; display:block; text-decoration:none; color:#333; }
+UL.selectList a.asdf:hover
 { background: #e5e5e5 url("../images/ico_add.gif") no-repeat scroll 0%; }
 .selectListHeader
 { text-align: left; padding-left: 4px; border:1px solid #999; border-top:1px solid #ccc; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x 0 -5px; width:251px; height: 25px; }
@@ -137,9 +137,9 @@ UL.selectedItemList
 { border:1px solid #999; background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; width: 204px; height: 95px; overflow: auto; position: relative}
 UL.selectedItemList
 { background-attachment:scroll }
-UL.selectedItemList li
-{ border-bottom:1px solid #eee; background: transparent url("../images/ico_cancel.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
-UL.selectedItemList LI:hover
+UL.selectedItemList a.asdf
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_cancel.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; display:block}
+UL.selectedItemList a.asdf:hover
 { background: #e5e5e5 url("../images/ico_cancel.gif") no-repeat scroll 0%; }
 
 .pagehelp
