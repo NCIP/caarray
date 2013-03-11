@@ -1977,13 +1977,25 @@
     <property name="git.revision" value=""/>
     <property name="git.caarray.version" value="${caarray.version}"/>
     <target name="git:getinfo" description="obtain git revision info" unless="nogit" depends="init:third-party-paths">
-        <exec executable="git" outputproperty="git.tag.describe" failifexecutionfails="true">
-            <arg value="describe"/>
-            <arg value="--tags"/>
-            <arg value="--always"/>
+        <var name="git.revision" unset="true"/>
+        <var name="git.caarray.version" unset="true"/>
+
+        <exec executable="git" outputproperty="git.branch" failifexecutionfails="true">
+            <arg value="rev-parse"/>
+            <arg value="--abbrev-ref"/>
             <arg value="HEAD"/>
         </exec>
-        <propertyregex property="git.caarray.version" input="${git.tag.describe}" regexp="^(.*?)(-\d+-g\w+)?$" select="\1" override="true" />
+        <if>
+            <equals arg1="${git.branch}" arg2="HEAD" />
+            <then>
+                <exec executable="git" outputproperty="git.caarray.version" failifexecutionfails="true">
+                    <arg value="describe"/>
+                </exec>
+            </then>
+            <else>
+                <property name="git.caarray.version" value="${git.branch}"/>
+            </else>
+        </if>
         <exec executable="git" outputproperty="git.revision" failifexecutionfails="true">
             <arg value="show"/>
             <arg value="-s"/>
