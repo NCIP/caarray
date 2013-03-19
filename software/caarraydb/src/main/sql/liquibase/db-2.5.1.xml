@@ -26,4 +26,8 @@
        <comment>ARRAY-2607 - Clean up files in uploading status.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.1/array-2607.sql"/>
     </changeSet>
+    <changeSet id="array-2616" author="wcheng">
+       <comment>ARRAY-2616 - Clean up duplicate arraydata, add unique constraint.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.1/array-2616.sql"/>
+    </changeSet>
 </databaseChangeLog>
