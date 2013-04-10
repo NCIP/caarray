@@ -81,9 +81,9 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
 
     private void importSplits(CaArrayFileSet origFileSet) {
         Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
+        handleSessionMess(); // new job needs the new split sdrf to have an id
         for (CaArrayFileSet curSplit : splits) {
             curSplit.updateStatus(FileStatus.VALIDATED);
-            handleSessionMess(); // new job needs the new split sdrf to have an id
             ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit,
                     dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(),
                     getProjectDao(), getSearchDao(), this);

@@ -104,12 +104,9 @@ public final class CelHandler extends AbstractDataFileHandler {
     public void closeFiles() {
         super.closeFiles();
 
-        // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
         this.celData.close();
         this.celData.clear();
         this.celData = null;
-        System.gc();
-
     }
 
     /**

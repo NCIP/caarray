@@ -61,11 +61,9 @@ final class CdfReader {
      * Closes the reader.
      */
     void close() {
-        // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
         if (cdfData != null) {
             cdfData.clear();
             cdfData = null;
-            System.gc();
         }
     }
 
