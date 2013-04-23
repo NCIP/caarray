@@ -27,6 +27,8 @@ import gov.nih.nci.security.util.StringUtilities;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -585,7 +587,7 @@ public final class AuthorizationManagerExtensions {
                 // get the Table Name and View Name for each object.
 
                 String applicationID = application.getApplicationId().toString();
-                String peiTableName, tableNameGroup, viewNameGroup = null;
+                String peiTableName, groupPrivilegeMappingTable, viewNameGroup = null;
                 String peiObjectId = null;
                 if (StringUtilities.isBlank(instanceLevelMappingEntry.getObjectPackageName())) {
                     peiObjectId = instanceLevelMappingEntry.getObjectName().trim();
@@ -604,10 +606,10 @@ public final class AuthorizationManagerExtensions {
                 }
 
                 if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableNameForGroup())) {
-                    tableNameGroup = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
+                    groupPrivilegeMappingTable = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
                             + instanceLevelMappingEntry.getAttributeName() + "_GROUP";
                 } else {
-                    tableNameGroup = instanceLevelMappingEntry.getTableNameForGroup();
+                    groupPrivilegeMappingTable = instanceLevelMappingEntry.getTableNameForGroup();
                 }
                 if (StringUtilities.isBlank(instanceLevelMappingEntry.getViewNameForGroup())) {
                     viewNameGroup = "CSM_VW_" + instanceLevelMappingEntry.getObjectName() + "_"
@@ -619,25 +621,14 @@ public final class AuthorizationManagerExtensions {
                 byte activeFlag = instanceLevelMappingEntry.getActiveFlag();
                 if (activeFlag == 1) {
 
-                    // refresh PEI Table
-                    statement.addBatch("delete from " + peiTableName);
-                    statement.executeBatch();
+                    // refresh PEI Table, e.g. csm_pei_project_id or csm_pei_sample_id
+                    deleteStaleEntriesFromPeiTable(statement, peiTableName);
+                    insertNewEntriesIntoPeiTable(statement, applicationID, peiTableName, peiObjectId, peiAttribute);
                     
-                    statement
-                            .addBatch("insert into "
-                                    + peiTableName
-                                    + " (protection_element_id, attribute_value) "
-                                    + "   select protection_element_id, attribute_value from csm_protection_element pe"
-                                    + "   where  pe.object_id = '" + peiObjectId + "' and  pe.attribute = '"
-                                    + peiAttribute + "' and pe.application_id = " + applicationID
-                                    + "        and pe.attribute_value is not null ");
-                    statement.executeBatch();
+                    //refresh groupPrivilegeMappingTable, e.g. csm_project_id_group or csm_sample_id_group 
+                    deleteStaleEntriesFromGroupPrivilegeMap(statement, groupPrivilegeMappingTable, viewNameGroup);
+                    insertNewEntriesIntoGroupPrivilegeMap(statement, groupPrivilegeMappingTable, viewNameGroup);
 
-                    statement.addBatch("delete from " + tableNameGroup);
-                    statement
-                            .addBatch("insert into " + tableNameGroup + " (group_id, privilege_id, attribute_value) "
-                                    + "select distinct group_id, privilege_id, attribute_value from " + viewNameGroup);
-                    statement.executeBatch();
                 }
             }
 
@@ -672,5 +663,84 @@ public final class AuthorizationManagerExtensions {
                                 + ex2.getMessage());
             }
         }
+    }
+
+    private static void insertNewEntriesIntoGroupPrivilegeMap(Statement statement, String groupPrivilegeMappingTable,
+            String viewNameGroup) throws SQLException {
+        ResultSet rs = statement.executeQuery(
+                "select distinct group_id, privilege_id, attribute_value from " + viewNameGroup + " vw "
+                + " where VW.GROUP_ID NOT IN (SELECT GROUP_ID FROM " + groupPrivilegeMappingTable 
+                + " WHERE PRIVILEGE_ID=VW.PRIVILEGE_ID AND ATTRIBUTE_VALUE=VW.ATTRIBUTE_VALUE) ");
+        while (rs.next()) {
+            Long groupId = rs.getLong("group_id");
+            Long privilegeId = rs.getLong("privilege_id");
+            Long attributeValue = rs.getLong("attribute_value");
+
+            String insertStmt = String.format(
+                    "insert into %s (group_id, privilege_id, attribute_value) values(%s, %s, %s)", 
+                    groupPrivilegeMappingTable, groupId, privilegeId, attributeValue);
+            statement.addBatch(insertStmt);
+        }
+        statement.executeBatch();
+    }
+
+    private static void deleteStaleEntriesFromGroupPrivilegeMap(Statement statement, 
+            String groupPrivilegeMappingTable, String viewNameGroup) throws SQLException {
+        ResultSet rs = statement.executeQuery("SELECT GROUP_ID, PRIVILEGE_ID, ATTRIBUTE_VALUE FROM " 
+                + groupPrivilegeMappingTable + " GROUP_PRIVILEGE_MAP WHERE GROUP_PRIVILEGE_MAP.GROUP_ID NOT IN ( " 
+                + " SELECT GROUP_ID FROM " + viewNameGroup 
+                + " WHERE GROUP_ID=GROUP_PRIVILEGE_MAP.GROUP_ID AND " 
+                + " PRIVILEGE_ID=GROUP_PRIVILEGE_MAP.PRIVILEGE_ID AND "
+                + " ATTRIBUTE_VALUE=GROUP_PRIVILEGE_MAP.ATTRIBUTE_VALUE) "
+                );
+
+        while (rs.next()) {
+            Long groupId = rs.getLong("group_id");
+            Long privilegeId = rs.getLong("privilege_id");
+            Long attributeValue = rs.getLong("attribute_value");
+            String deleteStmt = String.format(
+                    "delete from %s where group_id=%s and privilege_id=%s and attribute_value=%s ", 
+                    groupPrivilegeMappingTable, groupId, privilegeId, attributeValue);
+            statement.addBatch(deleteStmt);
+        }
+        statement.executeBatch();
+    }
+
+    private static void insertNewEntriesIntoPeiTable(Statement statement, String applicationID, String peiTableName,
+            String peiObjectId, String peiAttribute) throws SQLException {
+        ResultSet rs = statement.executeQuery(
+                "select protection_element_id, attribute_value from csm_protection_element pe"
+                        + " where  pe.object_id = '" + peiObjectId + "' and  pe.attribute = '"
+                        + peiAttribute + "' and pe.application_id = " + applicationID
+                        + " and pe.attribute_value is not null "
+                        + " and PE.PROTECTION_ELEMENT_ID NOT IN (SELECT PROTECTION_ELEMENT_ID FROM " 
+                        + peiTableName + " WHERE ATTRIBUTE_VALUE=PE.ATTRIBUTE_VALUE) ");
+        while (rs.next()) {
+            Long protectionElementId = rs.getLong("protection_element_id");
+            String attributeValue = rs.getString("attribute_value");
+
+            String insertStmt = String.format(
+                    "insert into %s (protection_element_id, attribute_value) values(%s, %s)", 
+                    peiTableName, protectionElementId, attributeValue);
+            statement.addBatch(insertStmt);
+        }
+        statement.executeBatch();
+    }
+
+    private static void deleteStaleEntriesFromPeiTable(Statement statement, String peiTableName) 
+    throws SQLException {
+        ResultSet rs = statement.executeQuery("SELECT PROTECTION_ELEMENT_ID FROM " 
+                + peiTableName + " PEI WHERE PEI.PROTECTION_ELEMENT_ID NOT IN ( "
+                + " SELECT PROTECTION_ELEMENT_ID FROM CSM_PROTECTION_ELEMENT " 
+                + " WHERE PROTECTION_ELEMENT_ID=PEI.PROTECTION_ELEMENT_ID) "
+                );
+
+        while (rs.next()) {
+            Long protectionElementId = rs.getLong("protection_element_id");
+            String deleteStmt = String.format("delete from %s where protection_element_id=%s", 
+                    peiTableName, protectionElementId);
+            statement.addBatch(deleteStmt);
+        }
+        statement.executeBatch();
     }
 }
