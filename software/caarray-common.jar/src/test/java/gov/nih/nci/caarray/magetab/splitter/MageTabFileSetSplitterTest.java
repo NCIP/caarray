@@ -64,7 +64,7 @@ public class MageTabFileSetSplitterTest {
         input.addIdf(generateFileRef());
         input.addNativeData(generateFileRef());
         Set<MageTabFileSet> result = splitter.split(input);
-        assertSingleFileSetSize(result, 4);
+        assertMultiFileSetSizes(result, 2, 3);
     }
 
     @Test
