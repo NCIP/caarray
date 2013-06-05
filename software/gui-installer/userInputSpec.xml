@@ -16,13 +16,12 @@
         <variable name="ldap.search.prefix" value=""/>
         
         <field type="title" txt="Installation Mode" bold="true" size="1" />
-        <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
+        <field type="staticText" align="left" txt="If you are performing an upgrade from an existing caArray instance, be sure to backup your application server and database instance. For detailed installation instructions, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="setup.type">
             <description align="left" txt="Select the type of installation"/>
             <spec>
-                <choice txt="Install" value="install" set="true" />
-                <choice txt="Upgrade" value="upgrade" />
+                <choice txt="Install/Upgrade" value="install" set="true" />
             </spec>
         </field>
         <fileextractor>
