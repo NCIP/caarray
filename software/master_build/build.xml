@@ -294,7 +294,6 @@
         depends="
             build:all,
             dist:installer,
-            dist:upgrader,
             dist:src,
             dist:javadoc,
             dist:caarray-client.zip,

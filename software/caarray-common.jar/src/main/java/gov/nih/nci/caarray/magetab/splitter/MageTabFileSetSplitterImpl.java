@@ -39,15 +39,39 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
     }
 
     private Set<MageTabFileSet> handleNonNullFileSet(MageTabFileSet largeFileSet) throws IOException {
-        if (largeFileSet.getSdrfFiles().isEmpty()) {
+        if (largeFileSet.getNativeDataFiles().isEmpty() && largeFileSet.getDataMatrixFiles().isEmpty()) {
             return Sets.newHashSet(largeFileSet);
+        } else if (largeFileSet.getSdrfFiles().isEmpty()) {
+            return oneSetPerDataFile(largeFileSet);
         } else if (largeFileSet.getIdfFiles().size() > 1) {
             LOG.warn(">1 IDF file.  Not splitting SDRFs.");
             return Sets.newHashSet(largeFileSet);
         } else {
             return handleSdrfs(largeFileSet);
         }
-    }    
+    }
+
+    private Set<MageTabFileSet> oneSetPerDataFile(MageTabFileSet largeFileSet) {
+        Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
+        for (FileRef singleDataFile : largeFileSet.getNativeDataFiles()) {
+            MageTabFileSet curSet = copyFileSetWithoutData(largeFileSet);
+            curSet.addNativeData(singleDataFile);
+            result.add(curSet);
+        }
+        for (FileRef singleDataFile : largeFileSet.getDataMatrixFiles()) {
+            MageTabFileSet curSet = copyFileSetWithoutData(largeFileSet);
+            curSet.addNativeData(singleDataFile);
+            result.add(curSet);
+        }
+        return result;
+    }
+
+    private MageTabFileSet copyFileSetWithoutData(MageTabFileSet largeFileSet) {
+        MageTabFileSet curSet = largeFileSet.makeCopy();
+        curSet.getNativeDataFiles().clear();
+        curSet.getDataMatrixFiles().clear();
+        return curSet;
+    }
 
     private Set<MageTabFileSet> handleSdrfs(MageTabFileSet largeFileSet) throws IOException {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();

@@ -45,15 +45,13 @@
     </c:choose>
     <ul class="${pageContext.request.remoteUser != null ? 'aboutmenu' : 'welcomemenu' }">
         <li class="liheader">About caArray</li>
-        <li><a href="http://caarray.nci.nih.gov/" target="_blank">What is caArray?</a></li>
+        <li><a href="https://wiki.nci.nih.gov/x/nIEOAQ" target="_blank">What is caArray?</a></li>
         <li><a href='${initParam["releaseNotesUrl"]}' target="_blank">Release Notes</a></li>
-        <li><a href="http://ncicbtraining.nci.nih.gov/TPOnline/TPOnline.dll/Public%20Course/COURSENO=COUR2006011114141308840025" target="_blank">Training</a></li>
         <li><a href="javascript:openHelpWindow()">Help</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
         <li><a href="http://www.cancer.gov/" target="_blank" class="external">National Cancer Institute (NCI)</a></li>
-        <li><a href="http://ncicb.nci.nih.gov/" target="_blank" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
-        <li><a href="https://cabig.nci.nih.gov/" target="_blank" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+        <li><a href="http://cbiit.nci.nih.gov/" target="_blank" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
     </ul>
 </div>
