@@ -52,6 +52,6 @@
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
         <li><a href="http://www.cancer.gov/" target="_blank" class="external">National Cancer Institute (NCI)</a></li>
-        <li><a href="http://cbiit.nci.nih.gov/" target="_blank" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+        <li><a href="http://cbiit.nci.nih.gov/" target="_blank" class="external">NCI Center for Biomedical Informatics and Information Technology (CBIIT)</a></li>
     </ul>
 </div>
