@@ -6,7 +6,9 @@
 //======================================================================================
 package gov.nih.nci.caarray.util;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.audit.AuditLogSecurity;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
@@ -50,6 +52,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private static final Long PERMISSIONS_PRIV_ID = 8L;
     private static final Long SYSADMIN_GROUP_ID = 7L;
     private final Map<AuditLogRecord, Set<AuditLogSecurity>> securityEntries;
+    private static final Map<String, String> EXP_PROP_MAP = new HashMap<String, String>();
     
     private static final Class<?>[] AUDITED_CLASSES = {
         Project.class,
@@ -57,10 +60,24 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         CollaboratorGroup.class,
         Group.class,
         Experiment.class,
-        AbstractArrayData.class
+        AbstractArrayData.class,
+        Organization.class,
+        Organism.class
     };
 
     private static final Logger LOG = Logger.getLogger(CaArrayAuditLogProcessor.class);
+    
+    static {
+        EXP_PROP_MAP.put("title", "Title");
+        EXP_PROP_MAP.put("description", "Description");
+        EXP_PROP_MAP.put("assayTypes", "Assay Types");
+        EXP_PROP_MAP.put("manufacturer", "Provider");
+        EXP_PROP_MAP.put("arrayDesigns", "Array Designs");
+        EXP_PROP_MAP.put("organism", "Organism");
+        EXP_PROP_MAP.put("experimentContacts", "Contacts");
+        EXP_PROP_MAP.put("publications", "Publications");
+    }
+    
     /**
      * default constructor, logs security classes.
      */
@@ -268,8 +285,8 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
     private void logExperiment(AuditLogRecord record, Experiment experiment, String property, 
             String columnName, Object oldVal, Object newVal) {
+        Project project = experiment.getProject();
         if ("samples".equals(property)) {
-            Project project = experiment.getProject();
             Set<Long> oldIds = new HashSet<Long>();
             Set<Long> newIds = new HashSet<Long>();
             for (Sample s : (Set<Sample>) newVal) {
@@ -288,6 +305,10 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
                     addDetail(record, columnName, " - Sample " + s.getName() + " added", null, s);
                 }
             }
+            addProjectSecurity(record, project, READ_PRIV_ID);
+        } else if (EXP_PROP_MAP.keySet().contains(property)) {
+            addExperimentDetail(record, columnName, project);
+            addDetail(record, columnName, " - " + EXP_PROP_MAP.get(property) + " updated", oldVal, newVal);
             addProjectSecurity(record, project, READ_PRIV_ID);
         }
     }
