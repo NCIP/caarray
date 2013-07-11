@@ -308,7 +308,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             addProjectSecurity(record, project, READ_PRIV_ID);
         } else if (EXP_PROP_MAP.keySet().contains(property)) {
             addExperimentDetail(record, columnName, project);
-            addDetail(record, columnName, " - " + EXP_PROP_MAP.get(property) + " updated", oldVal, newVal);
+            addDetail(record, columnName, String.format(" - %s updated", EXP_PROP_MAP.get(property)), oldVal, newVal);
             addProjectSecurity(record, project, READ_PRIV_ID);
         }
     }
