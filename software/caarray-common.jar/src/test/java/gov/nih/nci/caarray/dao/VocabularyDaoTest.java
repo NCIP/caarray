@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -467,7 +468,9 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
 
             tx = this.hibernateHelper.beginTransaction();
-            final Experiment e = new Experiment();
+            Project p = new Project();
+            Experiment e = p.getExperiment();
+            e.setProject(p);
             e.setTitle("Foo");
             e.setOrganism(DUMMY_ORGANISM_1);
             final Source s1 = new Source();
@@ -489,7 +492,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             this.daoObject.save(char2);
             this.daoObject.save(DUMMY_CATEGORY_1);
             this.daoObject.save(DUMMY_CATEGORY_2);
-            this.daoObject.save(e);
+            this.daoObject.save(p);
             this.daoObject.save(s1);
             this.daoObject.save(s2);
 

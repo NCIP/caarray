@@ -110,6 +110,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         org.setTermSource(DUMMY_TERM_SOURCE);
         DUMMY_PROJECT = new Project();
         DUMMY_EXPERIMENT = DUMMY_PROJECT.getExperiment();
+        DUMMY_EXPERIMENT.setProject(DUMMY_PROJECT);
         DUMMY_EXPERIMENT.setTitle("test experiment.");
         SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
@@ -206,6 +207,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         e1.getAssayTypes().add(at2);
         Project p1 = new Project();
         p1.setExperiment(e1);
+        e1.setProject(p1);
 
         Experiment e2 = new Experiment();
         e2.setTitle("e2");
@@ -213,6 +215,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         e2.getAssayTypes().add(at1);
         Project p2 = new Project();
         p2.setExperiment(e2);
+        e2.setProject(p2);
 
         Experiment e3 = new Experiment();
         e3.setTitle("e3");
@@ -220,6 +223,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         e3.getAssayTypes().add(at2);
         Project p3 = new Project();
         p3.setExperiment(e3);
+        e3.setProject(p3);
 
         Experiment e4 = new Experiment();
         e4.setTitle("e4");
@@ -227,6 +231,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         e4.getAssayTypes().add(at2);
         Project p4 = new Project();
         p4.setExperiment(e4);
+        e4.setProject(p4);
         
         SEARCH_DAO.save(Arrays.asList(p1, p2, p3, p4));
 

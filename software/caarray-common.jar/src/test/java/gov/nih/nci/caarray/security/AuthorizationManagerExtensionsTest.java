@@ -146,6 +146,7 @@ public class AuthorizationManagerExtensionsTest {
         o.setScientificName("baz");
         o.setTermSource(ts);
         testProject = new Project();
+        testProject.getExperiment().setProject(testProject);
         testProject.getExperiment().setTitle("Foo");
         testProject.getExperiment().setOrganism(o);
         hibernateHelper.getCurrentSession().save(testProject);
