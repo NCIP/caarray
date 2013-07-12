@@ -19,8 +19,12 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -41,6 +45,7 @@ import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.audit.AuditType;
 import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
+import com.google.common.collect.Sets;
 
 /**
  *
@@ -52,7 +57,8 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private static final Long PERMISSIONS_PRIV_ID = 8L;
     private static final Long SYSADMIN_GROUP_ID = 7L;
     private final Map<AuditLogRecord, Set<AuditLogSecurity>> securityEntries;
-    private static final Map<String, String> EXP_PROP_MAP = new HashMap<String, String>();
+    private static final Map<String, String> EXP_PROPERTIES = new HashMap<String, String>();
+    private static final Map<String, String> EXP_COLLECTIONS = new HashMap<String, String>();
     
     private static final Class<?>[] AUDITED_CLASSES = {
         Project.class,
@@ -68,14 +74,26 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private static final Logger LOG = Logger.getLogger(CaArrayAuditLogProcessor.class);
     
     static {
-        EXP_PROP_MAP.put("title", "Title");
-        EXP_PROP_MAP.put("description", "Description");
-        EXP_PROP_MAP.put("assayTypes", "Assay Types");
-        EXP_PROP_MAP.put("manufacturer", "Provider");
-        EXP_PROP_MAP.put("arrayDesigns", "Array Designs");
-        EXP_PROP_MAP.put("organism", "Organism");
-        EXP_PROP_MAP.put("experimentContacts", "Contacts");
-        EXP_PROP_MAP.put("publications", "Publications");
+        EXP_PROPERTIES.put("title", "Title");
+        EXP_PROPERTIES.put("description", "Description");
+        EXP_PROPERTIES.put("assayTypes", "Assay Types");
+        EXP_PROPERTIES.put("manufacturer", "Provider");
+        EXP_PROPERTIES.put("arrayDesigns", "Array Designs");
+        EXP_PROPERTIES.put("organism", "Organism");
+        EXP_PROPERTIES.put("experimentDesignTypes", "Experiment Design Types");
+        EXP_PROPERTIES.put("designDescription", "Experiment Design Description");
+        EXP_PROPERTIES.put("qualityControlTypes", "Quality Control Types");
+        EXP_PROPERTIES.put("qualityControlDescription", "Quality Control Description");
+        EXP_PROPERTIES.put("replicateTypes", "Replicate Types");
+        EXP_PROPERTIES.put("replicateDescription", "Replicate Description");
+        EXP_COLLECTIONS.put("experimentContacts", "Contact");
+        EXP_COLLECTIONS.put("publications", "Publication");
+        EXP_COLLECTIONS.put("factors", "Factor");
+        EXP_COLLECTIONS.put("sources", "Source");
+        EXP_COLLECTIONS.put("samples", "Sample");
+        EXP_COLLECTIONS.put("extracts", "Extract");
+        EXP_COLLECTIONS.put("labeledExtracts", "Labeled Extract");
+        EXP_COLLECTIONS.put("hybridizations", "Hybridization");
     }
     
     /**
@@ -282,35 +300,54 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
     
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void logExperiment(AuditLogRecord record, Experiment experiment, String property, 
             String columnName, Object oldVal, Object newVal) {
         Project project = experiment.getProject();
-        if ("samples".equals(property)) {
-            Set<Long> oldIds = new HashSet<Long>();
-            Set<Long> newIds = new HashSet<Long>();
-            for (Sample s : (Set<Sample>) newVal) {
-                newIds.add(s.getId());
-            }
-            for (Sample s : (Set<Sample>) oldVal) {
-                oldIds.add(s.getId());
-                if (!newIds.contains(s.getId())) {
-                    addExperimentDetail(record, columnName, project);
-                    addDetail(record, columnName, " - Sample " + s.getName() + " deleted", s, null);
+        if (project != null) {
+            if (EXP_COLLECTIONS.keySet().contains(property)) {
+                addExperimentDetail(record, columnName, project);
+                Set<?> addedEntries = Sets.difference(makeSet(newVal), makeSet(oldVal));
+                for (Object node : addedEntries) {
+                    String msg = String.format(" - %s %s added", EXP_COLLECTIONS.get(property), getObjectName(node));
+                    addDetail(record, columnName, msg, null, node);
                 }
-            }
-            for (Sample s : (Set<Sample>) newVal) {
-                if (!oldIds.contains(s.getId())) {
-                    addExperimentDetail(record, columnName, project);
-                    addDetail(record, columnName, " - Sample " + s.getName() + " added", null, s);
+                Set<?> deletedEntries = Sets.difference(makeSet(oldVal), makeSet(newVal));
+                for (Object node : deletedEntries) {
+                    String msg = String.format(" - %s %s deleted", EXP_COLLECTIONS.get(property), getObjectName(node));
+                    addDetail(record, columnName, msg, node, null);
                 }
+                addProjectSecurity(record, project, READ_PRIV_ID);
+            } else if (EXP_PROPERTIES.keySet().contains(property)) {
+                addExperimentDetail(record, columnName, project);
+                String msg = String.format(" - %s updated", EXP_PROPERTIES.get(property));
+                addDetail(record, columnName, msg, oldVal, newVal);
+                addProjectSecurity(record, project, READ_PRIV_ID);
             }
-            addProjectSecurity(record, project, READ_PRIV_ID);
-        } else if (EXP_PROP_MAP.keySet().contains(property)) {
-            addExperimentDetail(record, columnName, project);
-            addDetail(record, columnName, " - " + EXP_PROP_MAP.get(property) + " updated", oldVal, newVal);
-            addProjectSecurity(record, project, READ_PRIV_ID);
         }
+    }
+    
+    private Set<?> makeSet(Object o) {
+        if (o instanceof Collection) {
+            Set<?> result = Sets.newHashSet();
+            result.addAll((Collection) o);
+            return result;
+        } else {
+            return Sets.newHashSet(o);
+        }
+    }
+    
+    private String getObjectName(Object o) {
+        if (o instanceof AbstractExperimentDesignNode) {
+            return ((AbstractExperimentDesignNode) o).getName();
+        } else if (o instanceof Factor) {
+            return ((Factor) o).getName();
+        } else if (o instanceof ExperimentContact) {
+            return ((ExperimentContact) o).getContact().getName();
+        } else if (o instanceof Publication) {
+            return ((Publication) o).getTitle();
+        }
+        return "";
     }
     
     @SuppressWarnings("PMD.ExcessiveParameterList")
