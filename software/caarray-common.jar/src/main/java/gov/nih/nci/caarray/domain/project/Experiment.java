@@ -48,6 +48,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -170,6 +171,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private String publicIdentifier;
     private Project project;
     private Date lastDataModificationDate;
+    private long version;
     
     /**
      * {@inheritDoc}
@@ -923,6 +925,20 @@ public class Experiment extends AbstractCaArrayEntity {
         this.lastDataModificationDate = lastDataModificationDate;
     }
 
+    /**
+     * @return the version
+     */
+    @Version
+    public long getVersion() {
+        return version;
+    }
+
+    /**
+     * @param version the version to set
+     */
+    public void setVersion(long version) {
+        this.version = version;
+    }
     
     /**
      * Predicate to match biomaterial/hybridization names.
