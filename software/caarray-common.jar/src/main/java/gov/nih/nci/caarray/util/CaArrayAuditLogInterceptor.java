@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 
@@ -450,7 +451,8 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
                 oldMap = oldMap == null ? Collections.emptyMap() : oldMap;
                 newMap = newMap == null ? Collections.emptyMap() : newMap;
                 return !equalsMap(oldMap, newMap);
-            } else if (getter.getAnnotation(JoinTable.class) != null) {
+            } else if (getter.getAnnotation(JoinTable.class) != null
+                    || getter.getAnnotation(JoinColumn.class) != null) {
                 Collection<?> oldSet = (Collection<?>) oldValue;
                 Collection<?> newSet = (Collection<?>) newValue;
                 return !CollectionUtils.isEqualCollection((oldSet == null) ? Collections.emptySet() : oldSet,

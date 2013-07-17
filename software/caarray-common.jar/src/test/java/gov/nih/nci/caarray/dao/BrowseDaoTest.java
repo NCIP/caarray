@@ -99,6 +99,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_ORGANISM_3.setTermSource(DUMMY_TERM_SOURCE2);
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
+        DUMMY_EXPERIMENT_1.setProject(DUMMY_PROJECT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
@@ -107,6 +108,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
+        DUMMY_EXPERIMENT_2.setProject(DUMMY_PROJECT_2);
         DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
         assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
@@ -115,11 +117,13 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM_2);
 
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
+        DUMMY_EXPERIMENT_3.setProject(DUMMY_PROJECT_3);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_4.setExperiment(DUMMY_EXPERIMENT_4);
+        DUMMY_EXPERIMENT_4.setProject(DUMMY_PROJECT_4);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment4");
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_3);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);

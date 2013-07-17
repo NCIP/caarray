@@ -8,8 +8,12 @@ package gov.nih.nci.caarray.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.dao.AbstractDaoTest;
 import gov.nih.nci.caarray.dao.AbstractProjectDaoTest;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
@@ -19,8 +23,14 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -129,10 +139,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         Transaction tx = this.hibernateHelper.beginTransaction();
 
         // setup
-        ProjectTestHelper helper = new ProjectTestHelper();
-        helper.setup();
-        helper.saveStuff();
-        this.hibernateHelper.getCurrentSession().flush();
+        setupHelper();
         int initLogMessages = getLogMessages().size();
         
         // remove files
@@ -152,30 +159,30 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
     }
     
     @Test
-    public void testAddSample() {
+    public void updateBiomaterial() {
         Transaction tx = this.hibernateHelper.beginTransaction();
 
         // setup
-        ProjectTestHelper helper = new ProjectTestHelper();
-        helper.setup();
-        helper.saveStuff();
-        this.hibernateHelper.getCurrentSession().flush();
+        setupHelper();
         int initLogMessages = getLogMessages().size();
 
-        // add sample
+        // delete/add sample
         Project p = ProjectTestHelper.getDummyProject();
         Sample mySample = new Sample();
         mySample.setName("mySample");
         mySample.setExperiment(p.getExperiment());
+        ProjectTestHelper.getDummySource().getSamples().clear();
+        p.getExperiment().getSamples().clear();
         p.getExperiment().getSamples().add(mySample);
         this.hibernateHelper.getCurrentSession().saveOrUpdate(p);
         this.hibernateHelper.getCurrentSession().flush();
 
         // check logs
         List<String> messages = getLogMessages();
-        assertEquals(2, messages.size() - initLogMessages);
+        assertEquals(3, messages.size() - initLogMessages);
         assertTrue(messages.contains("Experiment " + p.getExperiment().getTitle() + ":"));
         assertTrue(messages.contains(" - Sample " + mySample.getName() + " added"));
+        assertTrue(messages.contains(" - Sample " + ProjectTestHelper.getDummySample().getName() + " deleted"));
         
         tx.commit();
     }
@@ -185,10 +192,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         Transaction tx = this.hibernateHelper.beginTransaction();
 
         // setup
-        ProjectTestHelper helper = new ProjectTestHelper();
-        helper.setup();
-        helper.saveStuff();
-        this.hibernateHelper.getCurrentSession().flush();
+        setupHelper();
         int initLogMessages = getLogMessages().size();
         
         // add supplemental file
@@ -217,10 +221,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         Transaction tx = this.hibernateHelper.beginTransaction();
 
         // setup
-        ProjectTestHelper helper = new ProjectTestHelper();
-        helper.setup();
-        helper.saveStuff();
-        this.hibernateHelper.getCurrentSession().flush();
+        setupHelper();
         int initLogMessages = getLogMessages().size();
         
         Project p = ProjectTestHelper.getDummyProject();
@@ -250,6 +251,95 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         tx.commit();
     }
 
+    @Test
+    public void updateExperiment() {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        // setup
+        setupHelper();
+        int initLogMessages = getLogMessages().size();
+        
+        // update experiment fields
+        Project p = ProjectTestHelper.getDummyProject();
+        Experiment e = p.getExperiment();
+        e.setTitle("title new");
+        e.setDescription("description new");
+        e.getAssayTypes().add(ProjectTestHelper.getDummyAssayType2());
+        e.setManufacturer(ProjectTestHelper.getDummyOrganization2());
+        e.getArrayDesigns().add(ProjectTestHelper.getDummyArrayDesign());
+        e.setOrganism(ProjectTestHelper.getDummyOrganism2());
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(p);
+        this.hibernateHelper.getCurrentSession().flush();
+
+        // check logs
+        List<String> messages = getLogMessages();
+        assertEquals(7, messages.size() - initLogMessages);
+        assertTrue(messages.contains("Experiment " + e.getTitle() + ":"));
+        assertTrue(messages.contains(" - Title updated"));
+        assertTrue(messages.contains(" - Description updated"));
+        assertTrue(messages.contains(" - Assay Types updated"));
+        assertTrue(messages.contains(" - Provider updated"));
+        assertTrue(messages.contains(" - Array Designs updated"));
+        assertTrue(messages.contains(" - Organism updated"));
+
+        tx.commit();
+    }
+
+    @Test
+    public void updateContacts() {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        // setup
+        setupHelper();
+        int initLogMessages = getLogMessages().size();
+        
+        // add contact
+        Project p = ProjectTestHelper.getDummyProject();
+        Experiment e = p.getExperiment();
+        Person person = new Person();
+        person.setFirstName("test");
+        person.setLastName("user");
+        ExperimentContact contact = new ExperimentContact();
+        contact.setPerson(person);
+        e.getExperimentContacts().add(contact);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(p);
+        this.hibernateHelper.getCurrentSession().flush();
+
+        // check logs
+        List<String> messages = getLogMessages();
+        assertEquals(2, messages.size() - initLogMessages);
+        assertTrue(messages.contains("Experiment " + e.getTitle() + ":"));
+        assertTrue(messages.contains(" - Contact user, test added"));
+
+        tx.commit();
+    }
+    
+    @Test
+    public void updatePublications() {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        // setup
+        setupHelper();
+        int initLogMessages = getLogMessages().size();
+        
+        // add publication
+        Project p = ProjectTestHelper.getDummyProject();
+        Experiment e = p.getExperiment();
+        Publication publication = new Publication();
+        publication.setTitle("testPublication");
+        e.getPublications().add(publication);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(p);
+        this.hibernateHelper.getCurrentSession().flush();
+
+        // check logs
+        List<String> messages = getLogMessages();
+        assertEquals(2, messages.size() - initLogMessages);
+        assertTrue(messages.contains("Experiment " + e.getTitle() + ":"));
+        assertTrue(messages.contains(" - Publication testPublication added"));
+
+        tx.commit();
+    }
+    
     @SuppressWarnings("unchecked")
     private List<String> getLogMessages() {
         Criteria c = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class);
@@ -279,7 +369,23 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         tx.commit();
     }
 
+    private void setupHelper() {
+        ProjectTestHelper helper = new ProjectTestHelper();
+        helper.setup();
+        helper.saveStuff();
+        this.hibernateHelper.getCurrentSession().flush();
+    }
+
     static class ProjectTestHelper extends AbstractProjectDaoTest {
+        static final Organization DUMMY_ORGANIZATION2 = new Organization();
+        static final Organism DUMMY_ORGANISM2 = new Organism();
+        static final ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
+        static final CaArrayFile DUMMY_DESIGN_FILE = new CaArrayFile();
+
+        static Source getDummySource() {
+            return AbstractProjectDaoTest.DUMMY_SOURCE;
+        }
+        
         static Sample getDummySample() {
             return AbstractProjectDaoTest.DUMMY_SAMPLE;
         }
@@ -307,7 +413,23 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         static Hybridization getDummyHybridization() {
             return DUMMY_HYBRIDIZATION;
         }
+
+        static AssayType getDummyAssayType2() {
+            return DUMMY_ASSAYTYPE_2;
+        }
         
+        static Organism getDummyOrganism2() {
+            return DUMMY_ORGANISM2;
+        }
+        
+        static Organization getDummyOrganization2() {
+            return DUMMY_ORGANIZATION2;
+        }
+        
+        static ArrayDesign getDummyArrayDesign() {
+            return DUMMY_ARRAY_DESIGN;
+        }
+
         void saveStuff() {
             saveSupportingObjects();
             this.daoObject.save(DUMMY_PROJECT_1);
@@ -324,6 +446,18 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
             DUMMY_PROJECT_1.getFiles().add(DUMMY_DATA_FILE);
             DUMMY_DATA_FILE.setProject(DUMMY_PROJECT_1);
             DUMMY_DATA_FILE.setFileStatus(FileStatus.IMPORTED);
+            DUMMY_ORGANISM2.setScientificName("organism2");
+            DUMMY_ORGANISM2.setTermSource(DUMMY_TERM_SOURCE);
+            DUMMY_ORGANIZATION2.setName("organization2");
+            DUMMY_DESIGN_FILE.setFileStatus(FileStatus.IMPORTED);
+            DUMMY_DESIGN_FILE.setDataHandle(DUMMY_HANDLE);
+            DUMMY_ARRAY_DESIGN.setName("dummy design");
+            DUMMY_ARRAY_DESIGN.setOrganism(DUMMY_ORGANISM);
+            DUMMY_ARRAY_DESIGN.setProvider(DUMMY_ORGANIZATION);
+            DUMMY_ARRAY_DESIGN.setTechnologyType(DUMMY_REPLICATE_TYPE);
+            DUMMY_ARRAY_DESIGN.setVersion("1");
+            DUMMY_ARRAY_DESIGN.addDesignFile(DUMMY_DESIGN_FILE);
+            DUMMY_ARRAY_DESIGN.getAssayTypes().add(DUMMY_ASSAYTYPE_1);
         }
     }
 

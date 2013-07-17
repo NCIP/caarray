@@ -116,6 +116,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
+        DUMMY_EXPERIMENT_1.setProject(DUMMY_PROJECT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
         DUMMY_PROJECT_1.setLocked(false);

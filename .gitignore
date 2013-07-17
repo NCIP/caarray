@@ -30,3 +30,5 @@ software/plugins/nimblegen-platform/target/
 software/plugins/target/
 software/target/
 software/tools/
+software/build/site
+test-data/target

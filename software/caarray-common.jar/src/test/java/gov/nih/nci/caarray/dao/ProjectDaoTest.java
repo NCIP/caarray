@@ -1042,14 +1042,16 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             final Organism org = new Organism();
             org.setScientificName("Foo");
             org.setTermSource(DUMMY_TERM_SOURCE);
-            final Experiment e = new Experiment();
+            Project p = new Project();
+            Experiment e = p.getExperiment();
+            e.setProject(p);
             e.setTitle("test title");
             final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
             assayTypes.add(DUMMY_ASSAYTYPE_1);
             e.setAssayTypes(assayTypes);
             e.setManufacturer(new Organization());
             e.setOrganism(org);
-            daoObject.save(e);
+            daoObject.save(p);
             daoObject.save(DUMMY_ASSAYTYPE_1);
             daoObject.save(DUMMY_ASSAYTYPE_2);
             assertEquals(0, daoObject.getCellTypesForExperiment(e).size());
