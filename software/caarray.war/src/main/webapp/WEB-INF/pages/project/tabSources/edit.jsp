@@ -8,7 +8,7 @@
     <caarray:projectListTabItemForm entityName="Source" item="${currentSource}" itemName="${currentSource.name}"
         isSubtab="true">
         <c:if test="${editMode}">
-            <s:textfield name="currentSource.name" key="experiment.sources.name" required="true" size="80" tabindex="1" />
+            <s:textfield name="currentSource.name" key="experiment.sources.name" requiredLabel="true" size="80" tabindex="1" />
         </c:if>
         <s:textarea name="currentSource.description" key="experiment.sources.description" rows="3" cols="80" tabindex="2" />
         <s:textfield key="currentSource.externalId" size="80" tabindex="3" />

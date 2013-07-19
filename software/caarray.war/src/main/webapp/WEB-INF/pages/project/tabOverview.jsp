@@ -21,7 +21,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
         <s:form action="ajax/project/tab/Overview/save" namespace="/protected" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <s:token/>
             <c:if test="${editMode}">
-                <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1" maxlength="254"/>
+                <s:textfield requiredLabel="true" key="project.experiment.title" size="80" tabindex="1" maxlength="254"/>
             </c:if>
             <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
             <s:textfield theme="readonly" label="Status" value="%{project.locked ? 'Locked' : 'In Progress'}"/>
@@ -38,7 +38,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             <caarray:listSelector baseId="assayTypes" listField="${project.experiment.assayTypes}" listFieldName="project.experiment.assayTypes"
                 tabIndex="1" showFilter="false" objectValue="id" required="true" multiple="true" hideAddButton="true"
                 autocompleteUrl="${autocompleteUrl}"/>
-            <s:select key="project.experiment.manufacturer" tabindex="6" required="true"
+            <s:select key="project.experiment.manufacturer" tabindex="6" requiredLabel="true"
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">
@@ -48,7 +48,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
 
             <s:select multiple="true" name="project.experiment.arrayDesigns" label="Array Designs" tabindex="7"
                       list="arrayDesigns" listKey="id" listValue="name" value="%{project.experiment.arrayDesigns.{id}}" />
-            <s:select required="true" key="project.experiment.organism" tabindex="7"
+            <s:select requiredLabel="true" key="project.experiment.organism" tabindex="7"
                       list="organisms" listKey="id" listValue="nameAndSource" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
             <c:if test="${!editMode}">

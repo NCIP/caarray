@@ -14,7 +14,7 @@
             <caarray:termSelector baseId="experimentDesignTypes" category="<%= ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE %>" termField="${project.experiment.experimentDesignTypes}"
                 tabIndex="1" termFieldName="project.experiment.experimentDesignTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign"
                 hideAddButton="true" required="true" multiple="true"/>
-            <s:textarea required="true" key="project.experiment.designDescription" cols="80" rows="4" tabindex="2"/>
+            <s:textarea requiredLabel="true" key="project.experiment.designDescription" cols="80" rows="4" tabindex="2"/>
             <caarray:termSelector baseId="qualityControlTypes" category="<%= ExperimentOntologyCategory.QUALITY_CONTROL_TYPE %>" termField="${project.experiment.qualityControlTypes}"
                 tabIndex="3" termFieldName="project.experiment.qualityControlTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign"
                 hideAddButton="true" multiple="true"/>

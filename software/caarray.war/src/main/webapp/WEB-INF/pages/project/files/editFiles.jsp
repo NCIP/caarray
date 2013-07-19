@@ -11,7 +11,7 @@
         <s:form action="ajax/project/files/changeFileType" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabbox1wrapper'); return false;">
             <s:token/>
 
-                            <s:select required="true" name="changeToFileType" label="Select New File Type" 
+                            <s:select requiredLabel="true" name="changeToFileType" label="Select New File Type" 
                               list="%{availableFileTypes}" listValue="%{getText('experiment.files.filetype.' + name)}"
                               listKey="name" value="fileType.name"/>
 

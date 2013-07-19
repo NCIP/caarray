@@ -84,7 +84,7 @@
                                                 <s:form action="ajax/project/permissions/loadGroupProfile" cssClass="form" theme="simple" id="collaborators_form" onsubmit="PermissionUtils.loadProfileFromForm('collaborators_form'); return false;">
                                                     <s:hidden name="project.id"/>
                                                     <s:label for="collaborators_form_collaboratorGroup_id" value="Collaboration Group"/>
-                                                    <s:select required="true" name="collaboratorGroup.id" tabindex="1" label="Collaboration Group"
+                                                    <s:select requiredLabel="true" name="collaboratorGroup.id" tabindex="1" label="Collaboration Group"
                                                               list="collaboratorGroups" listKey="id" listValue="group.groupName"/>
                                                     <caarray:linkButton actionClass="edit" text="Edit Access Control" style="margin-left: 0px" onclick="PermissionUtils.loadProfileFromForm('collaborators_form');"/>
                                                     <input type="submit" class="enableEnterSubmit"/>

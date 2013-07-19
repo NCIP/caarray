@@ -1,2 +1,2 @@
-# Liquibase files must not be modified, so setting them as binary.
-* binary
+# Liquibase files must not be modified, so disabling normalization.
+* -text

@@ -211,7 +211,7 @@
                                 <input name="arrayDesign.assayTypes" type="hidden" value="${currAssayType.id}"/>
                             </c:forEach>
                             <c:if test="${editMode && !locked}">
-                                <s:file id="upload0" required="%{arrayDesign.id != null}" name="upload" label="Browse to File" tabindex="9"/>
+                                <s:file id="upload0" requiredLabel="%{arrayDesign.id != null}" name="upload" label="Browse to File" tabindex="9"/>
                                 <s:select id="fileFormatType0" name="fileFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
                                           list="%{arrayDesignTypes}"
                                           listValue="%{getText('experiment.files.filetype.' + name)}"

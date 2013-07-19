@@ -303,4 +303,12 @@ public class MonitoredMultiPartRequest implements MultiPartRequest {
             }
         };
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cleanUp() {
+        // do nothing
+    }
 }

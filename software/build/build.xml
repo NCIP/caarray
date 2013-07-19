@@ -452,6 +452,13 @@
         </path>
         <property name="commons-lang.jar" refid="commons-lang.jar.fileset" />
 
+        <path id="commons-lang3.jar.path">
+            <fileset dir="${project.lib}" id="commons-lang3.jar.fileset">
+                <include name="commons-lang3-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-lang3.jar" refid="commons-lang3.jar.fileset" />
+
         <path id="commons-configuration.jar.path">
             <fileset dir="${project.lib}" id="commons-configuration.jar.fileset">
                 <include name="commons-configuration-*.jar"/>
@@ -1435,6 +1442,7 @@
                 <include name="${nci-commons-struts2.jar}"/>
                 <include name="${ognl.jar}"/>
                 <include name="${urlrewrite.jar}"/>
+                <include name="${commons-lang3.jar}"/>
             </fileset>
 
             <fileset refid="spring.jar.fileset" />

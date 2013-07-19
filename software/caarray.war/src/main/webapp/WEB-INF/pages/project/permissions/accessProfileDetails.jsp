@@ -34,7 +34,7 @@
                                 <s:set var="secLevels" value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@collaboratorGroupLevels()"/>                            
                             </c:otherwise>
                         </c:choose>
-                        <s:select required="true" name="accessProfile.securityLevel" tabindex="1"
+                        <s:select requiredLabel="true" name="accessProfile.securityLevel" tabindex="1"
                             list="%{#secLevels}" listValue="%{getText(resourceKey)}"
                             onchange="PermissionUtils.changeExperimentAccess(this)"/>
                     </c:otherwise>
@@ -91,7 +91,7 @@
                 <s:label><b><fmt:message key="project.permissions.selectSecLevel"/>:</b>&nbsp;&nbsp;</s:label>
             </td>
             <td colspan="2" class="right">
-                <s:select required="true" name="securityChoices" tabindex="1" cssClass="sample_security_level"
+                <s:select requiredLabel="true" name="securityChoices" tabindex="1" cssClass="sample_security_level"
                     list="accessProfile.securityLevel.sampleSecurityLevels" listValue="%{getText(resourceKey)}"/>
             </td>
         </tr>

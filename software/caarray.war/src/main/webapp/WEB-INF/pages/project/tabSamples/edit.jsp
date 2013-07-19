@@ -9,7 +9,7 @@
         isSubtab="true">
 
         <c:if test="${editMode}">
-            <s:textfield required="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1" />
+            <s:textfield requiredLabel="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1" />
         </c:if>
         <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75"
             tabindex="2" />
