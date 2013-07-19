@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.apache.struts2.views.util.DefaultUrlHelper;
 import org.apache.struts2.views.util.UrlHelper;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -119,7 +120,8 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     public String getRequestParameters() {
         StringBuilder link = new StringBuilder();
-        UrlHelper.buildParametersString(ServletActionContext.getRequest().getParameterMap(), link, "&");
+        UrlHelper uh = new DefaultUrlHelper();
+        uh.buildParametersString(ServletActionContext.getRequest().getParameterMap(), link, "&");
         return link.toString();
     }
     

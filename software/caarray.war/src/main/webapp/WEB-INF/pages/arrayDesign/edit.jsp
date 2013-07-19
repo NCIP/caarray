@@ -87,14 +87,14 @@
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
-                            <s:select theme="%{#attr.lockedTheme}" required="true" key="arrayDesign.provider" tabindex="5"
+                            <s:select theme="%{#attr.lockedTheme}" requiredLabel="true" key="arrayDesign.provider" tabindex="5"
                                       list="providers" listKey="id" listValue="name"
                                       headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
-                            <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="6"/>
-                            <s:select required="true" key="arrayDesign.technologyType" tabindex="7"
+                            <s:textfield requiredLabel="true" key="arrayDesign.version" size="50" tabindex="6"/>
+                            <s:select requiredLabel="true" key="arrayDesign.technologyType" tabindex="7"
                                       list="featureTypes" listKey="id" listValue="valueAndSource" value="arrayDesign.technologyType.id"
                                       headerKey="" headerValue="--Please select a Feature Type--"/>
-                            <s:select required="true" key="arrayDesign.organism" tabindex="8"
+                            <s:select requiredLabel="true" key="arrayDesign.organism" tabindex="8"
                                       list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
                             <s:textfield key="arrayDesign.geoAccession" size="50" tabindex="9"/>

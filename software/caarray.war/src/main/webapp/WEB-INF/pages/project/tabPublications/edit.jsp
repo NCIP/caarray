@@ -3,7 +3,7 @@
     <caarray:projectListTabItemForm entityName="Publication" item="${currentPublication}"
         itemName="${currentPublication.title}">
         <c:if test="${editMode}">
-            <s:textfield required="true" name="currentPublication.title" key="experiment.publications.title" size="80"
+            <s:textfield requiredLabel="true" name="currentPublication.title" key="experiment.publications.title" size="80"
                 tabindex="1" maxlength="254"/>
         </c:if>
         <s:textarea name="currentPublication.authors" key="experiment.publications.authors" rows="3" cols="75"

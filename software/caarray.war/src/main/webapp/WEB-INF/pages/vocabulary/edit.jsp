@@ -20,7 +20,7 @@
                 </s:fielderror>
               </td>
             </tr>
-            <s:textfield key="currentTerm.value" required="true" size="80" tabindex="1"/>
+            <s:textfield key="currentTerm.value" requiredLabel="true" size="80" tabindex="1"/>
             <s:textfield key="currentTerm.description" size="80" tabindex="2"/>
             <tr><th colspan="2">Source</th></tr>
             <c:if test="${editMode}">
@@ -29,7 +29,7 @@
             </c:if>
             <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
                 <s:select list="sources" key="currentTerm.source" headerKey="" headerValue="-- Select A Source --"
-                    listKey="id" listValue="nameAndVersion" value="currentTerm.source.id" tabindex="4" required="true" />
+                    listKey="id" listValue="nameAndVersion" value="currentTerm.source.id" tabindex="4" requiredLabel="true" />
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
             <tr>
@@ -39,7 +39,7 @@
                 </s:fielderror>
               </td>
             </tr>
-            <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
+            <s:textfield key="newSource.name" size="80" tabindex="5" requiredLabel="true" />
             <s:textfield key="newSource.url" size="80" tabindex="5" />
             <s:textfield key="newSource.version" size="80" tabindex="7"/>
             </tbody>
