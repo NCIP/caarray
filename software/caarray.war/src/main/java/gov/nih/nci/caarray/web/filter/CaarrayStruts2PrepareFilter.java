@@ -14,13 +14,13 @@ import javax.servlet.FilterConfig;
 import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.dispatcher.Dispatcher;
-import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter;
+import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 
 /**
  * filter to initialize struts 2 of caarray 2.
  * @author Scott Miller
  */
-public class CaarrayStruts2FilterDispatcher extends StrutsPrepareAndExecuteFilter {
+public class CaarrayStruts2PrepareFilter extends StrutsPrepareFilter {
     /**
      * set the upload temporary directory based on our config.
      * {@inheritDoc}
