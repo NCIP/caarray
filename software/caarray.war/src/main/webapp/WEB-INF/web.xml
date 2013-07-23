@@ -138,7 +138,7 @@
     </filter>
     <filter>
         <filter-name>action2-cleanup</filter-name>
-        <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+        <filter-class>gov.nih.nci.caarray.web.filter.CaarrayStruts2PrepareFilter</filter-class>
     </filter>
 
     <filter>
@@ -294,7 +294,7 @@
     </filter>
     <filter>
         <filter-name>struts2</filter-name>
-        <filter-class>gov.nih.nci.caarray.web.filter.CaarrayStruts2FilterDispatcher</filter-class>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter</filter-class>
     </filter>
     <filter>
         <filter-name>urlrewrite</filter-name>
