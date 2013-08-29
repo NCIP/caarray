@@ -75,6 +75,10 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private void importAnnotationAndData(CaArrayFileSet fileSet) {
         MageTabDocumentSet mageTabDocSet = importAnnotation(fileSet);
         importArrayData(fileSet, mageTabDocSet);
+        // ARRAY-2684: The data loaded from the import is referenced from mageTabDocSet,
+        // but for some reason is not getting released for garbage collection. Clearing it
+        // manually for now, until we figure out why it is not released automatically.
+        mageTabDocSet.getNativeDataFiles().clear();
     }
 
     private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
