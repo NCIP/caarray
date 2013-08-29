@@ -34,6 +34,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
@@ -43,6 +44,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * 
  * @author gax
  */
+@Ignore
 public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
     Group g1;
     User u1, u2;
