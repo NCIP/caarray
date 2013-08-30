@@ -220,6 +220,14 @@ A.btn:active SPAN.btn_img
   padding-left: 15px !important;
 }
 
+.annotation_dialog_form .x-form-cb-label {
+  font-weight: bold;
+  display: inline;
+}
+
+.annotation_dialog_form .x-form-cb {
+  margin-top: 0px;
+}
 
 .simple_window {  
     border:1px solid #000;  

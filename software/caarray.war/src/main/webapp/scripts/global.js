@@ -105,7 +105,6 @@ window.onload = function() {
 window.defaultStatus=document.title;
 
 var Caarray = {
-    truePredicate: function(o) { return true; },
     submitAjaxForm: function(formId, divId, options) {
         var formData = Form.serialize(formId);
         options = options || {};
@@ -126,77 +125,6 @@ var Caarray = {
       }
       return form;
   }
-}
-
-var ExtTreeUtils = {
-    /**
-     * Returns whether the given tree has any checked nodes.
-     * @param tree the Ext.tree.TreePanel tree to search
-     * @return true if the tree has any checked nodes, false otherwise
-     */
-    hasCheckedNodes: function(tree) {
-        return (ExtTreeUtils.findDescendent(tree.root, "checked", true) != null);
-    },
-
-    /**
-     * Find a descendent of the given node whose value for the given attribute is equal to the given value.
-     * @param parent the root node of the subtree to search
-     * @param attribute the name of the attribute of each node to check
-     * @param value the value that the given attribute of the node should have
-     * @return if any matches are found, one of the matches (which match will be returned is unspecified).
-     * If no matches found, then null
-     */
-    findDescendent: function(parent, attribute, value) {
-        var match = null;
-        parent.cascade(function(node) {
-            if (node.attributes[attribute] == value) {
-                match = node;
-                return false;
-            }
-        });
-        return match;
-    },
-
-    /**
-     * Set the enabled status of all nodes matching the given predicate in the subtree rooted at the given node
-     * to the given status.
-     * @param parent the root node of the subtree all of whose nodes will be enabled.
-     * @param status the enabled status (true or false) to set
-     * @param predicate (optional) a function that should return a boolean value for each node indicating
-     * whether to set the status for that node. if omitted, each node's status will be set
-     */
-    setEnabledStatus: function(parent, status, predicate) {
-        parent.cascade(function(node) {
-            if ((predicate || Caarray.truePredicate)(node)) {
-                if (status) {
-                    node.enable();
-                } else {
-                    node.disable();
-                }
-            }
-        });
-    },
-
-    /**
-     * Returns an array of the nodes underneath (and including) the given node in Ext.tree.TreePanel that are checked
-     * @param rootNode the root node of the subtree to search (pass in the root node of the tree to search the whole
-     * tree)
-     * @param nodeProperty if this is specified, then the array returned will contain this attribute of each node
-     * that is checked; if it is not specified, the array will contain the nodes themselves
-     * @return the array of either the checked nodes or the given attribute of the checked nodes
-     */
-    getCheckedNodes: function(rootNode, nodeProperty) {
-        var checked = [], i;
-        if (rootNode.attributes.checked && !rootNode.disabled) {
-            checked.push(nodeProperty ? rootNode.attributes[nodeProperty] : rootNode);
-        }
-        if (!rootNode.isLeaf()) {
-                for (i = 0; i < rootNode.childNodes.length; i++) {
-                    checked = checked.concat(this.getCheckedNodes(rootNode.childNodes[i], nodeProperty));
-                }
-            }
-        return checked;
-    }
 }
 
 var TabUtils = {

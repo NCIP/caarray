@@ -9,8 +9,8 @@
         <link rel="address bar icon" href="<c:url value="/images/favicon.ico"/>" />
         <link rel="icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
         <link rel="shortcut icon" href="<c:url value="/images/favicon.ico"/>" type="image/x-icon" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/ext-all.css'/>" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/xtheme-gray.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/resources/css/ext-all.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/resources/css/ext-all-gray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/accordion.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
@@ -21,7 +21,6 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
-        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-prototype-adapter.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-all-debug.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/accordion.js'/>"></script>
         <script type="text/javascript" language="javascript">
