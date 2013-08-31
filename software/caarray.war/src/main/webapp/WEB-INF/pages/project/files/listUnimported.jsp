@@ -233,14 +233,6 @@
         });
     }
 
-    disableNodesWithOtherNodeType = function(parent, nodeType) {
-        parent.cascadeBy(function(node) {
-            if (node.raw.nodeType != nodeType && node.raw.checked != undefined) {
-//                node.disable(); WC: fix
-            }
-        });
-    }
-
     openImportDescDialog = function(importUrl) {
         Ext.MessageBox.show({
             title: 'Enter Description of Import',
@@ -259,66 +251,17 @@
     }
 
     openImportDialog = function(importUrl) {
-        var store = Ext.create('Ext.data.TreeStore', {
+        var store = Ext.create('Biomaterial.store.Nodes', {
+            projectId: '${project.id}',
             proxy: {
                 type: 'ajax',
                 url: '${nodesJsonUrl}'
-            },
-            listeners: {
-                beforeload: function(store, operation) {
-                    operation.params["project.id"] = '${project.id}';
-                    operation.params.nodeType = operation.node.raw.nodeType;
-                },
-                load: function(store, node, records) {
-                    // when new nodes are loaded, disable them if a different node type is selected
-                    // also add a handler to each to handle disabling different node types if checked
-                    var rootNode = node.getOwnerTree().getRootNode();
-                    var checkedNode = rootNode.findChild("checked", true, true);
-                    if (checkedNode != null) {
-                        disableNodesWithOtherNodeType(node, checkedNode.raw.nodeType);
-                    }
-                }
-            },
-            sorters: [{
-                property: 'sort',
-                direction: 'ASC'
-            }],
-            root: {
-                text: 'Experiment',
-                nodeType: 'ROOT',
-                sort: 'Experiment',
-                draggable:false, // disable root node dragging
-                id:'ROOT'
-            }
-        });
-        var tree = Ext.create('Ext.tree.TreePanel', {
-            animate: true,
-            autoScroll: true,
-            hidden: true,
-            hideMode: 'visibility',
-            border: false,
-            bodyStyle:'padding-top: 5px; padding-left: 15px',
-            rootVisible: false,
-            store: store,
-            xtype: 'check-tree',
-            listeners: {
-                beforeselect: function() {
-                    return false;
-                },
-                checkchange: function(nd, checked) {
-                    var rootNode = nd.getOwnerTree().getRootNode();
-                    if (checked) {
-                        disableNodesWithOtherNodeType(rootNode, nd.raw.nodeType);
-                    } else if (nd.getOwnerTree().findChild("checked", true, true) != null) {
-                        nd.getOwnerTree().getRootNode().cascadeBy(function(node) {
-//                            node.enable(); WC: fix
-                        });
-                    }
-                }
             }
         });
 
-       var formPanel = new Ext.FormPanel({
+        var tree = Ext.create('Biomaterial.view.NodeTree', { store: store });
+
+        var formPanel = Ext.create('Ext.form.Panel', {
             bodyStyle:'padding:5px 5px 0',
             height: 500,
             autoScroll: true,
@@ -403,7 +346,7 @@
             ]
         });
 
-        var annotationDialog = new Ext.Window({
+        var annotationDialog = Ext.create('Ext.window.Window', {
             title: 'Import Options',
             width: 650,
             modal: true,

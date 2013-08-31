@@ -22,6 +22,7 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-all-debug.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-biomaterial-tree.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/accordion.js'/>"></script>
         <script type="text/javascript" language="javascript">
         // for help script - default.jsp
