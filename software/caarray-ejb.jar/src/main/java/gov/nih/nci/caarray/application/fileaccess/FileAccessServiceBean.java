@@ -247,7 +247,7 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void synchronizeDataStorage() {
         final Set<URI> references = getActiveReferences();
-        LOG.debug("Currently active references:" + references);
+        LOG.debug("Currently active references:" + references.size());
         if (references.isEmpty()) {
             LOG.warn("No active references found.  No files will be deleted.");
         } else {

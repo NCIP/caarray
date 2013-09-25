@@ -28,6 +28,7 @@ import java.util.List;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
@@ -152,6 +153,7 @@ public class AuditLogDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
+    @Ignore
     public void testSecurity() throws Exception {
         AuditLogDaoImpl instance = new AuditLogDaoImpl(hibernateHelper);
         AuditLogSearchCriteria cr = new AuditLogSearchCriteria();

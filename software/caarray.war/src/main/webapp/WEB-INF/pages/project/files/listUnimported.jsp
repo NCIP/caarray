@@ -233,243 +233,169 @@
         });
     }
 
-    getCheckedNodeType = function(root) {
-        var nd = ExtTreeUtils.findDescendent(root, "checked", true);
-        return (nd == null ? null : nd.attributes.nodeType);
-    }
-
-    disableNodesWithOtherNodeType = function(parent, nodeType) {
-        ExtTreeUtils.setEnabledStatus(parent, false, function(node) {
-            var shouldDisable =  (node.attributes.nodeType != nodeType && node.attributes.checked != undefined);
-            return shouldDisable;
-        });
-    }
-    
     openImportDescDialog = function(importUrl) {
-        var importDescriptionDialog = new Ext.Window({
+        Ext.MessageBox.show({
             title: 'Enter Description of Import',
-            closable: true,
             width: 300,
-            height: 200,
-            modal: true,
-            bodyStyle: 'padding:5px',
-            items: [{
-                xtype: 'textarea',
-                id: 'importDescription',
-                name: 'importDescription',
-                width: 280,
-                height: 125,
-                autoScroll: true,
-                hideLabel: true
-            }],
-            buttons: [{
-                text: 'Import',
-                listeners: {
-                    'click' : {
-                        fn: function() {
-                            doImportFiles(importUrl, $('importDescription').value);
-                            importDescriptionDialog.close();
-                        }
-                    }
+            buttonText: {
+                yes: 'Import',
+                cancel: 'Cancel',
+            },
+            fn: function(btn, importDescription) {
+                if (btn == "yes") {
+                    doImportFiles(importUrl, importDescription);
                 }
-            },{
-                text: 'Cancel',
-                listeners: {
-                'click' : {
-                    fn: function() { importDescriptionDialog.close(); }
-                }
-            }
-            }]
+            },
+            multiline: true
         });
-        importDescriptionDialog.show();
     }
 
     openImportDialog = function(importUrl) {
-        var treeLoader = new Ext.tree.TreeLoader({
-            dataUrl: '${nodesJsonUrl}'
-        });
-        treeLoader.on("beforeload", function(tl, node) {
-            this.baseParams["project.id"] = '${project.id}';
-            this.baseParams["nodeType"] = node.attributes.nodeType;
-        }, treeLoader);
-        // when new nodes are loaded, disable them if a different node type is selected
-        // also add a handler to each to handle disabling different node types if checked
-        treeLoader.on("load", function(tl, node) {
-            if (ExtTreeUtils.hasCheckedNodes(node.getOwnerTree())) {
-                disableNodesWithOtherNodeType(node, getCheckedNodeType(node.getOwnerTree().getRootNode()));
+        var store = Ext.create('Biomaterial.store.Nodes', {
+            projectId: '${project.id}',
+            proxy: {
+                type: 'ajax',
+                url: '${nodesJsonUrl}'
             }
-            node.childNodes.each(function(childNode) {
-                childNode.on("checkchange", function(nd, checked) {
-                    if (checked) {
-                        disableNodesWithOtherNodeType(nd.getOwnerTree().getRootNode(), nd.attributes.nodeType);
-                    } else if (!ExtTreeUtils.hasCheckedNodes(nd.getOwnerTree())) {
-                        ExtTreeUtils.setEnabledStatus(nd.getOwnerTree().getRootNode(), true);
-                    }
-                }, childNode);
-           });
-        }, treeLoader);
-
-        // prevent selecting of nodes - instead we use the checkboxes and checked status for each node to select them
-        var treeSelModel = new Ext.tree.DefaultSelectionModel();
-        treeSelModel.on("beforeselect", function(selModel, node, oldNode) {
-            return false;
         });
 
-        var tree = new Ext.tree.TreePanel({
-            animate:true,
-            autoScroll:true,
-            enableDD:false,
-            containerScroll: true,
-            hidden: true,
-            hideMode: 'visibility',
-            border: false,
-            bodyStyle:'padding-top: 5px; padding-left: 15px',
-            loader: treeLoader,
-            rootVisible: false,
-            selModel: treeSelModel
-        });
-        new Ext.tree.TreeSorter(tree, { property : "sort"});
+        var tree = Ext.create('Biomaterial.view.NodeTree', { store: store });
 
-        // set the root node and expand one level to get the categories (root node itself is invisible)
-        var root = new Ext.tree.AsyncTreeNode({
-            text: 'Experiment',
-            nodeType: 'ROOT',
-            sort: 'Experiment',
-            draggable:false, // disable root node dragging
-            id:'ROOT'
-        });
-        tree.setRootNode(root);
-        root.expand();
-
-        // set up the form panel to handle autocreation selection and target node selection
-        var formPanel = new Ext.FormPanel({
-            autoWidth: true,
-            height: 500,
-            url:'save-form.php',
+        var formPanel = Ext.create('Ext.form.Panel', {
             bodyStyle:'padding:5px 5px 0',
-            labelAlign: 'right',
+            height: 500,
             autoScroll: true,
             border: false,
-            items: [{
-                                layout: 'form',
-                                border: false,
-                                width: 'auto',
-                                items: [
-                                            {
-                                                html: '<p>For the ' + getSelectedFileNames().length + ' selected file(s), please identify how biomaterial and '
-                                                    + ' hybridization annotations should be created or mapped',
-                                                border: false
-                                            },
-                                            {
-                                                xtype: 'radio',
-                                                boxLabel: 'Autocreate annotation sets (Source -> Sample -> Extract -> Labeled'
-                                                    + ' Extract -> Hybridization) for each selected file',
-                                                id: 'create_choice_autocreate_per_file',
-                                                name: 'create_choice',
-                                                inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_PER_FILE"/>',
-                                                itemCls: 'create_choice_form_item',
-                                                hideLabel: true
-                                            },
-                                            {
-                                                html: 'Note:  For GenePix and Illumina files, in which >1 biomaterial may be'
-                                                + ' represented in a given file, biomaterial annotations will be generated'
-                                                + ' based on the number of samples in the file.<p>',
-                                                border: false
-                                            },
-                                            {
-                                                xtype: 'radio',
-                                                boxLabel: 'Autocreate a single annotation set (Source -> Sample -> Extract -> Labeled'
-                                                    + ' Extract -> Hybridization) for all selected files',
-                                                id: 'create_choice_autocreate_single',
-                                                name: 'create_choice',
-                                                inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE"/>',
-                                                itemCls: 'create_choice_form_item',
-                                                hideLabel: true
-                                            },
-                                            {
-                                                xtype: 'textfield',
-                                                fieldLabel: 'Name for created annotations',
-                                                id: 'autocreate_single_annotation_name',
-                                                name: 'autocreate_single_annotation_name',
-                                                itemCls: 'create_choice_indented_item'
-                                            },
-                                            {
-                                                xtype: 'radio',
-                                                boxLabel: 'Associate selected file(s) to existing biomaterial or hybridization',
-                                                listeners: {
-                                                    'check' : {
-                                                        fn: function(theradio,ischecked) {
-                                                            formPanel.findById('experiment_design_tree_instructions').setVisible(ischecked);
-                                                            tree.setVisible(ischecked);
-                                                        }
-                                                   }
-                                                },
-                                                id: 'create_choice_associate_to_biomaterials',
-                                                name: 'create_choice',
-                                                inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES"/>',
-                                                itemCls: 'create_choice_form_item',
-                                                hideLabel: true
-                                            },
-                                            {
-                                                html: 'Note that biomaterials and hybridizations will be autocreated downstream'
-                                                    + ' of the selected node in the annotation set.  Be sure to select the most'
-                                                    + ' specific node in the annotation set.',
-                                                border: false,
-                                                hidden: true,
-                                                id: 'experiment_design_tree_instructions'
-                                            },
-                                            tree,
-                                            {
-                                                xtype: 'textarea',
-                                                fieldLabel: 'Import Description',
-                                                id: 'importDescription',
-                                                name: 'importDescription',
-                                                width: 280,
-                                                height: 125,
-                                                autoScroll: true,
-                                            }
-                                       ]
-                            }
+            bodyCls: 'annotation_dialog_form',
+            items: [
+                    {
+                        html: '<p>For the ' + getSelectedFileNames().length + ' selected file(s), please identify how biomaterial and '
+                            + ' hybridization annotations should be created or mapped',
+                        border: false
+                    },
+                    {
+                        xtype: 'radio',
+                        boxLabel: 'Autocreate annotation sets (Source -> Sample -> Extract -> Labeled'
+                            + ' Extract -> Hybridization) for each selected file',
+                        id: 'create_choice_autocreate_per_file',
+                        name: 'create_choice',
+                        inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_PER_FILE"/>',
+                        componentCls: 'create_choice_form_item',
+                        hideLabel: true
+                    },
+                    {
+                        html: 'Note:  For GenePix and Illumina files, in which >1 biomaterial may be'
+                        + ' represented in a given file, biomaterial annotations will be generated'
+                        + ' based on the number of samples in the file.<p>',
+                        border: false
+                    },
+                    {
+                        xtype: 'radio',
+                        boxLabel: 'Autocreate a single annotation set (Source -> Sample -> Extract -> Labeled'
+                            + ' Extract -> Hybridization) for all selected files',
+                        id: 'create_choice_autocreate_single',
+                        name: 'create_choice',
+                        inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE"/>',
+                        componentCls: 'create_choice_form_item',
+                        hideLabel: true
+                    },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: 'Name for created annotations',
+                        id: 'autocreate_single_annotation_name',
+                        name: 'autocreate_single_annotation_name',
+                        labelAlign: 'right',
+                        componentCls: 'create_choice_indented_item'
+                    },
+                    {
+                        xtype: 'radio',
+                        boxLabel: 'Associate selected file(s) to existing biomaterial or hybridization',
+                        listeners: {
+                            'change' : {
+                                fn: function(theradio,ischecked) {
+                                    Ext.getCmp('experiment_design_tree_instructions').setVisible(ischecked);
+                                    tree.setVisible(ischecked);
+                                }
+                           }
+                        },
+                        id: 'create_choice_associate_to_biomaterials',
+                        name: 'create_choice',
+                        inputValue: '<s:property value="@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES"/>',
+                        componentCls: 'create_choice_form_item',
+                        hideLabel: true
+                    },
+                    {
+                        html: 'Note that biomaterials and hybridizations will be autocreated downstream'
+                            + ' of the selected node in the annotation set.  Be sure to select the most'
+                            + ' specific node in the annotation set.',
+                        border: false,
+                        hidden: true,
+                        id: 'experiment_design_tree_instructions'
+                    },
+                    tree,
+                    {
+                        xtype: 'textarea',
+                        fieldLabel: 'Import Description',
+                        id: 'importDescription',
+                        name: 'importDescription',
+                        width: 380,
+                        height: 125,
+                        autoScroll: true,
+                        labelAlign: 'right'
+                    }
             ]
         });
 
-        var annotationDialog = new Ext.Window({
+        var annotationDialog = Ext.create('Ext.window.Window', {
             title: 'Import Options',
-            closable:true,
-            width:650,
-            height:570,
+            width: 650,
             modal: true,
             items: [formPanel],
+            autoScroll: true,
             buttons: [{
                 text: 'Import',
                 listeners: {
-                    'click' : {
+                    click: {
                         fn: function() {
-                            var createChoiceRadios = [$('create_choice_autocreate_per_file'), $('create_choice_autocreate_single'), $('create_choice_associate_to_biomaterials')];
-                            var selectedCreateChoiceRadio = $A(createChoiceRadios).find(function(elt) { return elt.checked });
-                            if (!selectedCreateChoiceRadio) {
+                            var selectedRadio, newAnnotationName, checkedNodes = [], checkedNodesType;
+                            if (Ext.getCmp('create_choice_autocreate_per_file').checked) {
+                                selectedRadio = Ext.getCmp('create_choice_autocreate_per_file').inputValue;
+                            } else if (Ext.getCmp('create_choice_autocreate_single').getValue()) {
+                                newAnnotationName = Ext.getCmp('autocreate_single_annotation_name').getValue();
+                                if (!newAnnotationName || newAnnotationName.length == 0) {
+                                    alert("You must enter a value for the new annotation name");
+                                    return;
+                                }
+                                selectedRadio = Ext.getCmp('create_choice_autocreate_single').inputValue;
+                            } else if (Ext.getCmp('create_choice_associate_to_biomaterials').getValue()) {
+                                var rootNode = tree.getRootNode()
+                                var nd = rootNode.findChild("checked", true, true);
+                                if (nd == null) {
+                                    alert("You must select at least one biomaterial or hybridization.");
+                                    return
+                                }
+                                checkedNodesType = nd.raw.nodeType;
+                                rootNode.cascadeBy(function(node) {
+                                    if (node.get('checked')) {
+                                        checkedNodes.push(node.raw.entityId);
+                                    }
+                                    return true;
+                                });
+                                selectedRadio = Ext.getCmp('create_choice_associate_to_biomaterials').inputValue;
+                            } else {
                                 alert('You must select an import option');
                                 return;
                             }
-                            var newAnnotationName = $('autocreate_single_annotation_name').value;
-                            if ($('create_choice_autocreate_single').checked && (!newAnnotationName || newAnnotationName.length == 0)) {
-                                alert("You must enter a value for the new annotation name");
-                                return;
-                            }
-                            var checkedNodes = ExtTreeUtils.getCheckedNodes(tree.getRootNode(), 'entityId');
-                            var checkedNodesType = getCheckedNodeType(tree.getRootNode());
-                            doImportFiles(importUrl, $('importDescription').value, selectedCreateChoiceRadio.value, newAnnotationName, checkedNodes, checkedNodesType);
+                            doImportFiles(importUrl, $('importDescription').value, selectedRadio, newAnnotationName, checkedNodes, checkedNodesType);
                             annotationDialog.close();
                         }
                     }
                 }
-            },{
+            }, {
                 text: 'Cancel',
                 listeners: {
-                'click' : {
-                    fn: function() { annotationDialog.close(); }
+                    click: { fn: function() { annotationDialog.close()}}
                 }
-            }
             }]
         });
         annotationDialog.show();

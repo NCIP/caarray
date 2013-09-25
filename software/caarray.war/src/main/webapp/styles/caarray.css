@@ -705,3 +705,7 @@ div.tooltip:hover {background:#ffffff; text-decoration:none;} /*BG color is a mu
 div.tooltip span {display:none; padding:2px 3px; margin-left:8px; width:130px;}
 div.tooltip:hover span {display:inline; position:absolute; background:#ffffff; border:1px solid #cccccc; color:#6c6c6c;}
 
+/* Extjs checkboxes */
+.checkbox-disabled input.x-tree-checkbox{
+  background-position: -39px 0px;
+}

@@ -234,8 +234,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
         if (audits.get() != null && !audits.get().isEmpty()) {
             SessionFactory sf = getHibernateHelper().getSessionFactory();
-            @SuppressWarnings("deprecation")
-            Session session = sf.openSession(getHibernateHelper().getCurrentSession().connection());
+            Session session = sf.openSession();
             Long transactionId = null;
             try {
                 transactionId = getTxIdGenerator().generateId(getDialect(), session);
