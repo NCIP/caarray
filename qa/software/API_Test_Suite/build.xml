@@ -33,6 +33,7 @@
     <property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
     <property name="jar.dest.file" value="${basedir}/client_api_test_suite.jar" />
     <property name="test.long.exclude" value="351,125,133,142,182,183,203,204,294,295,297,299,301,363,365,366,367,368,369,409,410,352,104,107,109,112,114,349,115,119,124,125,350,51,52,318,319" />
+    <property name="jboss.home" value="${user.home}/projects/caArray/apps/app/jboss-5.1.0.GA-nci"/>
 	
 	<!-- ******************************************************************* -->
 	<!-- ** TEST SUITE PROPERTIES                                         ** -->
@@ -58,7 +59,9 @@
             <exclude name="xercesImpl-1.7.0.jar" />
             <exclude name="xerces-J-1.4.0.jar" />
             <exclude name="pull-parser-2.jar"/>
+            <exclude name="jbosssx-client-4.2.2.GA.jar"/>
         </fileset>
+        <fileset dir="${jboss.home}/client" includes="*.jar"/>
     </path>
 
 
@@ -150,7 +153,7 @@
             <sysproperty key="test.long.exclude" value="${test.long.exclude}" />
         </java>
     </target>
-	
+
     <target name="run_load_tests" depends="compile">
         <java classname="caarray.client.test.full.LoadTest" fork="yes">
             <classpath>

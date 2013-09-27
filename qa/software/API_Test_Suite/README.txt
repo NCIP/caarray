@@ -6,6 +6,13 @@ RUNNING THE TEST SUITE
 
 Before building and running the test suite, confirm that the
 caArray project on this branch is fully built and deployed (i.e. ant deploy)
+
+Edit build.xml with your appropriate properties.  You should at least edit:
+ - grid.server.hostname
+ - grid.server.http.port
+ - server.hostname
+ - server.jndi.port
+ - jboss.home
 		 
 To run the test suite via gui: 	in a command line shell, navigate to the
 'API_Test_Suite' directory and run the 'ant' command. This will build.
