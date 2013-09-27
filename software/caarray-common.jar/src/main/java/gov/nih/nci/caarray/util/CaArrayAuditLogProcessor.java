@@ -11,9 +11,7 @@ import gov.nih.nci.caarray.domain.audit.AuditLogSecurity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -244,15 +242,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     }
     
     private boolean auditFileDeletion(CaArrayFile file) {
-        FileStatus fileStatus = file.getFileStatus();
-        if (FileStatus.SUPPLEMENTAL.equals(fileStatus)) {
-            return true;
-        } else if (FileStatus.IMPORTED.equals(fileStatus) || FileStatus.IMPORTED_NOT_PARSED.equals(fileStatus)) {
-            FileType fileType = file.getFileType();
-            FileCategory fileCat = fileType == null ? null : fileType.getCategory();
-            return FileCategory.DERIVED_DATA.equals(fileCat) || FileCategory.RAW_DATA.equals(fileCat);
-        }
-        return false;
+        return file.getParent() == null;
     }
 
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
