@@ -22,8 +22,10 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -49,7 +51,7 @@ import com.google.common.collect.Sets;
  *
  * @author gax
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveParameterList" })
 public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private static final Long READ_PRIV_ID = 3L;
     private static final Long PERMISSIONS_PRIV_ID = 8L;
@@ -66,7 +68,9 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         Experiment.class,
         AbstractArrayData.class,
         Organization.class,
-        Organism.class
+        Organism.class,
+        Term.class,
+        Protocol.class
     };
 
     private static final Logger LOG = Logger.getLogger(CaArrayAuditLogProcessor.class);
@@ -118,7 +122,6 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     public void processDetail(AuditLogRecord record, Object entity, Serializable key, String property,
             String columnName, Object oldVal, Object newVal) {
         
@@ -136,6 +139,10 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             logArrayData(record, (AbstractArrayData) entity, property, columnName, oldVal, newVal);
         } else if (entity instanceof CaArrayFile) {
             logCaArrayFile(record, (CaArrayFile) entity, property, columnName, oldVal, newVal);
+        } else if (entity instanceof Term) {
+            logTerm(record, (Term) entity, property, columnName, oldVal, newVal);
+        } else if (entity instanceof Protocol) {
+            logProtocol(record, (Protocol) entity, property, columnName, oldVal, newVal);
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
@@ -194,7 +201,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         entries.add(new AuditLogSecurity(entityName, entityId, privilegeId, record));
     }
 
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked", "PMD.NPathComplexity" })
+    @SuppressWarnings({"unchecked", "PMD.NPathComplexity" })
     private void logAccessProfile(AuditLogRecord record, AccessProfile entity, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("securityLevelInternal".equals(property)) {
@@ -215,7 +222,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    @SuppressWarnings("unchecked")
     private void logProject(AuditLogRecord record, Project project, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("locked".equals(property)) {
@@ -245,7 +252,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         return file.getParent() == null;
     }
 
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    @SuppressWarnings("unchecked")
     private void logGroup(AuditLogRecord record, Group entity, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("groupName".equals(property)) {
@@ -278,7 +285,6 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void logCollaboratorGroup(AuditLogRecord record, CollaboratorGroup entity, String property, 
             String columnName, Object oldVal, Object newVal) {
         if ("ownerId".equals(property)) {
@@ -290,7 +296,6 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
     
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void logExperiment(AuditLogRecord record, Experiment experiment, String property, 
             String columnName, Object oldVal, Object newVal) {
         Project project = experiment.getProject();
@@ -340,7 +345,6 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         return "";
     }
     
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void logCaArrayFile(AuditLogRecord record, CaArrayFile file, String property, 
             String columnName, Object oldVal, Object newVal) {
         if ("status".equals(property)
@@ -351,7 +355,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    @SuppressWarnings("unchecked")
     private void logArrayData(AuditLogRecord record, AbstractArrayData ad, String property, 
             String columnName, Object oldVal, Object newVal) {
         if ("hybridizations".equals(property)) {
@@ -410,7 +414,25 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             record.getDetails().remove(detail);
         }
     }
-    
+
+    private void logTerm(AuditLogRecord record, Term term, String property, String columnName, Object oldVal,
+            Object newVal) {
+        if (record.getDetails().size() == 0) {
+            String addUpdate = record.getType() == AuditType.INSERT ? "added" : "updated";
+            addDetail(record, "Term", "Term '" + term.getValue() + "' " + addUpdate, null, null);
+        }
+        addDetail(record, columnName, " - " + property + " updated", oldVal, newVal);
+    }
+
+    private void logProtocol(AuditLogRecord record, Protocol protocol, String property, String columnName,
+            Object oldVal, Object newVal) {
+        if (record.getDetails().size() == 0) {
+            String addUpdate = record.getType() == AuditType.INSERT ? "added" : "updated";
+            addDetail(record, "Protocol", "Protocol '" + protocol.getName() + "' " + addUpdate, null, null);
+        }
+        addDetail(record, columnName, " - " + property + " updated", oldVal, newVal);
+    }
+
     private void addExperimentDetail(AuditLogRecord record, String attribute, Project project) {
         if (record.getDetails().size() == 0) {
             addDetail(record, attribute, "Experiment " + project.getExperiment().getTitle() + ":");

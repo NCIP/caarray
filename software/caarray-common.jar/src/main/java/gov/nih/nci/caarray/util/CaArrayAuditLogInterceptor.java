@@ -30,6 +30,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.Session;
@@ -474,6 +475,9 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
             for (int i = 0; i < properties.length; i++) {
                 try {
                     myOldValues[i] = PropertyUtils.getProperty(oldObject, properties[i]);
+                    if (myOldValues[i] != null) {
+                        Hibernate.initialize(myOldValues[i]);
+                    }
                 } catch (Exception e) {
                     LOG.error("Unable to read the old value of a property while logging.", e);
                     myOldValues[i] = null;
