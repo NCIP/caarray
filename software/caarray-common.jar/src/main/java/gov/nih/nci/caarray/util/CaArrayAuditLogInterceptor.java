@@ -59,16 +59,16 @@ import com.fiveamsolutions.nci.commons.util.UsernameHolder;
 
 /**
  * Interceptor that adds audit log records for audits.  The username that identifies
- * the actor of the change request is determind with {@link UsernameHolder}.
+ * the actor of the change request is determined with {@link UsernameHolder}.
  * Don't forget to define a sequence {@value #SEQUENCE_NAME}, if your database supports it.
  * @see UsernameHolder
  * 
- * This class was copied and modified from AuditLogInterceptor in nci-commons v1.2.17.
+ * This class was copied and modified from AuditLogInterceptor in nci-commons v1.2.24.
  * This should be removed and integrated back into nci-commons when caArray updates to the newest version.
  * Tracked in JIRA ticket ARRAY-2496.
  */
 
-@SuppressWarnings({"PMD.CyclomaticComplexity", "unchecked", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
 public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
     private HibernateHelper hibernateHelper;
@@ -98,8 +98,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
     /**
      * Set to contain insert update log records.
      */
-    private final transient ThreadLocal<Set<AuditLogHelper>> audits =
-        new ThreadLocal<Set<AuditLogHelper>>();
+    private final transient ThreadLocal<Set<AuditLogHelper>> audits = new ThreadLocal<Set<AuditLogHelper>>();
 
     private final transient ThreadLocal<Map<RecordKey, AuditLogRecord>> records =
         new ThreadLocal<Map<RecordKey, AuditLogRecord>>();
@@ -113,7 +112,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
     }
 
     /**
-     *default ctor.
+     * default ctor.
      */
     public CaArrayAuditLogInterceptor() {
         // noop
@@ -136,7 +135,6 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         }
     }
 
-
     /**
      * @param processor replace the default selector.
      */
@@ -158,10 +156,9 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
     @Override
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public boolean onFlushDirty(Object obj, Serializable id, Object[] newValues, Object[] oldValues,
-                                String[] properties, Type[] types) {
+            String[] properties, Type[] types) {
         if (processor.isAuditableEntity(obj)) {
-            this.auditChangesIfNeeded(obj, id, newValues, oldValues, properties,
-                                      types, AuditType.UPDATE);
+            this.auditChangesIfNeeded(obj, id, newValues, oldValues, properties, types, AuditType.UPDATE);
         }
 
         return false;
@@ -173,11 +170,25 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
     @Override
     public boolean onSave(Object obj, Serializable id, Object[] newValues, String[] properties, Type[] types) {
         if (processor.isAuditableEntity(obj)) {
-            this.auditChangesIfNeeded(obj, id, newValues, new Object[properties.length],
-                                      properties, types, AuditType.INSERT);
+            this.auditChangesIfNeeded(obj, id, newValues, new Object[properties.length], properties, types,
+                    AuditType.INSERT);
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDelete(Object obj, Serializable id, Object[] newValues, String[] properties, Type[] types) {
+        if (processor.isAuditableEntity(obj)) {
+            // there are not new values since this object is being deleted.
+            // a null is passed in for the old values so that we will be forced
+            // to retrieve a fresh set of values from the session which will include
+            // even those fields on the component items that were mapped with a updatable=false.
+            auditChangesIfNeeded(obj, id, new Object[properties.length], null, properties, types, AuditType.DELETE);
+        }
     }
 
     /**
@@ -201,14 +212,14 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         String role = pc.getRole();
 
         Serializable oldSerial = pc.getStoredSnapshot();
-        Object oldV = null;
+        Object oldValue = null;
         if (oldSerial != null && pc instanceof PersistentSet) {
             // PersistentSet seems to build a strange map where the key is also the value.
-            oldV = ((Map) oldSerial).keySet();
+            oldValue = ((Map) oldSerial).keySet();
         } else {
-            oldV = oldSerial;
+            oldValue = oldSerial;
         }
-        Object newV = pc.getValue();
+        Object newValue = pc.getValue();
 
         int idx = role.lastIndexOf('.');
         String className = role.substring(0, idx);
@@ -218,13 +229,17 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         AuditLogRecord record = getOrCreateRecord(owner, key, className, tabColMA.get(TABLE_NAME), AuditType.UPDATE);
         Getter getter;
         try {
-            getter = getIdGetter(Class.forName(className));
+            // Use current thread's class loader, instead of this class's class loader. This
+            // ensures accessibility to class BO even if nci-commons is created via a higher level class loader
+            // than the application's class loader (web/ear class loader).
+            getter = getIdGetter(Thread.currentThread().getContextClassLoader().loadClass(className));
         } catch (ClassNotFoundException ex) {
             throw new HibernateException(ex);
         }
+
         AuditLogHelper helper = new AuditLogHelper(record, owner, getter);
         audits.get().add(helper);
-        helper.getDetails().add(new DetailHelper(property, tabColMA.get(COLUMN_NAME), oldV, newV));
+        helper.getDetails().add(new DetailHelper(property, tabColMA.get(COLUMN_NAME), oldValue, newValue));
     }
 
     /**
@@ -250,8 +265,8 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
                     audit.getAuditLogRecord().setEntityId((Long) id);
 
                     for (DetailHelper detail : audit.getDetails()) {
-                        processor.processDetail(audit.getAuditLogRecord(), audit.getEntity(), id,
-                                detail.getProperty(), detail.getColumnName(), detail.getOldVal(), detail.getNewVal());
+                        processor.processDetail(audit.getAuditLogRecord(), audit.getEntity(), id, detail.getProperty(),
+                                detail.getColumnName(), detail.getOldVal(), detail.getNewVal());
                     }
                     session.save(audit.getAuditLogRecord());
                 }
@@ -288,8 +303,10 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         private final AuditType type;
 
         RecordKey(Object entity, AuditType type) {
-            this.entity = entity; this.type = type;
+            this.entity = entity;
+            this.type = type;
         }
+
         /**
          * {@inheritDoc}
          */
@@ -298,6 +315,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
             RecordKey r = (RecordKey) obj;
             return entity == r.entity && type == r.type;
         }
+
         /**
          * {@inheritDoc}
          */
@@ -330,11 +348,11 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
     private void auditChangesIfNeeded(Object auditableObj, Serializable id, Object[] newValues, Object[] oldValues,
-                                      String[] properties, Type[] types, AuditType eventToLog) {
+            String[] properties, Type[] types, AuditType eventToLog) {
 
         // first make sure we have old values around. The passed in set will be null when an object is being updated
         // that was detached from the session
-        Object[] myOldValues = getOldValues(oldValues, properties, auditableObj, id);
+        Object[] nonNullOldValues = getOldValues(oldValues, properties, auditableObj, id);
 
         if (audits.get() == null) {
             audits.set(new HashSet<AuditLogHelper>());
@@ -345,45 +363,42 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
         for (int i = 0; i < properties.length; i++) {
             String property = properties[i];
-            Object oldV = myOldValues[i];
-            Object newV = newValues[i];
-            if (needsAuditing(auditableObj, types[i], newV, oldV, property)) {
+            Object oldValue = nonNullOldValues[i];
+            Object newValue = newValues[i];
+            if (needsAuditing(auditableObj, types[i], newValue, oldValue, property)) {
                 Class clazz = getPersistentClass(auditableObj);
                 Map<String, String> tabColMA = getColumnTableName(clazz.getName(), property);
                 if (record == null) {
                     String entityName = getPersistentClass(auditableObj).getName();
-                    record = getOrCreateRecord(auditableObj, id, entityName, tabColMA.get(TABLE_NAME),
-                            eventToLog);
+                    record = getOrCreateRecord(auditableObj, id, entityName, tabColMA.get(TABLE_NAME), eventToLog);
                     helper = new AuditLogHelper(record, auditableObj, getIdGetter(clazz));
                     audits.get().add(helper);
                 }
 
                 String colName = tabColMA.get(COLUMN_NAME);
-                helper.getDetails().add(new DetailHelper(property, colName, oldV, newV));
+                helper.getDetails().add(new DetailHelper(property, colName, oldValue, newValue));
             }
         }
     }
 
     private Getter getIdGetter(Class clazz) {
-        return getHibernateHelper().getConfiguration().getClassMapping(clazz.getName())
-                .getIdentifierProperty().getGetter(clazz);
+        return getHibernateHelper().getConfiguration().getClassMapping(clazz.getName()).getIdentifierProperty()
+                .getGetter(clazz);
     }
 
-    @SuppressWarnings("deprecation")
     private Object[] getOldValues(Object[] oldValues, String[] properties, Object auditableObj, Serializable id) {
-        Object[] myOldValues = oldValues;
+        Object[] nonNullOldValues = oldValues;
         Session session = null;
-        if (myOldValues == null) {
+        if (nonNullOldValues == null) {
             try {
                 SessionFactory sf = getHibernateHelper().getSessionFactory();
-                session = sf.openSession(getHibernateHelper().getCurrentSession().connection());
-                myOldValues = retrieveOldValues(session, id, properties,
-                                                getPersistentClass(auditableObj));
+                session = sf.openSession();
+                nonNullOldValues = retrieveOldValues(session, id, properties, getPersistentClass(auditableObj));
             } finally {
                 session.close();
             }
         }
-        return myOldValues;
+        return nonNullOldValues;
     }
 
     private Dialect getDialect() {
@@ -392,8 +407,11 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         }
         Dialect d = null;
         try {
-            d = (Dialect) Class.forName(getHibernateHelper().getConfiguration()
-                                                        .getProperty(Environment.DIALECT)).newInstance();
+            // Use current thread's class loader, instead of this class's class loader. This
+            // ensures accessibility to class BO even if nci-commons is created via a higher level class loader
+            // than the application's class loader (web/ear class loader).
+            d = (Dialect) Thread.currentThread().getContextClassLoader()
+                    .loadClass(getHibernateHelper().getConfiguration().getProperty(Environment.DIALECT)).newInstance();
         } catch (Exception e) {
             LOG.error("Unable to determine dialect.", e);
         }
@@ -417,8 +435,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         return g;
     }
 
-    private boolean needsAuditing(Object auditableObj, Type type, Object newValue,
-                                         Object oldValue, String property) {
+    private boolean needsAuditing(Object auditableObj, Type type, Object newValue, Object oldValue, String property) {
         if (type.isCollectionType()) {
             return collectionNeedsAuditing(auditableObj, newValue, oldValue, property);
         }
@@ -434,18 +451,14 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         return !ObjectUtils.equals(newValue, oldValue);
     }
 
-
-    private boolean collectionNeedsAuditing(Object auditableObj, Object newValue,
-                                                   Object oldValue, String property) {
-
+    private boolean collectionNeedsAuditing(Object auditableObj, Object newValue, Object oldValue, String property) {
 
         try {
             String cn = CGLIBUtils.unEnhanceCBLIBClassName(auditableObj.getClass());
             Method getter = getHibernateHelper().getConfiguration().getClassMapping(cn).getProperty(property)
                     .getGetter(auditableObj.getClass()).getMethod();
-            if (getter.getAnnotation(MapKey.class) != null
-                    || getter.getAnnotation(MapKeyManyToMany.class) != null) {
-                //  this is some sort of map
+            if (getter.getAnnotation(MapKey.class) != null || getter.getAnnotation(MapKeyManyToMany.class) != null) {
+                // this is some sort of map
                 Map<?, ?> oldMap = (Map<?, ?>) oldValue;
                 Map<?, ?> newMap = (Map<?, ?>) newValue;
                 oldMap = oldMap == null ? Collections.emptyMap() : oldMap;
@@ -456,7 +469,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
                 Collection<?> oldSet = (Collection<?>) oldValue;
                 Collection<?> newSet = (Collection<?>) newValue;
                 return !CollectionUtils.isEqualCollection((oldSet == null) ? Collections.emptySet() : oldSet,
-                                                          (newSet == null) ? Collections.emptySet() : newSet);
+                        (newSet == null) ? Collections.emptySet() : newSet);
 
             }
         } catch (SecurityException e) {
@@ -466,31 +479,30 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         return false;
     }
 
-    private static Object[] retrieveOldValues(Session session, Serializable id, String[] properties,
-                                              Class<?> theClass) {
-        Object[] myOldValues = new Object[properties.length];
+    private Object[] retrieveOldValues(Session session, Serializable id, String[] properties, Class<?> theClass) {
+        Object[] nonNullOldValues = new Object[properties.length];
 
         Object oldObject = session.get(theClass, id);
         if (oldObject != null) {
             for (int i = 0; i < properties.length; i++) {
                 try {
-                    myOldValues[i] = PropertyUtils.getProperty(oldObject, properties[i]);
-                    if (myOldValues[i] != null) {
-                        Hibernate.initialize(myOldValues[i]);
+                    nonNullOldValues[i] = PropertyUtils.getProperty(oldObject, properties[i]);
+                    if (nonNullOldValues[i] != null) {
+                        Hibernate.initialize(nonNullOldValues[i]);
                     }
                 } catch (Exception e) {
                     LOG.error("Unable to read the old value of a property while logging.", e);
-                    myOldValues[i] = null;
+                    nonNullOldValues[i] = null;
                 }
             }
         }
 
-        return myOldValues;
+        return nonNullOldValues;
     }
 
     /**
      * Retrieves the table name and the column name for the given class and property.
-     *
+     * 
      * @param className
      * @param fieldName
      * @return Map
@@ -520,7 +532,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
     /**
      * Retrieves the column name for the given PersistentClass and fieldName.
-     *
+     * 
      * @param pc
      * @param fieldName
      * @return columnName
@@ -557,9 +569,9 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         return columnName;
     }
 
-    /**.
-     * Returns the Actual class name from the CGILIB Proxy classname of the entity
-     *
+    /**
+     * . Returns the Actual class name from the CGILIB Proxy classname of the entity
+     * 
      * @param obj
      * @return
      */
@@ -635,7 +647,6 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
             return idGetter;
         }
 
-
         /**
          * @param record audit record
          * @param entity entity
@@ -643,7 +654,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
         public AuditLogHelper(AuditLogRecord record, Object entity, Getter idGetter) {
             this.auditLogRecord = record;
             this.entity = entity;
-            this.idGetter =  idGetter;
+            this.idGetter = idGetter;
         }
     }
 
@@ -667,7 +678,6 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
             this.newVal = newVal;
             this.oldVal = oldVal;
         }
-
 
         /**
          * @return the newVal
@@ -703,6 +713,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
      */
     static interface TxIdGenerator {
         Long generateId(Dialect dialect, Session session);
+
         boolean isSupported(Dialect dialect);
     }
 
@@ -715,7 +726,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
             Number uniqueResult = (Number) session.createSQLQuery(sql).uniqueResult();
             if (uniqueResult == null) {
                 // For some reason, HSQL isn't returning a result here, even though the query doesn't
-                // throw an exception.  This works correctly in postgres.
+                // throw an exception. This works correctly in postgres.
                 LOG.warn("should only happen in unit tests!!");
                 uniqueResult = 1L;
             }
@@ -734,6 +745,7 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
 
     private static final int HEX = 16;
     private static final int BITLENGHT_LONG = 64;
+
     /**
      * For MySql and such.
      */

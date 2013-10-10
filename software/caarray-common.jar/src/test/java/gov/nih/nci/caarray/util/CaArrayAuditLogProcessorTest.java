@@ -71,8 +71,8 @@ public class CaArrayAuditLogProcessorTest {
         Set<String> messages = getMessages(addRecord);
         assertEquals(3, messages.size());
         assertTrue(messages.contains("Term 'Brain' added"));
-        assertTrue(messages.contains(" - value updated"));
-        assertTrue(messages.contains(" - description updated"));
+        assertTrue(messages.contains(" - value added"));
+        assertTrue(messages.contains(" - description added"));
         
         AuditLogRecord updateRecord = createRecord(AuditType.UPDATE);
         tissueSite.setDescription("desc2");
@@ -93,8 +93,8 @@ public class CaArrayAuditLogProcessorTest {
         Set<String> messages = getMessages(addRecord);
         assertEquals(3, messages.size());
         assertTrue(messages.contains("Protocol 'Test Protocol' added"));
-        assertTrue(messages.contains(" - name updated"));
-        assertTrue(messages.contains(" - description updated"));
+        assertTrue(messages.contains(" - name added"));
+        assertTrue(messages.contains(" - description added"));
         
         AuditLogRecord updateRecord = createRecord(AuditType.UPDATE);
         tissueSite.setDescription("updated");
