@@ -72,6 +72,13 @@ public class ProjectHandlerTest extends AbstractAuditHandlerTest<Project> {
         assertFalse(logEntity(record, "invalid"));
     }
     
+    @Test
+    public void testDeleteProject() {
+        AuditLogRecord record = createAuditLogRecord(AuditType.DELETE);
+        assertTrue(logEntity(record, "experiment"));
+        verify(processor).addDetail(record, "experiment", "Experiment 'TestExp' deleted", OLD_VALUE, NEW_VALUE);
+    }
+    
     @SuppressWarnings("deprecation")
     private CaArrayFile createDummyFile(int id) {
         CaArrayFile file = new CaArrayFile();

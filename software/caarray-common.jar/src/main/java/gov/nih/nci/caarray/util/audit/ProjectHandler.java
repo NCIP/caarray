@@ -64,4 +64,20 @@ public class ProjectHandler extends AbstractAuditEntityHandler<Project> {
         }
         return addedEntry;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    protected boolean logDelete(AuditLogRecord record, Project entity, String property, String columnName,
+            Object oldVal, Object newVal) {
+        if ("experiment".equals(property)) {
+            String msg = String.format("Experiment '%s' deleted", entity.getExperiment().getTitle());
+            getProcessor().addDetail(record, columnName, msg, oldVal, newVal);
+            return true;
+        }
+        return false;
+    }
+
 }
