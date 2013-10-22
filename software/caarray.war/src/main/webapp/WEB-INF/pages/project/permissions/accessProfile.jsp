@@ -1,5 +1,24 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<script type="text/javascript">
+    var oldLevel = '${accessProfile.securityLevel}';
+    confirmSaveProfile = function() {
+        var newLevel = $(profileForm_accessProfile_securityLevel).value;
+        if (oldLevel == 'NO_VISIBILITY' && newLevel != 'NO_VISIBILITY') {
+            Ext.MessageBox.confirm('Confirm Experiment Access',
+                'This experiment will be made available to the public. Do you want to continue?',
+                function(btn) {
+                    if (btn == "yes") {
+                        PermissionUtils.saveProfile();
+                    }
+                }
+            );
+        } else {
+            PermissionUtils.saveProfile();
+        }
+    }
+</script>
+
 <s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm" onsubmit="return false;">
     <s:token/>
     <s:hidden name="project.id"/>
@@ -16,7 +35,7 @@
             <td>
                 <caarray:actions divclass="actionsthin">
                     <caarray:action actionClass="cancel" text="Cancel" onclick="PermissionUtils.cancelEditProfile(); " />
-                    <caarray:action actionClass="save" text="Save" onclick="PermissionUtils.saveProfile();" />
+                    <caarray:action actionClass="save" text="Save" onclick="confirmSaveProfile();" />
                 </caarray:actions>
             </td>
         </tr>
