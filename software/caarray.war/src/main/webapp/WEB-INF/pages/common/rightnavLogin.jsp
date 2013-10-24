@@ -10,6 +10,21 @@
 --%>
 
 <script type="text/javascript">
+function doLogin() {
+    <c:choose><c:when test='${empty initParam["login.warning"]}'>
+        startLogin();
+    </c:when><c:otherwise>
+        Ext.MessageBox.confirm(
+            'Login warning',
+            '${initParam["login.warning"]}',
+            function(btn) {
+                if (btn == "yes") {
+                    startLogin();
+                }
+            }
+        );
+    </c:otherwise></c:choose>
+}
 function startLogin() {
     $('login_progress').show();
     new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
@@ -34,7 +49,7 @@ function completeLogin() {
 		    <div id="login_progress" style="display: none; margin: 3px 3px">
 		       <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Logging in
 		    </div>
-		    <form id="login" method="post" action="<c:url value='/j_security_check'/>" onsubmit="startLogin(); return false;">
+		    <form id="login" method="post" action="<c:url value='/j_security_check'/>" onsubmit="doLogin(); return false;">
 		        <table class="login">
 		            <c:if test="${param.error != null}">
 		            <script type="text/javascript">
@@ -63,7 +78,7 @@ function completeLogin() {
 		                <td colspan="2" class="centered">
 		                    <del class="btnwrapper">
 		                        <ul id="btnrow">
-		                            <li><caarray:linkButton actionClass="register" text="Login" tabindex="3" onclick="startLogin()"/></li>
+		                            <li><caarray:linkButton actionClass="register" text="Login" tabindex="3" onclick="doLogin()"/></li>
 		                        </ul>
 		                    </del>
 		                </td>

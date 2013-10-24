@@ -21,6 +21,22 @@
                     </p>
 
                     <script type="text/javascript">
+                        function doLogin() {
+                            <c:choose><c:when test='${empty initParam["login.warning"]}'>
+                                startLogin();
+                            </c:when><c:otherwise>
+                                Ext.MessageBox.confirm(
+                                    'Login warning',
+                                    '${initParam["login.warning"]}',
+                                    function(btn) {
+                                        if (btn == "yes") {
+                                            startLogin();
+                                        }
+                                    }
+                                );
+                            </c:otherwise></c:choose>
+                        }
+                        
                         function startLogin() {
                             $('login_progress').show();
                             <c:choose>
@@ -42,7 +58,7 @@
                        <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Logging in
                     </div>
 
-                    <s:form method="post" id="login" action="/j_security_check" onsubmit="startLogin(); return false;" cssClass="form">
+                    <s:form method="post" id="login" action="/j_security_check" onsubmit="doLogin(); return false;" cssClass="form">
                         <c:if test="${param.error != null}">
                             <tr>
                                 <td colspan="2" class="centered">
@@ -64,7 +80,7 @@
                         <caarray:action actionClass="cancel" text="Cancel">
                             <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
                         </caarray:action>
-                        <caarray:action actionClass="register" text="Login" onclick="startLogin();"/>
+                        <caarray:action actionClass="register" text="Login" onclick="doLogin();"/>
                     </caarray:actions>
                 </div>
             </div>
