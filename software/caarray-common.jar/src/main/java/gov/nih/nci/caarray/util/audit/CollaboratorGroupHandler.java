@@ -33,8 +33,8 @@ public class CollaboratorGroupHandler extends AbstractAuditEntityHandler<Collabo
             String columnName, Object oldVal, Object newVal) {
         boolean addedEntry = false;
         if ("ownerId".equals(property)) {
-            String msg = "Collaborator Group " + entity.getGroup().getGroupName() + " owner set to "
-                    + entity.getOwner().getLoginName();
+            String msg = String.format("Collaborator Group %s owner set to %s",
+                    entity.getGroup().getGroupName(), entity.getOwner().getLoginName());
             getProcessor().addDetail(record, columnName, msg, oldVal, newVal);
             addedEntry = true;
         } else {

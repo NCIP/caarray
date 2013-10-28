@@ -43,7 +43,8 @@ public class GroupHandler extends AbstractAuditEntityHandler<Group> {
             getProcessor().addDetail(record, columnName, "Group " + newVal + " created", oldVal, newVal);
             if (entity.getUsers() != null) {
                 for (Object u : entity.getUsers()) {
-                    String msg = "User " + ((User) u).getLoginName() + " added to group " + entity.getGroupName();
+                    String msg = String.format("User %s added to group %s",
+                            ((User) u).getLoginName(), entity.getGroupName());
                     getProcessor().addDetail(record, columnName, msg, null, u);
                 }
             }
@@ -61,19 +62,19 @@ public class GroupHandler extends AbstractAuditEntityHandler<Group> {
             Object oldVal, Object newVal) {
         boolean updatedEntry = false;
         if ("groupName".equals(property)) {
-            String msg = "Group name changed from " + oldVal + " to " + newVal;
+            String msg = String.format("Group name changed from %s to %s", oldVal, newVal);
             getProcessor().addDetail(record, columnName, msg, oldVal, newVal);
             updatedEntry = true;
         } else if ("users".equals(property)) {
             Collection<User> tmp = CollectionUtils.subtract((Set<User>) oldVal, (Set<User>) newVal);
             for (User u : tmp) {
-                String msg = "User " + u.getLoginName() + " removed from group " + entity.getGroupName();
+                String msg = String.format("User %s removed from group %s", u.getLoginName(), entity.getGroupName());
                 getProcessor().addDetail(record, columnName, msg, u, null);
                 updatedEntry = true;
             }
             tmp = CollectionUtils.subtract((Set<User>) newVal, (Set<User>) oldVal);
             for (User u : tmp) {
-                String msg = "User " + u.getLoginName() + " added to group " + entity.getGroupName();
+                String msg = String.format("User %s added to group %s", u.getLoginName(), entity.getGroupName());
                 getProcessor().addDetail(record, columnName, msg, null, u);
                 updatedEntry = true;
             }
