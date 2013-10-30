@@ -683,23 +683,19 @@ TD.button
 
 /* Footer */
 
-#footerwrapper
-{ background:#fff; clear:both; font-size:85%; font-weight:bold; text-transform:uppercase }
-#footernavwrapper
-{ text-align:center; background:#5c5c5c; height:2.0em; border-top:1px solid #cacaca; border-bottom:1px solid #cacaca }
-#footernav
-{ margin:0 auto; width:500px }
-#footernav A
-{ display:block; float:left; color:#fff; padding:0 10px; line-height:2.0em; border-left:1px dotted #fff }
-#footernav A:hover
-{ background:#414141; text-decoration:none; }
-#footernav A.last
-{ border-right:1px dotted #fff }
-#partnerlogos
-{ padding-top:10px; text-align:center; }
 #footerplugins
 { padding-top:5px; text-align:center; }
 
+#portal-footer
+{line-height: 1.2em; margin: 2em 0em 1em 0em; padding: 1em 0em 1em 0em; text-align: center; background-color:#FFF; color: #333333; font-size: 85%;}
+#portal-footer a
+{text-decoration: none; color: #333333; border: none;}
+#portal-footer a:visited
+{color: #333333;}
+#portal-footer a:hover
+{text-decoration: underline;}
+.footerLinks
+{padding: .5em 0em 0em 0em;}
 
 div.tooltip:hover {background:#ffffff; text-decoration:none;} /*BG color is a must for IE6*/
 div.tooltip span {display:none; padding:2px 3px; margin-left:8px; width:130px;}
