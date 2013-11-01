@@ -25,15 +25,16 @@
                             <c:choose><c:when test='${empty initParam["login.warning"]}'>
                                 startLogin();
                             </c:when><c:otherwise>
-                                Ext.MessageBox.confirm(
-                                    'Login warning',
-                                    '${initParam["login.warning"]}',
-                                    function(btn) {
-                                        if (btn == "yes") {
+                                Ext.MessageBox.show({
+                                    title: 'Warning',
+                                    msg: '${initParam["login.warning"]}',
+                                    buttons: Ext.MessageBox.OKCANCEL,
+                                    fn: function(btn) {
+                                        if (btn == "ok") {
                                             startLogin();
                                         }
                                     }
-                                );
+                                });
                             </c:otherwise></c:choose>
                         }
                         
