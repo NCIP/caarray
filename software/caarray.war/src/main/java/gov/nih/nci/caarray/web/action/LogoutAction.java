@@ -27,6 +27,7 @@ public class LogoutAction extends com.fiveamsolutions.nci.commons.web.struts2.ac
      */
     @Override
     public String logout() {
+        ServletActionContext.getRequest().getSession().setAttribute("AuditLogout", true);
         String result = super.logout();
         return (casServerLogoutUrl != null) ? "casLogout" : result;
     }
