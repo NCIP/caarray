@@ -6,7 +6,14 @@
         var newLevel = $(profileForm_accessProfile_securityLevel).value;
         if (oldLevel == 'NO_VISIBILITY' && newLevel != 'NO_VISIBILITY') {
             Ext.MessageBox.confirm('Confirm Experiment Access',
-                'This experiment will be made available to the public. Do you want to continue?',
+                'This Experiment will be made available to the public. '
+                + 'Submitters are responsible for ensuring that all data and annotations are free of '
+                + 'Personally Identifiable Information and Protected Health Information (PII/PHI). '
+                + 'By sharing this data through NCI\'s caArray, you are certifying that you are the author of this '
+                + 'data, and are authorized to release the data. You also certify that you will post only data '
+                + 'generated and/or produced by you or your laboratory, and that you will consult with your '
+                + 'institution\'s technology development office before posting or disclosing confidential information '
+                + 'which may be patentable.',
                 function(btn) {
                     if (btn == "yes") {
                         PermissionUtils.saveProfile();
