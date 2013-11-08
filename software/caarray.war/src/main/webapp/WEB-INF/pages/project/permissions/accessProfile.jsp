@@ -1,10 +1,9 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <script type="text/javascript">
-    var oldLevel = '${accessProfile.securityLevel}';
     confirmSaveProfile = function() {
         var newLevel = $(profileForm_accessProfile_securityLevel).value;
-        if (oldLevel == 'NO_VISIBILITY' && newLevel != 'NO_VISIBILITY') {
+        if (PermissionUtils.lastPublicLevel == 'NO_VISIBILITY' && newLevel != 'NO_VISIBILITY') {
             Ext.MessageBox.confirm('Confirm Experiment Access',
                 'This Experiment will be made available to the public. '
                 + 'Submitters are responsible for ensuring that all data and annotations are free of '

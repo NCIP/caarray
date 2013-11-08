@@ -68,6 +68,7 @@
 
 
 <script type="text/javascript">
+    PermissionUtils.lastPublicLevel = '${project.publicProfile.securityLevel}';
     function toggleList(id, link){
         e = $(id);
         if (link != null) {
