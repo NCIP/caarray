@@ -47,7 +47,7 @@
         <li class="liheader">About caArray</li>
         <li><a href="https://wiki.nci.nih.gov/x/nIEOAQ" target="_blank">What is caArray?</a></li>
         <li><a href='${initParam["releaseNotesUrl"]}' target="_blank">Release Notes</a></li>
-        <li><a href="javascript:openHelpWindow()">Help</a></li>
+        <li><a href="javascript:openHelpWindow()">User Guide</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
