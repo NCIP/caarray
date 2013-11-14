@@ -2478,6 +2478,7 @@
                 <filter token="build.time" value="${mili.time}" />
                 <filter token="upt.url" value="${upt.url}" />
                 <filter token="release-notes.url" value="${release-notes.url}" />
+                <filter token="login.warning.show" value="${login.warning.show}" />
                 <filter token="login.warning" value="${login.warning}" />
                 <filter token="ldap.url" value="${ldap.url}" />
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />

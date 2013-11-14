@@ -87,6 +87,10 @@
         <param-name>login.warning</param-name>
         <param-value>@login.warning@</param-value>
     </context-param>
+    <context-param>
+        <param-name>login.warning.show</param-name>
+        <param-value>@login.warning.show@</param-value>
+    </context-param>
 
 	<!-- Only 2 CAS filters are required for JAAS support -->
 	<!--TODO ARRAY-2453 Change this back to org.jasig.cas.client.jboss.authentication.WebAuthenticationFilter

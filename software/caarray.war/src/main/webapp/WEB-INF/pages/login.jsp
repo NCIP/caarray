@@ -22,7 +22,7 @@
 
                     <script type="text/javascript">
                         function doLogin() {
-                            <c:choose><c:when test='${empty initParam["login.warning"]}'>
+                            <c:choose><c:when test='${not initParam["login.warning.show"]}'>
                                 startLogin();
                             </c:when><c:otherwise>
                                 Ext.MessageBox.show({
