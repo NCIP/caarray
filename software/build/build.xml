@@ -2480,6 +2480,8 @@
                 <filter token="release-notes.url" value="${release-notes.url}" />
                 <filter token="login.warning.show" value="${login.warning.show}" />
                 <filter token="login.warning" value="${login.warning}" />
+                <filter token="expAccess.warning.show" value="${expAccess.warning.show}" />
+                <filter token="expAccess.warning" value="${expAccess.warning}" />
                 <filter token="ldap.url" value="${ldap.url}" />
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
