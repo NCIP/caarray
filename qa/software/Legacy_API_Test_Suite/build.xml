@@ -24,6 +24,7 @@
     <property name="jar.dir" value="${basedir}/gui" />
     <property name="jar.file" value="${jar.dir}/client_legacy_api_test_suite.jar" />
     <property name="jar.dest.file" value="${basedir}/client_legacy_api_test_suite.jar" />
+    <property name="jboss.home" value="${user.home}/projects/caArray/apps/app/jboss-5.1.0.GA-nci"/>
 
     <!-- ******************************************************************* -->
         <!-- ** TEST SUITE PROPERTIES                                         ** -->
@@ -53,7 +54,9 @@
             <exclude name="xercesImpl-1.7.0.jar" />
             <exclude name="xerces-J-1.4.0.jar" />
             <exclude name="pull-parser-2.jar"/>
+            <exclude name="jbosssx-client-4.2.2.GA.jar"/>
         </fileset>
+        <fileset dir="${jboss.home}/client" includes="*.jar"/>
     </path>
 
     <target name="compile">

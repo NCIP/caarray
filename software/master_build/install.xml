@@ -1232,15 +1232,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                     dir2="${compare2.dir}"
                     reportFile="${changelogFile}"
                     />
-                <!-- Copy app server logs -->
-                <mkdir dir="${jboss.home}/server/${jboss.server.name}/log"/>
-                <mkdir dir="${backup.jboss.base.dir}/backup/${jboss.binaries.relative.dir}/server/${jboss.server.name}/log"/>
-                <!-- so the logs wont be included in the zip -->
-                <move todir="${jboss.home}/server/${jboss.server.name}/log">
-                    <fileset dir="${backup.jboss.base.dir}/backup/${jboss.binaries.relative.dir}/server/${jboss.server.name}/log">
-                        <include name="*"/>
-                    </fileset>
-                </move>
 
                 <!-- Compress backup and cleanup -->
                 <mkdir dir="${backup.jboss.base.dir}/backup1"/>

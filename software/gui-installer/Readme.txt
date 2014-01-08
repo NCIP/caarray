@@ -2,8 +2,8 @@ Release Notes
 =============
  
   #Product:#	caArray
-  #Version:#	2.5.1
-  #Date:#	June 2013
+  #Version:#	2.5.2
+  #Date:#	January 2014
 
 Contents
 --------
@@ -34,6 +34,7 @@ library of assay management.
 
 Release History
 ------------------------
+    * caArray v2.5.2		-- January 2014
     * caArray v2.5.1		-- June 2013
     * caArray v2.5.0		-- July 2012
     * caArray v2.4.1		-- May 2011 
@@ -51,28 +52,28 @@ Release History
     * caArray v2.0.0		-- February 2008
 
 
-Anticipated Releases
-------------------------
- 
-    * caArray v2.5.2		-- Q4 2013 (maintenance release)
-
-
 Features and Defects Addressed in this Release
 -----------------------------------------------
 
-This release represents a feature release of the caArray 2 software. Highlights of caArray 2.5.1 are:
+This release includes enhanced auditing and other features to enable full FISMA compliance.
 
-* Improved performance and memory usage during imports
-
-* Section 508 compliance
-
-* Bug fixes related to deleting hybridizations
-
-* Bug fixes related to data imports
-
-* Browser specific bug fixes for file uploads
-
-* Updated home page navigation links
+ * [ARRAY-2008] - Add a warning banner to caArray
+ * [ARRAY-2010] - Experiment creation and deletion need to be an audited event
+ * [ARRAY-2671] - Audit changes to array designs
+ * [ARRAY-2672] - Audit changes to terms
+ * [ARRAY-2673] - Audit account logon events
+ * [ARRAY-2675] - Add time to the audit log details in the interface
+ * [ARRAY-2018] - Add warning to experiment owner when an experiment is made public
+ * [ARRAY-2688] - Updated footer
+ * [ARRAY-2666] - Audit changes to experiment properties
+ * [ARRAY-2668] - Audit experiment file deletion
+ * [ARRAY-2619] - Move the caArray Release Notes to the Confluence Wiki
+ * [ARRAY-2694] - Change "Help" link to "User Guide"
+ * [ARRAY-2693] - There is no warning message if experiment owner is trying to change an experiment public permission from "No Visibility" to "Read Selective"
+ * [ARRAY-2695] - MAGE-TAB link on home page leads to 502 Bad Gateway error
+ * [ARRAY-2696] - Release notes link is not pointed to the correct release notes
+ * [ARRAY-2670] - Changing only an experiment's assay type or array design does not get audited
+ * [ARRAY-2645] - Error Adding GenePix Array Design
 
 
 Known Issues/Defects
@@ -119,14 +120,14 @@ Documentation And Files
 -----------------------
 Wiki-based guides are available at the following locations:
 
-   caArray 2.5.0 User's Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5+User%27s+Guide
-   caArray 2.5.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+Data+Portal+Local+Installation+Guide+Wiki+Main+Page
-   caArray 2.5.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+Technical+Guide+Wiki+Main+Page
-   caArray 2.5.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+API+Guide
+   caArray 2.5.0 User's Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+User%27s+Guide
+   caArray 2.5.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5+Data+Portal+Local+Installation+Guide
+   caArray 2.5.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.5.0+Technical+Guide
+   caArray 2.5.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2doc/caArray+API+Guide
 
 Links to all other documentation and files can be found at: 
-
-   https://cabig.nci.nih.gov/tools/caArray
+   https://wiki.nci.nih.gov/display/caArray2doc/caArray2+Documentation
+   https://wiki.nci.nih.gov/display/caArray2/caArray+Downloads
 
 
 NCI CBIIT Web Pages
