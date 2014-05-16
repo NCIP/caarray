@@ -100,7 +100,7 @@
     <dependency conf="project" org="displaytag" name="displaytag" rev="1.1.1nci" transitive="false" />
     <dependency conf="project" org="org.tuckey" name="urlrewrite" rev="2.6.0nci" transitive="false" />
     <dependency conf="project" org="axis" name="axis" rev="1.4.2_10nci" transitive="false" />
-    <dependency conf="project" org="org.apache.struts" name="struts2-core" rev="2.3.15.1" transitive="true" />
+    <dependency conf="project" org="org.apache.struts" name="struts2-core" rev="2.3.16.3" transitive="true" />
     <dependency conf="project" org="jboss" name="jboss-cache" rev="1.4.1.GA" transitive="false" />
     <dependency conf="project" org="org.jboss" name="jboss-system-jmx-client" rev="5.1.0.GAnci" transitive="false" />
     <dependency conf="project" org="jboss" name="jboss-system-client" rev="5.1.0.GAnci" transitive="false" />
