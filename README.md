@@ -18,7 +18,7 @@ You will find more details about caArray in the following links:
  *  Documentation Repository: http://github.com/NCIP/caarray-docs
  *  Mailing List: caarray_users-l@list.nih.gov
 
-An NCI hosted instance of caArray is publicly available at:
+The NCI-hosted instance of caArray has been retired but data is available for download. For more information, see
 
  * https://array.nci.nih.gov/caarray
 
