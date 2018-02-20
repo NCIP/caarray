@@ -18,7 +18,7 @@ You will find more details about caArray in the following links:
  *  Documentation Repository: http://github.com/NCIP/caarray-docs
  *  Mailing List: caarray_users-l@list.nih.gov
 
-The National Cancer Institute (NCI) Center for Biomedical Informatics and Information Technology (CBIIT) instance of the caArray database was retired on March 31st, 2015. All publicly-accessible caArray data and annotations will be archived and will remain available via FTP download and is also available at GEO. While NCI will not be able to provide technical support for the caArray software after the retirement, the source code is available on GitHub, and we encourage continued community development.
+The National Cancer Institute (NCI) Center for Biomedical Informatics and Information Technology (CBIIT) instance of the caArray database was retired on March 31st, 2015. All publicly-accessible caArray data and annotations will be archived and will remain available via [FTP download](https://wiki.nci.nih.gov/x/UYHeDQ) and is also available at [GEO](http://www.ncbi.nlm.nih.gov/geo/). While NCI will not be able to provide technical support for the caArray software after the retirement, the source code is available on GitHub, and we encourage continued community development.
 
 If you have any further questions, please contact the [NCI CBIIT Application Support](mailto:ncicbiit@mail.nih.gov) team.
 
