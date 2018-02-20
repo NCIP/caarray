@@ -18,9 +18,12 @@ You will find more details about caArray in the following links:
  *  Documentation Repository: http://github.com/NCIP/caarray-docs
  *  Mailing List: caarray_users-l@list.nih.gov
 
-The NCI-hosted instance of caArray has been retired but data is available for download. For more information, see
+The National Cancer Institute (NCI) Center for Biomedical Informatics and Information Technology (CBIIT) instance of the caArray database was retired on March 31st, 2015. All publicly-accessible caArray data and annotations will be archived and will remain available via FTP download and is also available at GEO. While NCI will not be able to provide technical support for the caArray software after the retirement, the source code is available on GitHub, and we encourage continued community development.
 
- * https://array.nci.nih.gov/caarray
+If you have any further questions, please contact the [NCI CBIIT Application Support](mailto:ncicbiit@mail.nih.gov) team.
+
+Update November 18th, 2014: Molecular Analysis of Brain Neoplasia (Rembrandt fine-00037) gene expression data has been loaded into ArrayExpress:
+[ArrayExpress accession: E-MTAB-3073](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-3073)
 
 Please join us in further developing and improving caArray.
 
